@@ -1,7 +1,9 @@
 # Target specific macros
 TARGET = program
 
-TARGET_CPP_SOURCES = program.cpp
+TARGET_CPP_SOURCES = \
+    program.cpp \
+    driving.cpp
 	
 TOPPERS_OSEK_OIL_SOURCE = ./program.oil
 

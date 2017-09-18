@@ -1,6 +1,9 @@
 #ifndef TEST_DRIVING_H
 #define TEST_DRIVING_H
 
+#include "Motor.h"
+
+
 #define TURN_ANGLE 35
 #define TURN_SPEED 50
 #define FORWARD_SPEED 70
@@ -14,7 +17,22 @@
 #define DRIVE_REVERSE -1
 #define DRIVE_STOP 0
 
-// void turn(int direction);
-// void drive(int direction);
+namespace ecrobot {
+    class Driving {
+		/*private:
+			Motor motorDrive(unsigned char _port);
+			Motor motorTurn(unsigned char _port);
+		*/
+		public:
+			// Driving(Motor drive, Motor turn); // TODO: Not working
+			Driving();
+
+			void turn(int direction);
+
+			void drive(int direction);
+
+			int getTurnCount();
+    };
+};
 
 #endif //TEST_DRIVING_H
