@@ -20,9 +20,9 @@ Motor motorForward(PORT_B);
  */
 /*Driving::Driving( Motor drive, Motor turn )
 {
-    direction = -1;
-    motorDrive = drive;
-    motorTurn = turn;
+	direction = -1;
+	motorDrive = drive;
+	motorTurn = turn;
 }*/
 
 Driving::Driving() {}
@@ -37,24 +37,24 @@ bool calibrated = false;
 */
 void Driving::turn(int direction)
 {
-    if (direction == TURN_LEFT)
-        motorTurn.setPWM(TURN_SPEED);
+	if (direction == TURN_LEFT)
+		motorTurn.setPWM(TURN_SPEED);
 
-    else if (direction == TURN_RIGHT)
-        motorTurn.setPWM(-(TURN_SPEED));
+	else if (direction == TURN_RIGHT)
+		motorTurn.setPWM(-(TURN_SPEED));
 
-    else if (direction == TURN_CENTER) // TODO: Need to think through the approach on this one
-    {
-        int angle = motorTurn.getCount();
+	else if (direction == TURN_CENTER) // TODO: Need to think through the approach on this one
+	{
+		int angle = motorTurn.getCount();
 
-        if (angle > 3 && angle < -3)
-            if (angle > 3)
-                motorTurn.setPWM(-(TURN_SPEED));
-            else if (angle < -3)
-                motorTurn.setPWM(TURN_SPEED);
-            else
-                motorTurn.setPWM(0);
-    }
+		if (angle > 3 && angle < -3)
+			if (angle > 3)
+				motorTurn.setPWM(-(TURN_SPEED));
+			else if (angle < -3)
+				motorTurn.setPWM(TURN_SPEED);
+			else
+				motorTurn.setPWM(0);
+	}
 }
 
 /**
