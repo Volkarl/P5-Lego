@@ -20,7 +20,7 @@ extern "C"
  *
  * PORT_1 Sonar Sensor
  */
-SonarSensor sonar(PORT_1);
+SonarSensor sonar(PORT_4);
 
 /**
  * Classes
@@ -41,7 +41,7 @@ TASK(TaskMain)
 	int distance;
 	int direction = -1;
 
-	drive.drive(DRIVE_FORWARD);
+	drive.forward();
 
 	while(1)
 	{
@@ -51,10 +51,10 @@ TASK(TaskMain)
 		{
 			direction = 0;
 			// Reverse
-			drive.drive(DRIVE_REVERSE);
+			drive.reverse;
 			drive.turn(TURN_RIGHT);
 			clock.wait(2000);
-			drive.drive(DRIVE_FORWARD);
+			drive.forward();
 			direction = TURN_LEFT;
 		}
 		else if (direction == DRIVE_STOP)

@@ -54,21 +54,40 @@ void Driving::turn(int direction)
     }
 }
 
-/**
- * Select between drive / stop / reverse
- *
- * @param direction
- */
-void Driving::drive(int direction)
-{
-    if (direction == DRIVE_FORWARD)
-        motorForward.setPWM(FORWARD_SPEED);
-    else if (direction == DRIVE_REVERSE)
-        motorForward.setPWM(-(FORWARD_SPEED));
-    else
-        motorForward.setPWM(0);
 
-    motorForward.setCount(0); // Counter is irrelevant and an increasing number would be a waste.
+
+/**
+ * Drive Forwards
+ */
+void Driving::forward()
+{
+	motorForward.setPWM(FORWARD_SPEED);
+}
+
+/**
+ * Reverse
+ */
+void Driving::reverse()
+{
+	motorForward.setPWM(-(FORWARD_SPEED));
+}
+
+/**
+ * Stop forward engine
+ */
+void Driving::stop()
+{
+	motorForward.setPWM(0);
+}
+
+/**
+ * Stop both forward and turn engines.
+ * TODO: Remember that this should interrupt tasks as well
+ */
+void Driving::halt()
+{
+	motorForward.setPWM(0);
+	motorTurn.setPWM(0);
 }
 
 

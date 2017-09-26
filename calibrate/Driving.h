@@ -6,6 +6,7 @@
 
 #define TURN_ANGLE 35
 #define TURN_SPEED 50
+#define TURN_JITTER 2
 #define FORWARD_SPEED 70
 
 #define TURN_LEFT -1
@@ -35,6 +36,12 @@ namespace ecrobot {
 			void halt();
 
 			int getTurnCount();
+			bool isCentered();
+			bool isCalibrated();
+
+			void calibrate();
+
+			void center();
     };
 };
 
