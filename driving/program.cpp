@@ -51,7 +51,7 @@ TASK(TaskMain)
 		{
 			direction = 0;
 			// Reverse
-			drive.reverse;
+			drive.reverse();
 			drive.turn(TURN_RIGHT);
 			clock.wait(2000);
 			drive.forward();

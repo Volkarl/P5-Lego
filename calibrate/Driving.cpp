@@ -1,8 +1,13 @@
 #include "Driving.h"
 #include "Motor.h"
 #include "Clock.h"
+#include <climits>
 
 using namespace ecrobot;
+
+/**
+ * Input:
+ */
 
 /**
  * Output:
@@ -14,19 +19,13 @@ Motor motorTurn(PORT_A);
 Motor motorForward(PORT_B);
 
 /**
- * Constructor - TODO: requires motors
- * @param Motor drive
- * @param Motor turn
+ * Constructor
  */
-/*Driving::Driving( Motor drive, Motor turn )
-{
-	direction = -1;
-	motorDrive = drive;
-	motorTurn = turn;
-}*/
-
 Driving::Driving() {}
 
+/**
+ * Variables
+ */
 bool calibrated = false;
 
 
@@ -42,19 +41,6 @@ void Driving::turn(int direction)
 
 	else if (direction == TURN_RIGHT)
 		motorTurn.setPWM(-(TURN_SPEED));
-
-	else if (direction == TURN_CENTER) // TODO: Need to think through the approach on this one
-	{
-		int angle = motorTurn.getCount();
-
-		if (angle > 3 && angle < -3)
-			if (angle > 3)
-				motorTurn.setPWM(-(TURN_SPEED));
-			else if (angle < -3)
-				motorTurn.setPWM(TURN_SPEED);
-			else
-				motorTurn.setPWM(0);
-	}
 }
 
 /**
@@ -93,7 +79,6 @@ void Driving::halt()
 
 
 /**
- * Probably shouldn't be here as all driving logic should most likely be here
  * @return int count
  */
 int Driving::getTurnCount()
@@ -108,7 +93,7 @@ void Driving::calibrate()
 {
 	int leftPos = 0;
 	int rightPos = 0;
-	int lastPos = -20000; // TODO: Fix stupid value instead of null
+	int lastPos = INT_MAX; // TODO: Fix stupid value instead of null
 	int direction = 1; // TODO: This variable is frankly pretty odd
 	int count; // Used to reduce query counts, a bit unsure if this is a bit too slow because of processing & turning time
 	int center;
@@ -118,7 +103,7 @@ void Driving::calibrate()
 		count = motorTurn.getCount();
 
 		// Right
-		if (direction == 1 && lastPos != -2000)
+		if (direction == 1)
 		{
 			motorTurn.setPWM(TURN_SPEED);
 			count = this->getTurnCount();
@@ -126,7 +111,7 @@ void Driving::calibrate()
 			// Take account for jitter, albeit probably stupid
 			if (count >= lastPos - 1 && count <= lastPos + 1) {
 				rightPos = lastPos;
-				lastPos = -20000;
+				lastPos = INT_MAX;
 				direction = -1;
 				motorTurn.setPWM(-TURN_SPEED);
 			}
@@ -155,7 +140,7 @@ void Driving::calibrate()
 		else if (direction == -2) {
 			center = (leftPos + rightPos) / 2;
 
-			if (motorTurn.getCount() < center)
+			if (this->getTurnCount() < center)
 				motorTurn.setPWM(TURN_SPEED);
 			else
 				motorTurn.setPWM(-TURN_SPEED);
