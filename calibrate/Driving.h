@@ -19,7 +19,7 @@
 #define DRIVE_STOP 0
 
 namespace ecrobot {
-    class Driving {
+	class Driving {
 		/*private:
 			Motor motorDrive(unsigned char _port);
 			Motor motorTurn(unsigned char _port);
@@ -42,7 +42,7 @@ namespace ecrobot {
 			void calibrate();
 
 			void center();
-    };
+	};
 };
 
 #endif //TEST_DRIVING_H

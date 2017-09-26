@@ -24,7 +24,7 @@ void user_1ms_isr_type2(void)
 
 TASK(TaskMain)
 {
-    Nxt nxt; // Used for buttons
+	Nxt nxt; // Used for buttons
 	Lcd lcd;
 	Clock clock;
 	bool centerPls = false;
@@ -47,8 +47,8 @@ TASK(TaskMain)
 		}
 
 
-        lcd.clear();
-        lcd.putf("sdnn", "Turn Count: ", drive.getTurnCount(), 0);
+		lcd.clear();
+		lcd.putf("sdnn", "Turn Count: ", drive.getTurnCount(), 0);
 
 		if (drive.isCentered())
 			lcd.putf("sn", "Centered");
