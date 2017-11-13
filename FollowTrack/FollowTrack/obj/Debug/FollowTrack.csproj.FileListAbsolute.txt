@@ -1,0 +1,6 @@
+c:\users\kimx4560\documents\visual studio 2017\Projects\FollowTrack\FollowTrack\bin\Debug\FollowTrack.exe.config
+c:\users\kimx4560\documents\visual studio 2017\Projects\FollowTrack\FollowTrack\bin\Debug\FollowTrack.exe
+c:\users\kimx4560\documents\visual studio 2017\Projects\FollowTrack\FollowTrack\bin\Debug\FollowTrack.pdb
+c:\users\kimx4560\documents\visual studio 2017\Projects\FollowTrack\FollowTrack\obj\Debug\FollowTrack.csprojResolveAssemblyReference.cache
+c:\users\kimx4560\documents\visual studio 2017\Projects\FollowTrack\FollowTrack\obj\Debug\FollowTrack.exe
+c:\users\kimx4560\documents\visual studio 2017\Projects\FollowTrack\FollowTrack\obj\Debug\FollowTrack.pdb
