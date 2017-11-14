@@ -202,9 +202,107 @@ namespace FollowTrack
 
 
 
-        private void ConvertDataToWorldSpace(List<double> pDataLeftOld, List<double> pDataRightOld)
+        private void RotateAndDisplaceData(List<double> DataL, List<double> DataR, List<double> LastTwoPoints)
         {
-            throw new NotImplementedException();
+            int RotationDirection;
+
+            if (LastTwoPoints[0] < LastTwoPoints[2]) // we are turning clockwise, soo rotate counterclockwise
+            {
+                RotationDirection = -1;
+            }
+            else //we are turning counterclockwise so turn clockwise
+            {
+                RotationDirection = 1;
+            }
+
+            double RotationSumInDegrees =  Math.Atan(Math.Abs((LastTwoPoints[0] - LastTwoPoints[2])) / Math.Abs(LastTwoPoints[1] - LastTwoPoints[3])); // math.abs is the absolute value e.g always positive
+            RotationSumInDegrees = RotationSumInDegrees * RotationDirection;
+            // for (int i = 0; i < 8; i+=2)
+            int i = 0;
+
+            while (DataL.Count > i+1)
+            {
+                double tempXValue = DataL[i]; // we will override x value, but still need original when rotating y
+                double tempYValue = DataL[i + 1]; // i dont think this is needed but it makes it pretty
+
+                /*
+                 * take care
+                 * what way is it rotating?
+                 * if the bus has rotated clockwise
+                 * rotate the cordinats counterclockwise
+                 */
+                DataL[i] = tempXValue * Math.Cos(RotationSumInDegrees) - tempYValue * Math.Sin(RotationSumInDegrees); // rotation
+                DataL[i + 1] = tempXValue * Math.Sin(RotationSumInDegrees) + tempYValue * Math.Cos(RotationSumInDegrees);
+                i += 2;
+            }
+            i = 0;
+
+            while (DataR.Count > i+1)
+            {
+                double tempXValue = DataR[i]; // we will override x value, but still need original when rotating y
+                double tempYValue = DataR[i + 1]; // i dont think this is needed but it makes it pretty
+
+                /*
+                 * take care
+                 * what way is it rotating?
+                 * if the bus has rotated clockwise
+                 * rotate the cordinats counterclockwise
+                 */
+                DataR[i] = tempXValue * Math.Cos(RotationSumInDegrees) - tempYValue * Math.Sin(RotationSumInDegrees); // rotation
+                DataR[i + 1] = tempXValue * Math.Sin(RotationSumInDegrees) + tempYValue * Math.Cos(RotationSumInDegrees);
+                i += 2;
+            }
+            i = 0;
+
+            while (LastTwoPoints.Count > i + 1)
+            {
+                double tempXValue = LastTwoPoints[i]; // we will override x value, but still need original when rotating y
+                double tempYValue = LastTwoPoints[i + 1]; // i dont think this is needed but it makes it pretty
+
+                /*
+                 * take care
+                 * what way is it rotating?
+                 * if the bus has rotated clockwise
+                 * rotate the cordinats counterclockwise
+                 */
+                LastTwoPoints[i] = tempXValue * Math.Cos(RotationSumInDegrees) - tempYValue * Math.Sin(RotationSumInDegrees); // rotation
+                LastTwoPoints[i + 1] = tempXValue * Math.Sin(RotationSumInDegrees) + tempYValue * Math.Cos(RotationSumInDegrees);
+
+                i += 2;
+            }
+            i = 0;
+
+            /*
+             * Set end point to startpoint cordinats,
+             * all start points must be at the same spot in the graph 
+             */
+            double DisplacementX = 88 - LastTwoPoints[0]; //after endpoint has been rotated
+            double DisplacementY = (-20)-LastTwoPoints[1];
+
+            /*
+             * lastly we displace all of the cordinats
+             */
+            // for (int i = 0; i < 8; i+=2)
+            while (DataR.Count >i+1)
+            {
+                DataL[i] = DataL[i] + DisplacementX;
+                DataL[i + 1] = DataL[i + 1] + DisplacementY;
+                i += 2;
+            }
+            i = 0;
+            // for (int i = 0; i < 8; i += 2)
+            while (DataR.Count > i+1)
+            {
+                DataR[i] = DataR[i] + DisplacementX;
+                DataR[i + 1] = DataR[i + 1] + DisplacementY;
+                i += 2;
+            }
+
+            /*
+             * we new have the new old cordinats 
+             * override the old old cordinats, and its done
+             */
+
         }
 
         private void ConvertDataFromFieldOfView(double[] data)
