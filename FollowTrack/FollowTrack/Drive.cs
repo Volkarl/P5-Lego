@@ -21,7 +21,7 @@ namespace FollowTrack
         private List<double> _pDataLeftOld = new List<double>();
         private List<double> _pDataRightOld = new List<double>();
 
-
+        // Main
         public void Run()
         {
             if (Path.Count > 0)
@@ -64,7 +64,7 @@ namespace FollowTrack
 
 
 
-        // TODO: Find relevant Points
+        // TODO: Find relevant Points -> need test
         private double[] CalculateBezierCurvePoints(double[] pData)
         {
             double[] data = new double[PointsOnCurve];
@@ -102,7 +102,7 @@ namespace FollowTrack
             return midPoints;
         }
 
-        // TODO: Fix slope
+        // DONE
         private List<PathPoint> CalculatePathData(List<Vector2> midPoints)
         {
             List<PathPoint> pathPoints = new List<PathPoint>();
@@ -112,8 +112,8 @@ namespace FollowTrack
 
             for (int i = 1; i < midPoints.Count; i++)
             {
-                slope = Math.Round((midPoints[i].Y - midPoints[i - 1].Y) / (midPoints[i].X - midPoints[i - 1].X), 2, MidpointRounding.AwayFromZero);
-                distance = Math.Round(Math.Sqrt(Math.Pow(midPoints[i].X - midPoints[i - 1].X, 2) + Math.Pow(midPoints[i].Y - midPoints[i - 1].Y, 2)), 2, MidpointRounding.AwayFromZero);
+                slope = Math.Atan((midPoints[i].X - midPoints[i - 1].X) / (midPoints[i].Y - midPoints[i - 1].Y)) * 180 / Math.PI;
+                distance = Math.Sqrt(Math.Pow(midPoints[i].X - midPoints[i - 1].X, 2) + Math.Pow(midPoints[i].Y - midPoints[i - 1].Y, 2));
 
                 PathPoint pathPoint = new PathPoint(slope, distance);
                 pathPoints.Add(pathPoint);
@@ -137,7 +137,7 @@ namespace FollowTrack
             }
             else if (_dataCount == 1)
             {
-                double[] data = { 14,0,143,13,123,21,14,19,16,24 };
+                double[] data = { 132,70, 12,57, 132,51, 12,38, 12,19, 132,32, 144,13, 12,0 };
                 _dataCount++;
                 return data;
             }
