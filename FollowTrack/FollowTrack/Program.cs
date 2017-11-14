@@ -15,7 +15,15 @@ namespace FollowTrack
             // 1st Data set
             d.Run();
             Console.ReadKey();
-
+            d.Run();
+            d.Run();
+            d.Run();
+            d.Run();
+            d.Run();
+            d.Run();
+            d.Run();
+            d.Run();
+            Console.ReadKey();
             // 2nd Data set
             d.Run();
             Console.ReadKey();

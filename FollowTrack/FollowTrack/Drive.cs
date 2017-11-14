@@ -26,6 +26,7 @@ namespace FollowTrack
         {
             if (Path.Count > 0)
             {
+                Console.WriteLine("\n***************************************************");
                 Drive.Turn(CurrentAngle + Path[0].Slope);
                 Drive.Length(Path[0].Length); // Set how ofte Run needs to be called. //
                 Path.RemoveAt(0);
@@ -35,7 +36,7 @@ namespace FollowTrack
                 double[] nxtCamData = GetNewDataFromNxtCam(); // Need to balance data, and handle only left side data. //
                 //ConvertDataFromFieldOfView(nxtCamData);
 
-                Tuple<List<double>, List<double>> tupleData =  SortNxtCamData(nxtCamData);
+                Tuple<List<double>, List<double>> tupleData = SortNxtCamData(nxtCamData);
                 //ConvertDataToWorldSpace(_pDataLeftOld, _pDataRightOld); // Use data from prev Path[] List. // ::NOTE: Convert new data also?
                 double[] dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
                 double[] dataRight = CombineData(tupleData.Item2, _pDataRightOld);
@@ -73,8 +74,10 @@ namespace FollowTrack
 
 
             // TODO: gem kun 1-2 old points, og sort data efter Bezier til kun relevante points.
-            //FindRelevantPoints();
-
+            data = data.Where(val => val <= MaxNxtCamX).ToArray();
+            data = data.Where(val => val >= 0).ToArray();
+            data = data.Where(val => val <= MaxNxtCamY).ToArray();
+            data = data.Where(val => val >= 0).ToArray();
 
             return data;
         }
@@ -102,13 +105,13 @@ namespace FollowTrack
         // TODO: Fix slope
         private List<PathPoint> CalculatePathData(List<Vector2> midPoints)
         {
-            List <PathPoint> pathPoints = new List<PathPoint>();
+            List<PathPoint> pathPoints = new List<PathPoint>();
 
             double distance;
             double slope;
 
             for (int i = 1; i < midPoints.Count; i++)
-            {                
+            {
                 slope = Math.Round((midPoints[i].Y - midPoints[i - 1].Y) / (midPoints[i].X - midPoints[i - 1].X), 2, MidpointRounding.AwayFromZero);
                 distance = Math.Round(Math.Sqrt(Math.Pow(midPoints[i].X - midPoints[i - 1].X, 2) + Math.Pow(midPoints[i].Y - midPoints[i - 1].Y, 2)), 2, MidpointRounding.AwayFromZero);
 
@@ -128,13 +131,13 @@ namespace FollowTrack
         {
             if (_dataCount == 0)
             {
-                double[] data = { 12,0,144,13,132,32,12,19,12,38,132,51,12,57,132,70 };
+                double[] data = { 12, 0, 144, 13, 132, 32, 12, 19, 12, 38, 132, 51, 12, 57, 132, 70 };
                 _dataCount++;
                 return data;
             }
             else if (_dataCount == 1)
             {
-                double[] data = {  };
+                double[] data = { 14,0,143,13,123,21,14,19,16,24 };
                 _dataCount++;
                 return data;
             }
@@ -154,17 +157,17 @@ namespace FollowTrack
             List<double> leftPoints = new List<double>();
             List<double> rightPoints = new List<double>();
 
-            for (int i = 0; i < nxtCamData.Length; i+=2)
+            for (int i = 0; i < nxtCamData.Length; i += 2)
             {
                 if (nxtCamData[i] <= MaxNxtCamX / 2)
                 {
                     leftPoints.Add(nxtCamData[i]);
-                    leftPoints.Add(nxtCamData[i+1]);
+                    leftPoints.Add(nxtCamData[i + 1]);
                 }
                 else if (nxtCamData[i] > MaxNxtCamX / 2)
                 {
                     rightPoints.Add(nxtCamData[i]);
-                    rightPoints.Add(nxtCamData[i+1]);
+                    rightPoints.Add(nxtCamData[i + 1]);
                 }
                 else
                 {
@@ -218,15 +221,15 @@ namespace FollowTrack
 
         private static void Turn(double v)
         {
-            Console.WriteLine("\n***************************************************");
+
             Console.WriteLine("The Bus turned " + v + "degrees.");
         }
 
         private static void Length(double p)
         {
-            Console.WriteLine("***************************************************");
+
             Console.WriteLine("The Bus drove " + p + "km.");
-            Console.WriteLine("***************************************************");
+
         }
 
         #endregion
