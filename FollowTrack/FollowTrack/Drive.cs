@@ -265,13 +265,13 @@ namespace FollowTrack
         {
             int RotationDirection;
 
-            if (LastTwoPoints[0] < LastTwoPoints[2]) // we are turning clockwise, soo rotate counterclockwise
+            if (LastTwoPoints[0] < LastTwoPoints[2]) // we are turning clockwise, soo rotate counterclockwise -1 is cloclwise and 1 is counterclockwise
             {
-                RotationDirection = -1;
+                RotationDirection = 1;
             }
             else //we are turning counterclockwise so turn clockwise
             {
-                RotationDirection = 1;
+                RotationDirection = -1;
             }
 
             double RotationSumInDegrees = Math.Atan(Math.Abs((LastTwoPoints[0] - LastTwoPoints[2])) / Math.Abs(LastTwoPoints[1] - LastTwoPoints[3])); // math.abs is the absolute value e.g always positive
