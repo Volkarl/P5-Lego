@@ -21,29 +21,43 @@ namespace FollowTrack
         private List<double> _pDataLeftOld = new List<double>();
         private List<double> _pDataRightOld = new List<double>();
 
+        private List<double> _lastTwoMidPointsOld = new List<double>();
+
+        private bool _isFirstTimeRunning = true; 
+
         // Main
         public void Run()
         {
             if (Path.Count > 0)
             {
-                Console.WriteLine("\n***************************************************");
-                Drive.Turn(CurrentAngle + Path[0].Slope);
-                Drive.Length(Path[0].Length); // Set how ofte Run needs to be called. //
+                //Console.WriteLine("\n***************************************************");
+                //Drive.Turn(CurrentAngle + Path[0].Slope);
+                //Drive.Length(Path[0].Length); // Set how ofte Run needs to be called. //
                 Path.RemoveAt(0);
             }
-            else
+            else if (!_isFirstTimeRunning)
             {
                 double[] nxtCamData = GetNewDataFromNxtCam(); // Need to balance data, and handle only left side data. //
                 //ConvertDataFromFieldOfView(nxtCamData);
 
                 Tuple<List<double>, List<double>> tupleData = SortNxtCamData(nxtCamData);
                 //ConvertDataToWorldSpace(_pDataLeftOld, _pDataRightOld); // Use data from prev Path[] List. // ::NOTE: Convert new data also?
+                RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
+                _lastTwoMidPointsOld.RemoveAt(0);
+                _lastTwoMidPointsOld.RemoveAt(0);
+                _lastTwoMidPointsOld.RemoveAt(0);
+                _lastTwoMidPointsOld.RemoveAt(0);
+
                 double[] dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
                 double[] dataRight = CombineData(tupleData.Item2, _pDataRightOld);
                 _pDataLeftOld = tupleData.Item1;
                 _pDataRightOld = tupleData.Item2;
 
                 List<Vector2> midPoints = CalculatePathMidPoints(CalculateBezierCurvePoints(dataLeft), CalculateBezierCurvePoints(dataRight));
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].X);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].Y);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].X);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].Y);
                 Path = CalculatePathData(midPoints);
 
 
@@ -53,11 +67,53 @@ namespace FollowTrack
                     Console.WriteLine(item.ToString());
                 }
                 Console.WriteLine("\n\n");
-                foreach (var item in Path)
+                //foreach (var item in Path)
+                //{
+                //    Console.WriteLine(item.ToString());
+                //}
+                foreach (var item in _lastTwoMidPointsOld)
+                {
+                    Console.WriteLine(item);
+                }
+            }
+            else // First run.
+            {
+                double[] nxtCamData = GetNewDataFromNxtCam();
+                //ConvertDataFromFieldOfView(nxtCamData);
+
+                Tuple<List<double>, List<double>> tupleData = SortNxtCamData(nxtCamData);
+                //double[] dataLeft = tupleData.Item1.ToArray();
+                //double[] dataRight = tupleData.Item1.ToArray();
+
+                double[] dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
+                double[] dataRight = CombineData(tupleData.Item2, _pDataRightOld);
+                _pDataLeftOld = tupleData.Item1;
+                _pDataRightOld = tupleData.Item2;
+
+                List<Vector2> midPoints = CalculatePathMidPoints(CalculateBezierCurvePoints(dataLeft), CalculateBezierCurvePoints(dataRight));
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].X);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].Y);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].X);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].Y);
+
+                Path = CalculatePathData(midPoints);
+                _isFirstTimeRunning = false;
+
+
+                //Test
+                foreach (var item in midPoints)
                 {
                     Console.WriteLine(item.ToString());
                 }
-
+                Console.WriteLine("\n\n");
+                //foreach (var item in Path)
+                //{
+                //    Console.WriteLine(item.ToString());
+                //}
+                foreach (var item in _lastTwoMidPointsOld)
+                {
+                    Console.WriteLine(item);
+                }
 
             }
         }
@@ -93,8 +149,11 @@ namespace FollowTrack
 
             for (int i = 1; i != PointsOnCurve - 1; i += 2)
             {
-                x = Math.Round(((pLeft[i + 1] + pRight[i + 1]) / 2), 2, MidpointRounding.AwayFromZero);
-                y = Math.Round(((pLeft[i] + pRight[i]) / 2), 2, MidpointRounding.AwayFromZero);
+                x = (pLeft[i + 1] + pRight[i + 1]) / 2;
+                y = (pLeft[i] + pRight[i]) / 2;
+                //x = Math.Round(((pLeft[i + 1] + pRight[i + 1]) / 2), 2, MidpointRounding.AwayFromZero);
+                //y = Math.Round(((pLeft[i] + pRight[i]) / 2), 2, MidpointRounding.AwayFromZero);
+
                 Vector2 v = new Vector2(x, y);
                 midPoints.Add(v);
             }
@@ -137,7 +196,7 @@ namespace FollowTrack
             }
             else if (_dataCount == 1)
             {
-                double[] data = { 132,70, 12,57, 132,51, 12,38, 12,19, 132,32, 144,13, 12,0 };
+                double[] data = { 12, 0, 144, 13, 132, 32, 12, 19, 12, 38, 132, 51, 12, 57, 132, 70 };
                 _dataCount++;
                 return data;
             }
@@ -215,12 +274,12 @@ namespace FollowTrack
                 RotationDirection = 1;
             }
 
-            double RotationSumInDegrees =  Math.Atan(Math.Abs((LastTwoPoints[0] - LastTwoPoints[2])) / Math.Abs(LastTwoPoints[1] - LastTwoPoints[3])); // math.abs is the absolute value e.g always positive
+            double RotationSumInDegrees = Math.Atan(Math.Abs((LastTwoPoints[0] - LastTwoPoints[2])) / Math.Abs(LastTwoPoints[1] - LastTwoPoints[3])); // math.abs is the absolute value e.g always positive
             RotationSumInDegrees = RotationSumInDegrees * RotationDirection;
             // for (int i = 0; i < 8; i+=2)
             int i = 0;
 
-            while (DataL.Count > i+1)
+            while (DataL.Count > i + 1)
             {
                 double tempXValue = DataL[i]; // we will override x value, but still need original when rotating y
                 double tempYValue = DataL[i + 1]; // i dont think this is needed but it makes it pretty
@@ -237,7 +296,7 @@ namespace FollowTrack
             }
             i = 0;
 
-            while (DataR.Count > i+1)
+            while (DataR.Count > i + 1)
             {
                 double tempXValue = DataR[i]; // we will override x value, but still need original when rotating y
                 double tempYValue = DataR[i + 1]; // i dont think this is needed but it makes it pretty
@@ -277,13 +336,13 @@ namespace FollowTrack
              * all start points must be at the same spot in the graph 
              */
             double DisplacementX = 88 - LastTwoPoints[0]; //after endpoint has been rotated
-            double DisplacementY = (-20)-LastTwoPoints[1];
+            double DisplacementY = (-20) - LastTwoPoints[1];
 
             /*
              * lastly we displace all of the cordinats
              */
             // for (int i = 0; i < 8; i+=2)
-            while (DataR.Count >i+1)
+            while (DataL.Count > i + 1)
             {
                 DataL[i] = DataL[i] + DisplacementX;
                 DataL[i + 1] = DataL[i + 1] + DisplacementY;
@@ -291,7 +350,7 @@ namespace FollowTrack
             }
             i = 0;
             // for (int i = 0; i < 8; i += 2)
-            while (DataR.Count > i+1)
+            while (DataR.Count > i + 1)
             {
                 DataR[i] = DataR[i] + DisplacementX;
                 DataR[i + 1] = DataR[i + 1] + DisplacementY;
