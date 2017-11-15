@@ -54,10 +54,10 @@ namespace FollowTrack
                 _pDataRightOld = tupleData.Item2;
 
                 List<Vector2> midPoints = CalculatePathMidPoints(CalculateBezierCurvePoints(dataLeft), CalculateBezierCurvePoints(dataRight));
-                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].X);
-                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].Y);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].X);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].Y);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].X);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].Y);
                 Path = CalculatePathData(midPoints);
 
 
@@ -91,10 +91,10 @@ namespace FollowTrack
                 _pDataRightOld = tupleData.Item2;
 
                 List<Vector2> midPoints = CalculatePathMidPoints(CalculateBezierCurvePoints(dataLeft), CalculateBezierCurvePoints(dataRight));
-                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].X);
-                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].Y);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].X);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].Y);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].X);
+                _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].Y);
 
                 Path = CalculatePathData(midPoints);
                 _isFirstTimeRunning = false;
