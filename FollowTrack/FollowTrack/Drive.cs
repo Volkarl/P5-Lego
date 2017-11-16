@@ -335,11 +335,11 @@ namespace FollowTrack
 
 
         //DONE?!?
-        private void RotateAndDisplaceData(List<double> DataL, List<double> DataR, List<double> LastTwoPoints)
+        private void RotateAndDisplaceData(List<Vector2> DataL, List<Vector2> DataR, List<Vector2> LastTwoPoints)
         {
             int RotationDirection;
 
-            if (LastTwoPoints[0] < LastTwoPoints[2]) // we are turning clockwise, soo rotate counterclockwise -1 is cloclwise and 1 is counterclockwise
+            if (LastTwoPoints[0].X < LastTwoPoints[1].X) // we are turning clockwise, soo rotate counterclockwise -1 is cloclwise and 1 is counterclockwise
             {
                 RotationDirection = 1;
             }
@@ -348,15 +348,15 @@ namespace FollowTrack
                 RotationDirection = -1;
             }
 
-            double RotationSumInDegrees = Math.Atan(Math.Abs((LastTwoPoints[0] - LastTwoPoints[2])) / Math.Abs(LastTwoPoints[1] - LastTwoPoints[3])); // math.abs is the absolute value e.g always positive
+            double RotationSumInDegrees = Math.Atan(Math.Abs((LastTwoPoints[0].X - LastTwoPoints[1].X)) / Math.Abs(LastTwoPoints[0].Y - LastTwoPoints[1].Y)); // math.abs is the absolute value e.g always positive
             RotationSumInDegrees = RotationSumInDegrees * RotationDirection;
             // for (int i = 0; i < 8; i+=2)
             int i = 0;
 
             while (DataL.Count > i + 1)
             {
-                double tempXValue = DataL[i]; // we will override x value, but still need original when rotating y
-                double tempYValue = DataL[i + 1]; // i dont think this is needed but it makes it pretty
+                double tempXValue = DataL[i].X; // we will override x value, but still need original when rotating y
+                double tempYValue = DataL[i].Y; // i dont think this is needed but it makes it pretty
 
                 /*
                  * take care
@@ -364,16 +364,16 @@ namespace FollowTrack
                  * if the bus has rotated clockwise
                  * rotate the cordinats counterclockwise
                  */
-                DataL[i] = tempXValue * Math.Cos(RotationSumInDegrees) - tempYValue * Math.Sin(RotationSumInDegrees); // rotation
-                DataL[i + 1] = tempXValue * Math.Sin(RotationSumInDegrees) + tempYValue * Math.Cos(RotationSumInDegrees);
+                DataL[i].X = tempXValue * Math.Cos(RotationSumInDegrees) - tempYValue * Math.Sin(RotationSumInDegrees); // rotation
+                DataL[i].Y = tempXValue * Math.Sin(RotationSumInDegrees) + tempYValue * Math.Cos(RotationSumInDegrees);
                 i += 2;
             }
             i = 0;
 
             while (DataR.Count > i + 1)
             {
-                double tempXValue = DataR[i]; // we will override x value, but still need original when rotating y
-                double tempYValue = DataR[i + 1]; // i dont think this is needed but it makes it pretty
+                double tempXValue = DataR[i].X; // we will override x value, but still need original when rotating y
+                double tempYValue = DataR[i].Y; // i dont think this is needed but it makes it pretty
 
                 /*
                  * take care
@@ -381,36 +381,25 @@ namespace FollowTrack
                  * if the bus has rotated clockwise
                  * rotate the cordinats counterclockwise
                  */
-                DataR[i] = tempXValue * Math.Cos(RotationSumInDegrees) - tempYValue * Math.Sin(RotationSumInDegrees); // rotation
-                DataR[i + 1] = tempXValue * Math.Sin(RotationSumInDegrees) + tempYValue * Math.Cos(RotationSumInDegrees);
+                DataR[i].X = tempXValue * Math.Cos(RotationSumInDegrees) - tempYValue * Math.Sin(RotationSumInDegrees); // rotation
+                DataR[i].Y = tempXValue * Math.Sin(RotationSumInDegrees) + tempYValue * Math.Cos(RotationSumInDegrees);
                 i += 2;
             }
             i = 0;
+            
+            double tempXValue2 = LastTwoPoints[0].X; // we will override x value, but still need original when rotating y
+            double tempYValue2 = LastTwoPoints[0].Y; // i dont think this is needed but it makes it pretty
 
-            while (LastTwoPoints.Count > i + 1)
-            {
-                double tempXValue = LastTwoPoints[i]; // we will override x value, but still need original when rotating y
-                double tempYValue = LastTwoPoints[i + 1]; // i dont think this is needed but it makes it pretty
+            LastTwoPoints[1].X = tempXValue2 * Math.Cos(RotationSumInDegrees) - tempYValue2 * Math.Sin(RotationSumInDegrees); // rotation
+            LastTwoPoints[1].Y = tempXValue2 * Math.Sin(RotationSumInDegrees) + tempYValue2 * Math.Cos(RotationSumInDegrees);
 
-                /*
-                 * take care
-                 * what way is it rotating?
-                 * if the bus has rotated clockwise
-                 * rotate the cordinats counterclockwise
-                 */
-                LastTwoPoints[i] = tempXValue * Math.Cos(RotationSumInDegrees) - tempYValue * Math.Sin(RotationSumInDegrees); // rotation
-                LastTwoPoints[i + 1] = tempXValue * Math.Sin(RotationSumInDegrees) + tempYValue * Math.Cos(RotationSumInDegrees);
-
-                i += 2;
-            }
-            i = 0;
 
             /*
              * Set end point to startpoint cordinats,
              * all start points must be at the same spot in the graph 
              */
-            double DisplacementX = 88 - LastTwoPoints[0]; //after endpoint has been rotated
-            double DisplacementY = (-20) - LastTwoPoints[1];
+            double DisplacementX = 88 - LastTwoPoints[1].X; //after endpoint has been rotated
+            double DisplacementY = (-20) - LastTwoPoints[1].Y;
 
             /*
              * lastly we displace all of the cordinats
@@ -418,16 +407,16 @@ namespace FollowTrack
             // for (int i = 0; i < 8; i+=2)
             while (DataL.Count > i + 1)
             {
-                DataL[i] = DataL[i] + DisplacementX;
-                DataL[i + 1] = DataL[i + 1] + DisplacementY;
+                DataL[i].X = DataL[i].X + DisplacementX;
+                DataL[i].Y = DataL[i].Y + DisplacementY;
                 i += 2;
             }
             i = 0;
             // for (int i = 0; i < 8; i += 2)
             while (DataR.Count > i + 1)
             {
-                DataR[i] = DataR[i] + DisplacementX;
-                DataR[i + 1] = DataR[i + 1] + DisplacementY;
+                DataR[i].X = DataR[i].X + DisplacementX;
+                DataR[i].Y = DataR[i].Y + DisplacementY;
                 i += 2;
             }
 
