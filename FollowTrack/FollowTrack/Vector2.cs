@@ -8,8 +8,8 @@ namespace FollowTrack
 {
     public class Vector2
     {
-        public double X { get;}
-        public double Y { get;}
+        public double X { get { return X; } set { X = value; } }
+        public double Y { get { return Y; } set { Y = value; } }
 
         public Vector2(double x, double y)
         {
