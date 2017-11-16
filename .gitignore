@@ -1,0 +1,23 @@
+# Editor / Compilation
+.idea/
+cmake-build-debug/
+build/
+*.pro.user
+
+
+# GENERATED FILES #
+
+# NXT generated files
+*.bin
+*.elf
+*.map
+*.rxe
+implementation.oil
+
+# Scripts etc
+appflash.sh
+biosflash.sh
+ramboot.sh
+rxeflash.sh
+kernel_cfg.c
+kernel_id.h
