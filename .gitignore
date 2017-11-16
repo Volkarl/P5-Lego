@@ -13,6 +13,9 @@ build/
 *.map
 *.rxe
 implementation.oil
+*.d
+*.o
+.f
 
 # Scripts etc
 appflash.sh
