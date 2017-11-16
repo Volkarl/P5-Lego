@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace FollowTrack
         private List<double> _pDataLeftOld = new List<double>();
         private List<double> _pDataRightOld = new List<double>();
 
-        private List<double> _lastTwoMidPointsOld = new List<double>();
+        private readonly List<double> _lastTwoMidPointsOld = new List<double>();
 
         private bool _isFirstTimeRunning = true; 
 
@@ -30,9 +31,9 @@ namespace FollowTrack
         {
             if (Path.Count > 0)
             {
-                //Console.WriteLine("\n***************************************************");
-                //Drive.Turn(CurrentAngle + Path[0].Slope);
-                //Drive.Length(Path[0].Length); // Set how ofte Run needs to be called. //
+                Console.WriteLine("\n***************************************************");
+                Drive.Turn(CurrentAngle + Path[0].Slope);
+                Drive.Length(Path[0].Length); // Set how ofte Run needs to be called. //
                 Path.RemoveAt(0);
             }
             else if (!_isFirstTimeRunning)
@@ -40,7 +41,6 @@ namespace FollowTrack
                 double[] nxtCamData = GetNewDataFromNxtCam(); // Need to balance data, and handle only left side data. //
                 //ConvertDataFromFieldOfView(nxtCamData);
 
-                Tuple<List<double>, List<double>> tupleData = SortNxtCamData(nxtCamData);
                 //ConvertDataToWorldSpace(_pDataLeftOld, _pDataRightOld); // Use data from prev Path[] List. // ::NOTE: Convert new data also?
                 RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
                 _lastTwoMidPointsOld.RemoveAt(0);
@@ -48,33 +48,36 @@ namespace FollowTrack
                 _lastTwoMidPointsOld.RemoveAt(0);
                 _lastTwoMidPointsOld.RemoveAt(0);
 
+                Tuple<List<double>, List<double>> tupleData = SortNxtCamData(nxtCamData);
                 double[] dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
                 double[] dataRight = CombineData(tupleData.Item2, _pDataRightOld);
                 _pDataLeftOld = tupleData.Item1;
                 _pDataRightOld = tupleData.Item2;
 
-                List<Vector2> midPoints = CalculatePathMidPoints(CalculateBezierCurvePoints(dataLeft), CalculateBezierCurvePoints(dataRight));
+                List<Vector2> midPoints = CalculatePathMidPoints(CalculateBezierCurvePoints(dataLeft, PointsOnCurve*2+2), CalculateBezierCurvePoints(dataRight, PointsOnCurve*2+2));
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].X);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].Y);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].X);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].Y);
                 Path = CalculatePathData(midPoints);
 
-
-                //Test
+                //long memory = GC.GetTotalMemory(true);
+                //Console.WriteLine("MEMORY" + memory);
+                ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
                 foreach (var item in midPoints)
                 {
                     Console.WriteLine(item.ToString());
                 }
                 Console.WriteLine("\n\n");
-                //foreach (var item in Path)
-                //{
-                //    Console.WriteLine(item.ToString());
-                //}
-                foreach (var item in _lastTwoMidPointsOld)
+                foreach (var item in Path)
                 {
-                    Console.WriteLine(item);
+                    Console.WriteLine(item.ToString());
                 }
+                //foreach (var item in _lastTwoMidPointsOld)
+                //{
+                //    Console.WriteLine(item);
+                //}
+                ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
             }
             else // First run.
             {
@@ -82,15 +85,12 @@ namespace FollowTrack
                 //ConvertDataFromFieldOfView(nxtCamData);
 
                 Tuple<List<double>, List<double>> tupleData = SortNxtCamData(nxtCamData);
-                //double[] dataLeft = tupleData.Item1.ToArray();
-                //double[] dataRight = tupleData.Item1.ToArray();
-
                 double[] dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
                 double[] dataRight = CombineData(tupleData.Item2, _pDataRightOld);
                 _pDataLeftOld = tupleData.Item1;
                 _pDataRightOld = tupleData.Item2;
 
-                List<Vector2> midPoints = CalculatePathMidPoints(CalculateBezierCurvePoints(dataLeft), CalculateBezierCurvePoints(dataRight));
+                List<Vector2> midPoints = CalculatePathMidPoints(CalculateBezierCurvePoints(dataLeft, PointsOnCurve), CalculateBezierCurvePoints(dataRight, PointsOnCurve));
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].X);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 2].Y);
                 _lastTwoMidPointsOld.Add(midPoints[midPoints.Count - 1].X);
@@ -100,59 +100,82 @@ namespace FollowTrack
                 _isFirstTimeRunning = false;
 
 
-                //Test
+                ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
                 foreach (var item in midPoints)
                 {
                     Console.WriteLine(item.ToString());
                 }
                 Console.WriteLine("\n\n");
-                //foreach (var item in Path)
-                //{
-                //    Console.WriteLine(item.ToString());
-                //}
-                foreach (var item in _lastTwoMidPointsOld)
+                foreach (var item in Path)
                 {
-                    Console.WriteLine(item);
+                    Console.WriteLine(item.ToString());
                 }
-
+                //foreach (var item in _lastTwoMidPointsOld)
+                //{
+                //    Console.WriteLine(item);
+                //}
+                ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
             }
         }
 
 
 
         // TODO: Find relevant Points -> need test
-        private double[] CalculateBezierCurvePoints(double[] pData)
+        private double[] CalculateBezierCurvePoints(double[] pData, int pointsOnCurve)
         {
-            double[] data = new double[PointsOnCurve];
+            double[] data = new double[pointsOnCurve];
 
             BezierCurve bc = new BezierCurve();
-            bc.Bezier2D(pData, PointsOnCurve / 2, data);   // Left Curve Points
+            bc.Bezier2D(pData, pointsOnCurve / 2, data);
 
 
             // TODO: gem kun 1-2 old points, og sort data efter Bezier til kun relevante points.
-            data = data.Where(val => val <= MaxNxtCamX).ToArray();
-            data = data.Where(val => val >= 0).ToArray();
-            data = data.Where(val => val <= MaxNxtCamY).ToArray();
-            data = data.Where(val => val >= 0).ToArray();
+            List<double> dataUpdated = new List<double>();
 
-            return data;
+            for (int i = 0; i < data.Length; i +=2)
+            {
+                if (data[i] <= MaxNxtCamX && data[i] >= 0 && data[i + 1] <= MaxNxtCamY && data[i + 1] >= 0)
+                {
+                    dataUpdated.Add(data[i]);
+                    dataUpdated.Add(data[i+1]);
+                }
+            }
+
+            return dataUpdated.ToArray();
         }
 
         // DONE
         private List<Vector2> CalculatePathMidPoints(double[] pLeft, double[] pRight)
         {
+            ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
+            //Console.WriteLine("TEST****************************");
+            //Console.WriteLine("Left");
+            //for (int i = 0; i < pLeft.Length; i += 2)
+            //{
+            //    Console.WriteLine("X: " + pLeft[i] + "\tY: " + pLeft[i+1]);
+            //}
+            //Console.WriteLine("Right");
+            //for (int i = 0; i < pRight.Length; i += 2)
+            //{
+            //    Console.WriteLine("X: " + pRight[i] + "\tY: " + pRight[i + 1]);
+            //}
+            //Console.ReadKey();
+            ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
+
+
+
             List<Vector2> midPoints = new List<Vector2>();
             midPoints.Add(_busPoint); // set busPoint as the first pathpoint.
 
             double x;
             double y;
 
-            for (int i = 1; i != PointsOnCurve - 1; i += 2)
+            int pCount = pLeft.Length <= pRight.Length ? pLeft.Length : pRight.Length;
+
+            for (int i = 1; i != pCount - 1; i += 2) // PointsOnCurve er mindre eftersom vi lige har fjernet nogen fra old data.
             {
                 x = (pLeft[i + 1] + pRight[i + 1]) / 2;
                 y = (pLeft[i] + pRight[i]) / 2;
-                //x = Math.Round(((pLeft[i + 1] + pRight[i + 1]) / 2), 2, MidpointRounding.AwayFromZero);
-                //y = Math.Round(((pLeft[i] + pRight[i]) / 2), 2, MidpointRounding.AwayFromZero);
 
                 Vector2 v = new Vector2(x, y);
                 midPoints.Add(v);
@@ -248,10 +271,37 @@ namespace FollowTrack
             }
             for (int i = 0; i < pData.Count; i++)
             {
-                data[i] = pData[i];
+                data[i + pDataOld.Count] = pData[i];
             }
 
-            return data;
+
+            // Order By Y-Value
+            double[] orderedData = new double[data.Length];
+            int minYIndex = 0; // TODO: Can crash then using this value?
+            double minY = double.MaxValue;
+            int x = 0;
+
+            while (data.Length > 0)
+            {
+                for (int i = 1; i < data.Length; i += 2)
+                {
+                    if (data[i] < minY)
+                    {
+                        minY = data[i];
+                        minYIndex = i;
+                    }
+                }
+
+                orderedData[x] = data[minYIndex - 1];
+                orderedData[x + 1] = data[minYIndex];
+                x += 2;
+
+                data = RemoveAt(data, minYIndex - 1);
+                data = RemoveAt(data, minYIndex - 1);
+
+                minY = double.MaxValue;
+            }
+            return orderedData;
         }
 
 
@@ -261,6 +311,7 @@ namespace FollowTrack
 
 
 
+        //DONE?!?
         private void RotateAndDisplaceData(List<double> DataL, List<double> DataR, List<double> LastTwoPoints)
         {
             int RotationDirection;
@@ -388,6 +439,20 @@ namespace FollowTrack
             Console.WriteLine("The Bus drove " + p + "km.");
 
         }
+
+        // Done
+        private static double[] RemoveAt(double[] source, int index)
+        {
+            double[] dest = new double[source.Length - 1];
+            if (index > 0)
+                Array.Copy(source, 0, dest, 0, index);
+
+            if (index < source.Length - 1)
+                Array.Copy(source, index + 1, dest, index, source.Length - index - 1);
+
+            return dest;
+        }
+
 
         #endregion
 
