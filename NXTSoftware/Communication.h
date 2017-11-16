@@ -19,7 +19,7 @@ namespace ecrobot {
 			void Communication::getCameraHeatmapTest();
 
 
-		unsigned char data[64]; //Usb::MAX_USB_DATA_LEN];
+			unsigned char data[64]; //Usb::MAX_USB_DATA_LEN];
 			Usb* usb;
 			Camera* camera;
 			Clock clock;
