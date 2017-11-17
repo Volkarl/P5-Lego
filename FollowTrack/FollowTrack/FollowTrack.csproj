@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="BezierCurve.cs" />
     <Compile Include="Drive.cs" />
+    <Compile Include="FieldOfViewCorrecter.cs" />
     <Compile Include="PathPoint.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
