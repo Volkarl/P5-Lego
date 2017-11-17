@@ -99,9 +99,9 @@ namespace FollowTrack
             return basis;
         }
 
-        public void Bezier2D(double[] b, int cpts, double[] p)
+        public void Bezier2D(List<Vector2> b, int cpts, double[] p)
         {
-            int npts = (b.Length) / 2;
+            int npts = b.Count;
             int icount, jcount;
             double step, t;
 
@@ -122,9 +122,9 @@ namespace FollowTrack
                 for (int i = 0; i != npts; i++)
                 {
                     double basis = Bernstein(npts - 1, i, t);
-                    p[icount] += basis * b[jcount];
-                    p[icount + 1] += basis * b[jcount + 1];
-                    jcount = jcount + 2;
+                    p[icount] += basis * b[jcount].X;
+                    p[icount + 1] += basis * b[jcount].Y;
+                    jcount = jcount + 1;
                 }
 
                 icount += 2;
