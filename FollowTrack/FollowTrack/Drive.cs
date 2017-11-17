@@ -18,7 +18,7 @@ namespace FollowTrack
         private const int MaxNxtCamX = 176;
         private const int MaxNxtCamY = 144;
         private const int PointsOnCurve = 18; //    Points = (value / 2) - 1
-        private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, MaxNxtCamY - MaxNxtCamY); // TODO: Lav til Const
+        private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, -20); // TODO: Lav til Const
 
         // Old Data
         private List<Vector2> _pDataLeftOld = new List<Vector2>();
@@ -217,6 +217,7 @@ namespace FollowTrack
                 data.Add(new Vector2(132, 51));
                 data.Add(new Vector2(12, 57));
                 data.Add(new Vector2(132, 70));
+                
 
                 _dataCount++;
                 return data;
@@ -293,11 +294,11 @@ namespace FollowTrack
             // for (int i = 0; i < 8; i+=2)
             int i = 0;
 
-            while (dataL.Count > i + 1)
+            while (dataL.Count-1 >= i )
             {
                 double tempXValue = dataL[i].X; // we will override x value, but still need original when rotating y
                 double tempYValue = dataL[i].Y; // i dont think this is needed but it makes it pretty
-
+                  
                 /*
                  * take care
                  * what way is it rotating?
@@ -306,11 +307,11 @@ namespace FollowTrack
                  */
                 dataL[i].X = tempXValue * Math.Cos(rotationSumInDegrees) - tempYValue * Math.Sin(rotationSumInDegrees); // rotation
                 dataL[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) + tempYValue * Math.Cos(rotationSumInDegrees);
-                i += 2;
+                i += 1;
             }
             i = 0;
 
-            while (dataR.Count > i + 1)
+            while (dataR.Count-1 >= i )
             {
                 double tempXValue = dataR[i].X; // we will override x value, but still need original when rotating y
                 double tempYValue = dataR[i].Y; // i dont think this is needed but it makes it pretty
@@ -323,7 +324,7 @@ namespace FollowTrack
                  */
                 dataR[i].X = tempXValue * Math.Cos(rotationSumInDegrees) - tempYValue * Math.Sin(rotationSumInDegrees); // rotation
                 dataR[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) + tempYValue * Math.Cos(rotationSumInDegrees);
-                i += 2;
+                i += 1;
             }
             i = 0;
             
@@ -338,26 +339,26 @@ namespace FollowTrack
              * Set end point to startpoint cordinats,
              * all start points must be at the same spot in the graph 
              */
-            double displacementX = 88 - lastTwoPoints[1].X; //after endpoint has been rotated
-            double displacementY = (-20) - lastTwoPoints[1].Y;
+            double displacementX = _busPoint.X - lastTwoPoints[1].X; //after endpoint has been rotated
+            double displacementY = _busPoint.Y - lastTwoPoints[1].Y;
 
             /*
              * lastly we displace all of the cordinats
              */
             // for (int i = 0; i < 8; i+=2)
-            while (dataL.Count > i + 1)
+            while (dataL.Count-1 >= i )
             {
                 dataL[i].X = dataL[i].X + displacementX;
                 dataL[i].Y = dataL[i].Y + displacementY;
-                i += 2;
+                i += 1;
             }
             i = 0;
             // for (int i = 0; i < 8; i += 2)
-            while (dataR.Count > i + 1)
+            while (dataR.Count-1 >= i )
             {
                 dataR[i].X = dataR[i].X + displacementX;
                 dataR[i].Y = dataR[i].Y + displacementY;
-                i += 2;
+                i += 1;
             }
 
             /*
