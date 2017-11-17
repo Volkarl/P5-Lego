@@ -144,7 +144,7 @@ namespace FollowTrack
             List<Tuple<double, double>> floorCoordinates = new List<Tuple<double, double>>();
             foreach (Vector2 coordinate in nxtCamData)
             {
-                floorCoordinates.Add(_foV.CalcFloorCoordinates(coordinate.X, coordinate.Y));
+                floorCoordinates.Add(_foV.CalcFloorCoordinates(coordinate.X, coordinate.Y, MaxNxtCamX, MaxNxtCamY));
             }
             return new List<Vector2>(floorCoordinates.ConvertAll(fc => new Vector2(fc.Item1, fc.Item2)));
         }

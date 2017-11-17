@@ -28,36 +28,36 @@ namespace FollowTrack
             _fieldOfViewXdeg = fieldOfViewXdeg;
             _fieldOfViewYdeg = fieldOfViewYdeg;
             _cameraAngle = cameraAngle;
-            _cameraBlindSpotDeg = cameraAngle - _fieldOfViewYdeg;
+            _cameraBlindSpotDeg = cameraAngle - _fieldOfViewYdeg / 2;
         }
 
-        public Tuple<double, double> CalcFloorCoordinates(double pictureHorizontalCoordinate, double pictureVerticalCoordinate)
+        public Tuple<double, double> CalcFloorCoordinates(double pictureHorizontalCoordinate, double pictureVerticalCoordinate, double maxPossibleX = 100, double maxPossibleY = 100)
         {
             // todo rename horizontal and vertical to x and y soon. Just note that it's the reverse in the mathcad calculations. 
-            double y = CalcFloorCoordinateY(pictureVerticalCoordinate);
-            double x = CalcFloorCoordinateX(pictureHorizontalCoordinate, pictureVerticalCoordinate, y);
+            double y = CalcFloorCoordinateY(pictureVerticalCoordinate, maxPossibleY);
+            double x = CalcFloorCoordinateX(pictureHorizontalCoordinate, y, maxPossibleX, maxPossibleY);
             return new Tuple<double, double>(x, y);
         }
 
-        public double CalcFloorCoordinateY(double pictureY)
+        public double CalcFloorCoordinateY(double pictureY, double maxPossibleY = 100)
         {
-            double deg = ConvertToDegrees(pictureY, _fieldOfViewYdeg);
+            double deg = ConvertToDegrees(pictureY, maxPossibleY, _fieldOfViewYdeg);
             return TangensSolveOpposite(_cameraHeight, deg + _cameraBlindSpotDeg);
         }
 
         private double TangensSolveOpposite(double adjacent, double degreesA)
         {
-            return adjacent * Math.Tan(degreesA);
+            return adjacent * Math.Tan(degreesA.DegreeToRadian());
         }
 
-        private double ConvertToDegrees(double value, double fieldOfView)
+        private double ConvertToDegrees(double value, double maximumValue, double fieldOfView)
         {
-            return value / (100 / fieldOfView);
+            return value / (maximumValue / fieldOfView);
         }
 
-        public double CalcFloorCoordinateX(double pictureX, double pictureY, double floorCoordinateY)
+        private double CalcFloorCoordinateX(double pictureX, double floorCoordinateY, double maxPossibleX = 100, double maxPossibleY = 100)
         {
-            double deg = ConvertToDegrees(pictureX, _fieldOfViewXdeg) - 20;
+            double deg = ConvertToDegrees(pictureX, maxPossibleX, _fieldOfViewXdeg) - (_fieldOfViewXdeg / 2);
             double hypo = PythagorasSolveC(_cameraHeight, floorCoordinateY);
             return TangensSolveOpposite(hypo, deg);
         }
