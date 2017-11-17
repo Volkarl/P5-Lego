@@ -47,8 +47,6 @@ namespace FollowTrack
                 floorCoordinates.Add(CalcFloorCoordinates(coordinate.X, coordinate.Y));
             }
             List<Vector2> correctedCoords = new List<Vector2>(floorCoordinates.ConvertAll(fc => new Vector2(fc.Item1, fc.Item2)));
-
-            correctedCoords = DisplaceCoordinates(correctedCoords);
             return correctedCoords;
         }
 
@@ -97,11 +95,11 @@ namespace FollowTrack
         {
             // Moves the origin of the coordinate system. In stead of being in the very top left, it is now in the bottom-mid
 
-            double displacementX = -(_maxPossibleX / 2), displacementY = _maxPossibleY;
+            double displacementX = _maxPossibleX / 2, displacementY = _maxPossibleY;
             foreach (Vector2 coordinate in coordinates)
             {
-                coordinate.X += displacementX;
-                coordinate.Y += displacementY;
+                coordinate.X -= displacementX;
+                coordinate.Y = Math.Abs(coordinate.Y - displacementY); // High numbers become low numbers and the reverse as well
             }
             return coordinates;
 
