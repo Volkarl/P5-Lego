@@ -36,7 +36,7 @@ namespace FollowTrack
 
         public Drive()
         {
-            _foV = new FieldOfViewCorrecter(NxtCamHeight, FieldOfView, FieldOfView, CameraAngle);
+            _foV = new FieldOfViewCorrecter(NxtCamHeight, FieldOfView, FieldOfView, CameraAngle, MaxNxtCamX, MaxNxtCamY);
         }
 
         // Main
@@ -100,6 +100,9 @@ namespace FollowTrack
             {
                 // Get & Update New Data
                 List<Vector2> nxtCamData = GetNewDataFromNxtCam();
+
+                nxtCamData = CorrectFieldOfView(new List<Vector2> { new Vector2(0, 0) });
+
                 nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Sort Left/Right
@@ -141,12 +144,7 @@ namespace FollowTrack
 
         private List<Vector2> CorrectFieldOfView(List<Vector2> nxtCamData)
         {
-            List<Tuple<double, double>> floorCoordinates = new List<Tuple<double, double>>();
-            foreach (Vector2 coordinate in nxtCamData)
-            {
-                floorCoordinates.Add(_foV.CalcFloorCoordinates(coordinate.X, coordinate.Y, MaxNxtCamX, MaxNxtCamY));
-            }
-            return new List<Vector2>(floorCoordinates.ConvertAll(fc => new Vector2(fc.Item1, fc.Item2)));
+            return _foV.CalcFloorCoordinates(nxtCamData);
         }
 
         // TODO: Find relevant Points -> need test

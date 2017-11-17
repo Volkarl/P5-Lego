@@ -13,8 +13,10 @@ namespace FollowTrack
         private readonly double _fieldOfViewYdeg;
         private readonly double _cameraAngle;
         private readonly double _cameraBlindSpotDeg;
+        private readonly double _maxPossibleX;
+        private readonly double _maxPossibleY;
 
-        public FieldOfViewCorrecter(double cameraHeight, double fieldOfViewXdeg, double fieldOfViewYdeg, double cameraAngle)
+        public FieldOfViewCorrecter(double cameraHeight, double fieldOfViewXdeg, double fieldOfViewYdeg, double cameraAngle, double maxPossibleX, double maxPossibleY)
         {
             if(cameraHeight < 0 || cameraHeight > 100
                 || fieldOfViewXdeg <= 0 || fieldOfViewXdeg >= 90
@@ -28,20 +30,39 @@ namespace FollowTrack
             _fieldOfViewXdeg = fieldOfViewXdeg;
             _fieldOfViewYdeg = fieldOfViewYdeg;
             _cameraAngle = cameraAngle;
+            _maxPossibleX = maxPossibleX; //todo error check these
+            _maxPossibleY = maxPossibleY;
             _cameraBlindSpotDeg = cameraAngle - _fieldOfViewYdeg / 2;
         }
 
-        public Tuple<double, double> CalcFloorCoordinates(double pictureHorizontalCoordinate, double pictureVerticalCoordinate, double maxPossibleX = 100, double maxPossibleY = 100)
+        public List<Vector2> CalcFloorCoordinates(List<Vector2> nxtCamData)
+        {
+            // todo Nothing nxtcam specific should be in here! Move it later
+
+            nxtCamData = DisplaceCoordinates(nxtCamData);
+
+            List<Tuple<double, double>> floorCoordinates = new List<Tuple<double, double>>();
+            foreach (Vector2 coordinate in nxtCamData)
+            {
+                floorCoordinates.Add(CalcFloorCoordinates(coordinate.X, coordinate.Y));
+            }
+            List<Vector2> correctedCoords = new List<Vector2>(floorCoordinates.ConvertAll(fc => new Vector2(fc.Item1, fc.Item2)));
+
+            correctedCoords = DisplaceCoordinates(correctedCoords);
+            return correctedCoords;
+        }
+
+        public Tuple<double, double> CalcFloorCoordinates(double pictureHorizontalCoordinate, double pictureVerticalCoordinate)
         {
             // todo rename horizontal and vertical to x and y soon. Just note that it's the reverse in the mathcad calculations. 
-            double y = CalcFloorCoordinateY(pictureVerticalCoordinate, maxPossibleY);
-            double x = CalcFloorCoordinateX(pictureHorizontalCoordinate, y, maxPossibleX, maxPossibleY);
+            double y = CalcFloorCoordinateY(pictureVerticalCoordinate);
+            double x = CalcFloorCoordinateX(pictureHorizontalCoordinate, y);
             return new Tuple<double, double>(x, y);
         }
 
-        public double CalcFloorCoordinateY(double pictureY, double maxPossibleY = 100)
+        public double CalcFloorCoordinateY(double pictureY)
         {
-            double deg = ConvertToDegrees(pictureY, maxPossibleY, _fieldOfViewYdeg);
+            double deg = ConvertToDegrees(pictureY, _maxPossibleY, _fieldOfViewYdeg);
             return TangensSolveOpposite(_cameraHeight, deg + _cameraBlindSpotDeg);
         }
 
@@ -55,9 +76,9 @@ namespace FollowTrack
             return value / (maximumValue / fieldOfView);
         }
 
-        private double CalcFloorCoordinateX(double pictureX, double floorCoordinateY, double maxPossibleX = 100, double maxPossibleY = 100)
+        private double CalcFloorCoordinateX(double pictureX, double floorCoordinateY)
         {
-            double deg = ConvertToDegrees(pictureX, maxPossibleX, _fieldOfViewXdeg) - (_fieldOfViewXdeg / 2);
+            double deg = ConvertToDegrees(pictureX, _maxPossibleX, _fieldOfViewXdeg);
             double hypo = PythagorasSolveC(_cameraHeight, floorCoordinateY);
             return TangensSolveOpposite(hypo, deg);
         }
@@ -65,6 +86,28 @@ namespace FollowTrack
         private double PythagorasSolveC(double a, double b)
         {
             return Math.Sqrt((a * a) + (b * b));
+        }
+
+
+
+
+        ///////////////////////////////
+
+        private List<Vector2> DisplaceCoordinates(List<Vector2> coordinates)
+        {
+            // Moves the origin of the coordinate system. In stead of being in the very top left, it is now in the bottom-mid
+
+            double displacementX = -(_maxPossibleX / 2), displacementY = _maxPossibleY;
+            foreach (Vector2 coordinate in coordinates)
+            {
+                coordinate.X += displacementX;
+                coordinate.Y += displacementY;
+            }
+            return coordinates;
+
+            // I may still need to displace coordinates in the opposite direction:
+            // However, i will need to use the new max and min points. Max is now for instance 47cm x -8(?)cm
+            // So i'll need to minus this
         }
     }
 }
