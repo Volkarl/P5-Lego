@@ -8,13 +8,13 @@ namespace FollowTrack
 {
     public class FieldOfViewCorrecter
     {
-        private readonly int _cameraHeight;
-        private readonly int _fieldOfViewXdeg;
-        private readonly int _fieldOfViewYdeg;
-        private readonly int _cameraAngle;
-        private readonly int _cameraBlindSpotDeg;
+        private readonly double _cameraHeight;
+        private readonly double _fieldOfViewXdeg;
+        private readonly double _fieldOfViewYdeg;
+        private readonly double _cameraAngle;
+        private readonly double _cameraBlindSpotDeg;
 
-        public FieldOfViewCorrecter(int cameraHeight, int fieldOfViewXdeg, int fieldOfViewYdeg, int cameraAngle)
+        public FieldOfViewCorrecter(double cameraHeight, double fieldOfViewXdeg, double fieldOfViewYdeg, double cameraAngle)
         {
             if(cameraHeight < 0 || cameraHeight > 100
                 || fieldOfViewXdeg <= 0 || fieldOfViewXdeg >= 90
@@ -31,40 +31,40 @@ namespace FollowTrack
             _cameraBlindSpotDeg = cameraAngle - _fieldOfViewYdeg;
         }
 
-        public Tuple<int, int> CalcFloorCoordinates(int pictureHorizontalCoordinate, int pictureVerticalCoordinate)
+        public Tuple<double, double> CalcFloorCoordinates(double pictureHorizontalCoordinate, double pictureVerticalCoordinate)
         {
             // todo rename horizontal and vertical to x and y soon. Just note that it's the reverse in the mathcad calculations. 
-            int y = CalcFloorCoordinateY(pictureVerticalCoordinate);
-            int x = CalcFloorCoordinateX(pictureHorizontalCoordinate, pictureVerticalCoordinate, y);
-            return new Tuple<int, int>(x, y);
+            double y = CalcFloorCoordinateY(pictureVerticalCoordinate);
+            double x = CalcFloorCoordinateX(pictureHorizontalCoordinate, pictureVerticalCoordinate, y);
+            return new Tuple<double, double>(x, y);
         }
 
-        public int CalcFloorCoordinateY(int pictureY)
+        public double CalcFloorCoordinateY(double pictureY)
         {
-            int deg = ConvertToDegrees(pictureY, _fieldOfViewYdeg);
+            double deg = ConvertToDegrees(pictureY, _fieldOfViewYdeg);
             return TangensSolveOpposite(_cameraHeight, deg + _cameraBlindSpotDeg);
         }
 
-        private int TangensSolveOpposite(int adjacent, int degreesA)
+        private double TangensSolveOpposite(double adjacent, double degreesA)
         {
-            return Convert.ToInt32(adjacent * Math.Tan(degreesA));
+            return adjacent * Math.Tan(degreesA);
         }
 
-        private int ConvertToDegrees(int value, int fieldOfView)
+        private double ConvertToDegrees(double value, double fieldOfView)
         {
-            return Convert.ToInt32(value / (100 / (double) fieldOfView));
+            return value / (100 / fieldOfView);
         }
 
-        public int CalcFloorCoordinateX(int pictureX, int pictureY, int floorCoordinateY)
+        public double CalcFloorCoordinateX(double pictureX, double pictureY, double floorCoordinateY)
         {
-            int deg = ConvertToDegrees(pictureX, _fieldOfViewXdeg) - 20;
-            int hypo = PythagorasSolveC(_cameraHeight, floorCoordinateY);
+            double deg = ConvertToDegrees(pictureX, _fieldOfViewXdeg) - 20;
+            double hypo = PythagorasSolveC(_cameraHeight, floorCoordinateY);
             return TangensSolveOpposite(hypo, deg);
         }
 
-        private int PythagorasSolveC(int a, int b)
+        private double PythagorasSolveC(double a, double b)
         {
-            return Convert.ToInt32(Math.Sqrt((a * a) + (b * b)));
+            return Math.Sqrt((a * a) + (b * b));
         }
     }
 }

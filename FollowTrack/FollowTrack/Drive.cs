@@ -18,7 +18,12 @@ namespace FollowTrack
         private const int MaxNxtCamX = 176;
         private const int MaxNxtCamY = 144;
         private const int PointsOnCurve = 18; //    Points = (value / 2) - 1
+        private const int NxtCamHeight = 22;
+        private const int FieldOfView = 40;
+        private const int CameraAngle = 45;
+
         private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, MaxNxtCamY - MaxNxtCamY); // TODO: Lav til Const
+        private readonly FieldOfViewCorrecter _foV;
 
         // Old Data
         private List<Vector2> _pDataLeftOld = new List<Vector2>();
@@ -29,6 +34,10 @@ namespace FollowTrack
         private int _boundCountLeft = 0;
         private int _boundCountRight = 0;
 
+        public Drive()
+        {
+            _foV = new FieldOfViewCorrecter(NxtCamHeight, FieldOfView, FieldOfView, CameraAngle);
+        }
 
         // Main
         public void Run()
@@ -42,9 +51,10 @@ namespace FollowTrack
             }
             else if (!_isFirstTimeRunning) // Finding Path
             {
+                // If it's first time, we don't combine multiple datasets
                 // Get & Update New Data
                 List<Vector2> nxtCamData = GetNewDataFromNxtCam(); // Need to balance data, and handle only left side data. //
-                //ConvertDataFromFieldOfView(nxtCamData);
+                nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Update Old Data
                 RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
@@ -90,7 +100,7 @@ namespace FollowTrack
             {
                 // Get & Update New Data
                 List<Vector2> nxtCamData = GetNewDataFromNxtCam();
-                //ConvertDataFromFieldOfView(nxtCamData);
+                nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Sort Left/Right
                 Tuple<List<Vector2>, List<Vector2>> tupleData = SortNxtCamData(nxtCamData);
@@ -127,6 +137,16 @@ namespace FollowTrack
                 //}
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
             }
+        }
+
+        private List<Vector2> CorrectFieldOfView(List<Vector2> nxtCamData)
+        {
+            List<Tuple<double, double>> floorCoordinates = new List<Tuple<double, double>>();
+            foreach (Vector2 coordinate in nxtCamData)
+            {
+                floorCoordinates.Add(_foV.CalcFloorCoordinates(coordinate.X, coordinate.Y));
+            }
+            return new List<Vector2>(floorCoordinates.ConvertAll(fc => new Vector2(fc.Item1, fc.Item2)));
         }
 
         // TODO: Find relevant Points -> need test
