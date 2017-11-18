@@ -7,89 +7,51 @@ using FollowTrack;
 
 namespace FollowTrackTests
 {
-    /// <summary>
-    /// A test class for ...
-    /// </summary>
     [TestFixture]
     public class FieldOfViewCorrecterTests
     {
         // All expected results have been calculated with mathcad
-
-        private FieldOfViewCorrecter _foV = new FieldOfViewCorrecter(22, 40, 40, 45);
-
-        //#region Setup and Tear down
-        ///// <summary>
-        ///// This runs only once at the beginning of all tests and is used for all tests in the 
-        ///// class.
-        ///// </summary>
-        //[TestFixtureSetUp]
-        //public void InitialSetup()
-        //{
-
-        //}
-
-        ///// <summary>
-        ///// This runs only once at the end of all tests and is used for all tests in the class.
-        ///// </summary>
-        //[TestFixtureTearDown]
-        //public void FinalTearDown()
-        //{
-
-        //}
-
-        ///// <summary>
-        ///// This setup funcitons runs before each test method
-        ///// </summary>
-        //[SetUp]
-        //public void SetupForEachTest()
-        //{
-        //}
-
-        ///// <summary>
-        ///// This setup funcitons runs after each test method
-        ///// </summary>
-        //[TearDown]
-        //public void TearDownForEachTest()
-        //{
-        //}
-        //#endregion
+        private FieldOfViewCorrecter CreateFovCorrecter(double cameraHeight = 22, double fieldOfViewXdeg = 40, double fieldOfViewYdeg = 40, double cameraAngle = 45, double maxPossibleX = 100, double maxPossibleY =100)
+        {
+            return new FieldOfViewCorrecter(cameraHeight, fieldOfViewXdeg, fieldOfViewYdeg, cameraAngle, maxPossibleX, maxPossibleY);
+        }
 
         #region Integer
-        [TestCase(0, 100, ExpectedResult = 10.26)]
-        [TestCase(50, 100, ExpectedResult = 22)]
-        [TestCase(100, 100, ExpectedResult = 47.18)]
-        public double CalcFloorCoordinateY_Integer_IsCorrect(double y, double maxY)
+        [TestCase(0, ExpectedResult = 10.26)]
+        [TestCase(50, ExpectedResult = 22)]
+        [TestCase(100, ExpectedResult = 47.18)]
+        public double CalcFloorCoordinateY_Integer_IsCorrect(double y)
         {
-            double floorY = _foV.CalcFloorCoordinateY(y, maxY);
+            double floorY = CreateFovCorrecter().CalcFloorCoordinateY(y);
             return Math.Round(floorY, 2);
         }
 
-        [TestCase(0, 100, 0, 100, ExpectedResult = -8.835)]  // To the very left
-        [TestCase(50, 100, 0, 100, ExpectedResult = 0)]    // Middle
-        [TestCase(100, 100, 0, 100, ExpectedResult = 8.835)]// To the very right
-        public double CalcFloorCoordinateX_Integer_IsCorrect(double x, double maxX, double y, double maxY)
+        [TestCase(0, 0, ExpectedResult = -8.835)]  // To the very left
+        [TestCase(50, 0, ExpectedResult = 0)]    // Middle
+        [TestCase(100, 0, ExpectedResult = 8.835)]// To the very right
+        public double CalcFloorCoordinateX_Integer_IsCorrect(double x, double y)
         {
-            double floorX = _foV.CalcFloorCoordinates(x, y, maxX, maxY).Item1;
+            double floorX = CreateFovCorrecter().CalcFloorCoordinates(x, y).Item1;
             return Math.Round(floorX, 3);
         }
         #endregion
 
         #region Decimal
-        [TestCase(0.33, 100, ExpectedResult = 10.321)]
-        [TestCase(50.5, 100, ExpectedResult = 22.154)]
-        [TestCase(99.99, 100, ExpectedResult = 47.171)]
-        public double CalcFloorCoordinateY_Decimal_IsCorrect(double y, double maxY)
+        [TestCase(0.33, ExpectedResult = 10.321)]
+        [TestCase(50.5, ExpectedResult = 22.154)]
+        [TestCase(99.99, ExpectedResult = 47.171)]
+        public double CalcFloorCoordinateY_Decimal_IsCorrect(double y)
         {
-            double floorY = _foV.CalcFloorCoordinateY(y, maxY);
+            double floorY = CreateFovCorrecter().CalcFloorCoordinateY(y);
             return Math.Round(floorY, 3);
         }
 
-        [TestCase(0.33, 100, 0, 100, ExpectedResult = -8.772)]  // To the very left
-        [TestCase(50.5, 100, 0, 100, ExpectedResult = 0.085)]    // Middle
-        [TestCase(99.99, 100, 0, 100, ExpectedResult = 8.833)]// To the very right
-        public double CalcFloorCoordinateX_Decimal_IsCorrect(double x, double maxX, double y, double maxY)
+        [TestCase(0.33, 0, ExpectedResult = -8.772)]  // To the very left
+        [TestCase(50.5, 0, ExpectedResult = 0.085)]    // Middle
+        [TestCase(99.99, 0, ExpectedResult = 8.833)]// To the very right
+        public double CalcFloorCoordinateX_Decimal_IsCorrect(double x, double y)
         {
-            double floorX = _foV.CalcFloorCoordinates(x, y, maxX, maxY).Item1;
+            double floorX = CreateFovCorrecter().CalcFloorCoordinates(x, y).Item1;
             return Math.Round(floorX, 3);
         }
         #endregion
@@ -100,19 +62,48 @@ namespace FollowTrackTests
         [TestCase(100, 178, ExpectedResult = 23.985)]
         public double CalcFloorCoordinateY_DifferentMax_IsCorrect(double y, double maxY)
         {
-            double floorY = _foV.CalcFloorCoordinateY(y, maxY);
+            double floorY = CreateFovCorrecter(maxPossibleY:maxY).CalcFloorCoordinateY(y);
             return Math.Round(floorY, 3);
         }
 
-        [TestCase(1, 176, 0, 100, ExpectedResult = -8.726)]
-        [TestCase(50, 177, 0, 100, ExpectedResult = -3.715)]
-        [TestCase(100, 178, 0, 100, ExpectedResult = 1.048)]
-        public double CalcFloorCoordinateX_DifferentMax_IsCorrect(double x, double maxX, double y, double maxY)
+        [TestCase(1, 176, 0, ExpectedResult = -8.726)]
+        [TestCase(50, 177, 0, ExpectedResult = -3.715)]
+        [TestCase(100, 178, 0, ExpectedResult = 1.048)]
+        public double CalcFloorCoordinateX_DifferentMax_IsCorrect(double x, double maxX, double y)
         {
-            double floorX = _foV.CalcFloorCoordinates(x, y, maxX, maxY).Item1;
+            double floorX = CreateFovCorrecter(maxPossibleX:maxX).CalcFloorCoordinates(x, y).Item1;
             return Math.Round(floorX, 3);
         }
         #endregion
-        //todo Test med: Decimaltal, en anderledes maxX og maxY og alting på engang
+
+        #region NxtCamData->Coordinate Test
+
+        [Test]
+        public void CorrectFieldOfView_TopLeft_IsCorrect()
+        {
+            List<Vector2> topLeft = CreateFovCorrecter(maxPossibleX:176, maxPossibleY:144)
+                .CalcFloorCoordinates(new List<Vector2> {new Vector2(0, 0)});
+            Assert.AreEqual(-18, (int) topLeft[0].X);
+            Assert.AreEqual(47, (int) topLeft[0].Y);
+        }
+
+        [Test]
+        public void CorrectFieldOfView_BottomRight_IsCorrect()
+        {
+            List<Vector2> topLeft = CreateFovCorrecter(maxPossibleX: 176, maxPossibleY: 144)
+                .CalcFloorCoordinates(new List<Vector2> { new Vector2(176, 144) });
+            Assert.AreEqual(8, (int) topLeft[0].X); // Minimum x value when the y value is lowest 
+            Assert.AreEqual(10, (int) topLeft[0].Y); 
+        }
+
+        [Test]
+        public void CorrectFieldOfView_BottomMid_IsCorrect()
+        {
+            List<Vector2> topLeft = CreateFovCorrecter(maxPossibleX: 176, maxPossibleY: 144)
+                .CalcFloorCoordinates(new List<Vector2> { new Vector2(176 / 2, 144) });
+            Assert.AreEqual(0, (int) topLeft[0].X);
+            Assert.AreEqual(10, (int) topLeft[0].Y);
+        }
+        #endregion
     }
 }

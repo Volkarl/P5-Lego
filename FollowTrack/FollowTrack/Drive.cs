@@ -101,12 +101,7 @@ namespace FollowTrack
                 // Get & Update New Data
                 List<Vector2> nxtCamData = GetNewDataFromNxtCam();
 
-                //var a = CorrectFieldOfView(new List<Vector2> { new Vector2(0, 0) }); //Bør give (-18, 47)
-                //var b = CorrectFieldOfView(new List<Vector2> { new Vector2(MaxNxtCamX, MaxNxtCamY) }); //Bør give (8 [x aksens min når vi har y på 0], 10) todo: this one still fails
-                //var c = CorrectFieldOfView(new List<Vector2> { new Vector2(MaxNxtCamX/2, MaxNxtCamY) }); //Bør give (0, 10)
-                // They all work
-                // Todo put into unit test
-
+                // Correct Data
                 nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Sort Left/Right

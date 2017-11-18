@@ -16,13 +16,15 @@ namespace FollowTrack
         private readonly double _maxPossibleX;
         private readonly double _maxPossibleY;
 
-        public FieldOfViewCorrecter(double cameraHeight, double fieldOfViewXdeg, double fieldOfViewYdeg, double cameraAngle, double maxPossibleX, double maxPossibleY)
+        public FieldOfViewCorrecter(double cameraHeight, double fieldOfViewXdeg, double fieldOfViewYdeg, double cameraAngle, double maxPossibleX = 100, double maxPossibleY = 100)
         {
             if(cameraHeight < 0 || cameraHeight > 100
                 || fieldOfViewXdeg <= 0 || fieldOfViewXdeg >= 90
                 || fieldOfViewYdeg <= 0 || fieldOfViewYdeg >= 90
                 || cameraAngle < 0 || cameraAngle >= 90
-                || cameraAngle + fieldOfViewYdeg <= 0 || cameraAngle + fieldOfViewYdeg >= 90)
+                || cameraAngle + fieldOfViewYdeg <= 0 || cameraAngle + fieldOfViewYdeg >= 90
+                || _maxPossibleX < 0
+                || _maxPossibleY < 0)
                 throw new ArgumentException();
             // The angle + field of view cannot reach 90 degrees, because otherwise no triangle calculation could work
 
@@ -30,7 +32,7 @@ namespace FollowTrack
             _fieldOfViewXdeg = fieldOfViewXdeg;
             _fieldOfViewYdeg = fieldOfViewYdeg;
             _cameraAngle = cameraAngle;
-            _maxPossibleX = maxPossibleX; //todo error check these
+            _maxPossibleX = maxPossibleX; 
             _maxPossibleY = maxPossibleY;
             _cameraBlindSpotDeg = cameraAngle - _fieldOfViewYdeg / 2;
         }
@@ -44,22 +46,35 @@ namespace FollowTrack
             List<Tuple<double, double>> floorCoordinates = new List<Tuple<double, double>>();
             foreach (Vector2 coordinate in nxtCamData)
             {
-                floorCoordinates.Add(CalcFloorCoordinates(coordinate.X, coordinate.Y));
+                floorCoordinates.Add(CalcFloorCoordinates(coordinate.X, coordinate.Y, false));
             }
             List<Vector2> correctedCoords = new List<Vector2>(floorCoordinates.ConvertAll(fc => new Vector2(fc.Item1, fc.Item2)));
             return correctedCoords;
         }
 
-        public Tuple<double, double> CalcFloorCoordinates(double pictureHorizontalCoordinate, double pictureVerticalCoordinate)
+        /// <summary>
+        /// Calculates floor coordinates (distance from the camera) using coordinates from a picture.
+        /// </summary>
+        /// <param name="pictureHorizontalCoordinate"></param>
+        /// <param name="pictureVerticalCoordinate"></param>
+        /// <param name="displaceOriginToMid">
+        /// Usually the origin (0,0) of a coordinate system is in the bottom left, but if true, the function will return numbers as if the origin was
+        /// half of the maximum x-value, which is where the camera is placed. This means the returned x-coordinates will be negative if they are left
+        /// of the camera and positive if they are right of the camera.
+        /// </param>
+        /// <returns></returns>
+        public Tuple<double, double> CalcFloorCoordinates(double pictureHorizontalCoordinate, double pictureVerticalCoordinate, bool displaceOriginToMid = true)
         {
-            // todo rename horizontal and vertical to x and y soon. Just note that it's the reverse in the mathcad calculations. 
+            // Note that the horiontal (x) coordinate is the y-coordinate in the mathcad calculations, and vice versa
             double y = CalcFloorCoordinateY(pictureVerticalCoordinate);
-            double x = CalcFloorCoordinateX(pictureHorizontalCoordinate, y);
+            double x = CalcFloorCoordinateX(pictureHorizontalCoordinate, y, displaceOriginToMid);
             return new Tuple<double, double>(x, y);
         }
 
         public double CalcFloorCoordinateY(double pictureY)
         {
+            if (pictureY > _maxPossibleY) throw new ArgumentException();
+
             double deg = ConvertToDegrees(pictureY, _maxPossibleY, _fieldOfViewYdeg);
             return TangensSolveOpposite(_cameraHeight, deg + _cameraBlindSpotDeg);
         }
@@ -74,9 +89,13 @@ namespace FollowTrack
             return value / (maximumValue / fieldOfView);
         }
 
-        private double CalcFloorCoordinateX(double pictureX, double floorCoordinateY)
+        private double CalcFloorCoordinateX(double pictureX, double floorCoordinateY, bool displaceOriginToMid)
         {
+            if (pictureX > _maxPossibleX) throw new ArgumentException();
+
             double deg = ConvertToDegrees(pictureX, _maxPossibleX, _fieldOfViewXdeg);
+            if (displaceOriginToMid) deg = -((_fieldOfViewXdeg / 2) - deg);
+            // Because the x axis has its origin in the middle of the FoV: 0 deg should become -20 and 40 deg should become 20
             double hypo = PythagorasSolveC(_cameraHeight, floorCoordinateY);
             return TangensSolveOpposite(hypo, deg);
         }
@@ -99,7 +118,8 @@ namespace FollowTrack
             foreach (Vector2 coordinate in coordinates)
             {
                 coordinate.X -= displacementX;
-                coordinate.Y = Math.Abs(coordinate.Y - displacementY); // High numbers become low numbers and the reverse as well
+                coordinate.Y = Math.Abs(coordinate.Y - displacementY); 
+                // High numbers become low numbers and the reverse as well
             }
             return coordinates;
 
