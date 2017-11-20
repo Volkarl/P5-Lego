@@ -28,9 +28,9 @@ namespace FollowTrack
         {
             if (obj == null) return 1;
 
-            Vector2 otherTemperature = obj as Vector2;
-            if (otherTemperature != null)
-                return this.Y.CompareTo(otherTemperature.Y);
+            Vector2 vector2 = obj as Vector2;
+            if (vector2 != null)
+                return this.Y.CompareTo(vector2.Y);
             else
                 throw new ArgumentException("Object is not a Vector2");
         }
