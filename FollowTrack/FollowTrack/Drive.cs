@@ -19,6 +19,12 @@ namespace FollowTrack
         private const int MaxNxtCamY = 144;
         private const int PointsOnCurve = 18; //    Points = (value / 2) - 1
         private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, MaxNxtCamY-MaxNxtCamY); // TODO: Lav til Const
+        private const int NxtCamHeight = 22;
+        private const int FieldOfView = 40;
+        private const int CameraAngle = 45;
+
+        private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, -(FieldOfView / 2)); // TODO: Lav til Const todo: I changed this from hardcoded -20, is it correct?
+        private readonly FieldOfViewCorrecter _foV;
 
         // Old Data
         private List<Vector2> _pDataLeftOld = new List<Vector2>();
@@ -29,6 +35,10 @@ namespace FollowTrack
         private int _boundCountLeft = 0;
         private int _boundCountRight = 0;
 
+        public Drive()
+        {
+            _foV = new FieldOfViewCorrecter(NxtCamHeight, FieldOfView, FieldOfView, CameraAngle, MaxNxtCamX, MaxNxtCamY);
+        }
 
         // Main
         public void Run()
@@ -42,9 +52,10 @@ namespace FollowTrack
             }
             else if (!_isFirstTimeRunning) // Finding Path
             {
+                // If it's first time, we don't combine multiple datasets
                 // Get & Update New Data
                 List<Vector2> nxtCamData = GetNewDataFromNxtCam(); // Need to balance data, and handle only left side data. //
-                //ConvertDataFromFieldOfView(nxtCamData);
+                nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Update Old Data
                 RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
@@ -90,7 +101,9 @@ namespace FollowTrack
             {
                 // Get & Update New Data
                 List<Vector2> nxtCamData = GetNewDataFromNxtCam();
-                //ConvertDataFromFieldOfView(nxtCamData);
+
+                // Correct Data
+                nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Sort Left/Right
                 Tuple<List<Vector2>, List<Vector2>> tupleData = SortNxtCamData(nxtCamData);
@@ -127,6 +140,11 @@ namespace FollowTrack
                 //}
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
             }
+        }
+
+        private List<Vector2> CorrectFieldOfView(List<Vector2> nxtCamData)
+        {
+            return _foV.CalcFloorCoordinates(nxtCamData);
         }
 
         // TODO: Find relevant Points -> need test
@@ -386,11 +404,11 @@ namespace FollowTrack
             // for (int i = 0; i < 8; i+=2)
             int i = 0;
 
-            while (dataL.Count > i + 1)
+            while (dataL.Count-1 >= i )
             {
                 double tempXValue = dataL[i].X; // we will override x value, but still need original when rotating y
                 double tempYValue = dataL[i].Y; // i dont think this is needed but it makes it pretty
-
+                  
                 /*
                  * take care
                  * what way is it rotating?
@@ -399,11 +417,11 @@ namespace FollowTrack
                  */
                 dataL[i].X = tempXValue * Math.Cos(rotationSumInDegrees) - tempYValue * Math.Sin(rotationSumInDegrees); // rotation
                 dataL[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) + tempYValue * Math.Cos(rotationSumInDegrees);
-                i += 2;
+                i += 1;
             }
             i = 0;
 
-            while (dataR.Count > i + 1)
+            while (dataR.Count-1 >= i )
             {
                 double tempXValue = dataR[i].X; // we will override x value, but still need original when rotating y
                 double tempYValue = dataR[i].Y; // i dont think this is needed but it makes it pretty
@@ -416,7 +434,7 @@ namespace FollowTrack
                  */
                 dataR[i].X = tempXValue * Math.Cos(rotationSumInDegrees) - tempYValue * Math.Sin(rotationSumInDegrees); // rotation
                 dataR[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) + tempYValue * Math.Cos(rotationSumInDegrees);
-                i += 2;
+                i += 1;
             }
             i = 0;
             
@@ -431,26 +449,26 @@ namespace FollowTrack
              * Set end point to startpoint cordinats,
              * all start points must be at the same spot in the graph 
              */
-            double displacementX = 88 - lastTwoPoints[1].X; //after endpoint has been rotated
-            double displacementY = (-20) - lastTwoPoints[1].Y;
+            double displacementX = _busPoint.X - lastTwoPoints[1].X; //after endpoint has been rotated
+            double displacementY = _busPoint.Y - lastTwoPoints[1].Y;
 
             /*
              * lastly we displace all of the cordinats
              */
             // for (int i = 0; i < 8; i+=2)
-            while (dataL.Count > i + 1)
+            while (dataL.Count-1 >= i )
             {
                 dataL[i].X = dataL[i].X + displacementX;
                 dataL[i].Y = dataL[i].Y + displacementY;
-                i += 2;
+                i += 1;
             }
             i = 0;
             // for (int i = 0; i < 8; i += 2)
-            while (dataR.Count > i + 1)
+            while (dataR.Count-1 >= i )
             {
                 dataR[i].X = dataR[i].X + displacementX;
                 dataR[i].Y = dataR[i].Y + displacementY;
-                i += 2;
+                i += 1;
             }
 
             /*

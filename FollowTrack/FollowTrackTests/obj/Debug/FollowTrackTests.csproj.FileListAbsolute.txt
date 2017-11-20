@@ -1,0 +1,9 @@
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\bin\Debug\FollowTrackTests.dll
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\bin\Debug\FollowTrackTests.pdb
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\bin\Debug\nunit.framework.dll
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\bin\Debug\nunit.framework.xml
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\obj\Debug\FollowTrackTests.csprojResolveAssemblyReference.cache
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\obj\Debug\FollowTrackTests.dll
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\obj\Debug\FollowTrackTests.pdb
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\bin\Debug\FollowTrack.exe
+C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\bin\Debug\FollowTrack.pdb
