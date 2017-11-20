@@ -7,3 +7,15 @@ C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\obj\Debug\FollowTrackTest
 C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\obj\Debug\FollowTrackTests.pdb
 C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\bin\Debug\FollowTrack.exe
 C:\cygwin\nxtOSEK\P5-Lego\FollowTrack\FollowTrackTests\bin\Debug\FollowTrack.pdb
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\FollowTrackTests.dll
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\FollowTrackTests.pdb
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\FollowTrackTests.dll.CodeAnalysisLog.xml
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\FollowTrackTests.dll.lastcodeanalysissucceeded
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\FollowTrack.exe
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\nunit.framework.dll
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\FollowTrack.pdb
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\FollowTrack.exe.config
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\bin\Debug\nunit.framework.xml
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\obj\Debug\FollowTrackTests.csprojResolveAssemblyReference.cache
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\obj\Debug\FollowTrackTests.dll
+C:\Users\kimx4560\Desktop\git\FollowTrack\FollowTrackTests\obj\Debug\FollowTrackTests.pdb

@@ -99,14 +99,15 @@ namespace FollowTrack
             return basis;
         }
 
-        public void Bezier2D(List<Vector2> b, int cpts, double[] p)
+        public void Bezier2D(Vector2[] b, int cpts, double[] p)
         {
-            int npts = b.Count;
+            b = Array.FindAll(b, x => x != null ); // TODO: FIX THIS SHIT
+
+            int npts = b.Length;
             int icount, jcount;
             double step, t;
 
             // Calculate points on curve
-
             icount = 0;
             t = 0;
             step = (double)1.0 / (cpts - 1);
@@ -126,7 +127,6 @@ namespace FollowTrack
                     p[icount + 1] += basis * b[jcount].Y;
                     jcount = jcount + 1;
                 }
-
                 icount += 2;
                 t += step;
             }

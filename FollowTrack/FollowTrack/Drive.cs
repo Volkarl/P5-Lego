@@ -11,14 +11,14 @@ namespace FollowTrack
     public class Drive
     {
         // Public & Path
-        public List<PathPoint> Path = new List<PathPoint>();
+        public PathPoint[] Path = new PathPoint[PointsOnCurve]; // Size?
         public int CurrentAngle;
 
         // Const
         private const int MaxNxtCamX = 176;
         private const int MaxNxtCamY = 144;
-        private const int PointsOnCurve = 18; //    Points = (value / 2) - 1
-        private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, MaxNxtCamY-MaxNxtCamY); // TODO: Lav til Const
+        private const int PointsOnCurve = 9; //    Points = (value / 2) - 1
+
         private const int NxtCamHeight = 22;
         private const int FieldOfView = 40;
         private const int CameraAngle = 45;
@@ -27,13 +27,16 @@ namespace FollowTrack
         private readonly FieldOfViewCorrecter _foV;
 
         // Old Data
-        private List<Vector2> _pDataLeftOld = new List<Vector2>();
-        private List<Vector2> _pDataRightOld = new List<Vector2>();
-        private readonly List<Vector2> _lastTwoMidPointsOld = new List<Vector2>();
+        private Vector2[] _pDataLeftOld = new Vector2[8];
+        private Vector2[] _pDataRightOld = new Vector2[8];
+        private readonly Vector2[] _lastTwoMidPointsOld = new Vector2[2];
 
         private bool _isFirstTimeRunning = true;
         private int _boundCountLeft = 0;
         private int _boundCountRight = 0;
+
+        private int _pathCounter = 0;
+        private int _pathSize = 0;
 
         public Drive()
         {
@@ -43,101 +46,110 @@ namespace FollowTrack
         // Main
         public void Run()
         {
-            if (Path.Count > 0) // Following Path
+            if (_pathSize > 0) // Following Path
             {
                 Console.WriteLine("\n***************************************************");
-                Drive.Turn(CurrentAngle + Path[0].Slope);
-                Drive.Length(Path[0].Length); // Set how ofte Run needs to be called. //
-                Path.RemoveAt(0);
+                Drive.Turn(CurrentAngle + Path[_pathCounter].Slope);
+                Drive.Length(Path[_pathCounter].Length); // Set how ofte Run needs to be called. //
+                _pathCounter++;
+                _pathSize--;
             }
             else if (!_isFirstTimeRunning) // Finding Path
             {
-                // If it's first time, we don't combine multiple datasets
                 // Get & Update New Data
-                List<Vector2> nxtCamData = GetNewDataFromNxtCam(); // Need to balance data, and handle only left side data. //
-                nxtCamData = CorrectFieldOfView(nxtCamData);
+                Vector2[] nxtCamData = new Vector2[8];
+                nxtCamData = GetNewDataFromNxtCam(); // Need to balance data, and handle only left side data. //
+                //nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Update Old Data
                 RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
-                _lastTwoMidPointsOld.RemoveRange(0,2);
+                //Array.Clear(_lastTwoMidPointsOld,0,2); // TODO: Remove?
 
                 // Sort Left/Right & Combine Old New Data 
-                Tuple<List<Vector2>, List<Vector2>> tupleData = SortNxtCamData(nxtCamData);
-                List<Vector2> dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
-                List<Vector2> dataRight = CombineData(tupleData.Item2, _pDataRightOld);
+                Tuple<Vector2[], Vector2[]> tupleData = SortNxtCamData(nxtCamData);
+                Vector2[] dataLeft = new Vector2[8];
+                dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
+                Vector2[] dataRight = new Vector2[8];
+                dataRight = CombineData(tupleData.Item2, _pDataRightOld);
                 _pDataLeftOld = tupleData.Item1;
                 _pDataRightOld = tupleData.Item2;
 
                 // Mid Points
-                List<Vector2> midPoints = CalculatePathMidPoints(
+                Vector2[] midPoints = new Vector2[8];
+                midPoints = CalculatePathMidPoints(
                     CalculateBezierCurvePoints(dataLeft, (PointsOnCurve*2), ref _boundCountLeft),
                     CalculateBezierCurvePoints(dataRight, (PointsOnCurve*2), ref _boundCountRight));
-                _lastTwoMidPointsOld.Add(new Vector2(midPoints[midPoints.Count - 2].X, midPoints[midPoints.Count - 2].Y));
-                _lastTwoMidPointsOld.Add(new Vector2(midPoints[midPoints.Count - 1].X, midPoints[midPoints.Count - 1].Y));
+
+                _lastTwoMidPointsOld[0] = new Vector2(midPoints[0].X, midPoints[0].Y);
+                _lastTwoMidPointsOld[1] = new Vector2(midPoints[1].X, midPoints[1].Y);
 
                 // Path Points
                 Path = CalculatePathData(midPoints);
-
+                _pathCounter = 0;
+                _pathSize = Path.Count(s => s != null);
 
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
                 //long memory = GC.GetTotalMemory(true);
                 //Console.WriteLine("MEMORY" + memory);
                 foreach (var item in midPoints)
                 {
-                    Console.WriteLine(item.ToString());
+                    if (item != null)
+                        Console.WriteLine(item.ToString());
                 }
                 Console.WriteLine("\n\n");
                 foreach (var item in Path)
                 {
-                    Console.WriteLine(item.ToString());
+                    if (item != null)
+                        Console.WriteLine(item.ToString());
                 }
-                //foreach (var item in _lastTwoMidPointsOld)
-                //{
-                //    Console.WriteLine(item);
-                //}
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
             }
             else // Finding Path -> First run.
             {
+                // If it's first time, we don't combine multiple datasets
                 // Get & Update New Data
-                List<Vector2> nxtCamData = GetNewDataFromNxtCam();
+                Vector2[] nxtCamData = new Vector2[8];
+                nxtCamData = GetNewDataFromNxtCam();
 
                 // Correct Data
-                nxtCamData = CorrectFieldOfView(nxtCamData);
+                //nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Sort Left/Right
-                Tuple<List<Vector2>, List<Vector2>> tupleData = SortNxtCamData(nxtCamData);
-                List<Vector2> dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
-                List<Vector2> dataRight = CombineData(tupleData.Item2, _pDataRightOld);
+                Tuple<Vector2[], Vector2[]> tupleData = SortNxtCamData(nxtCamData);
+                Vector2[] dataLeft = new Vector2[8];
+                dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
+                Vector2[] dataRight = new Vector2[8];
+                dataRight = CombineData(tupleData.Item2, _pDataRightOld);
                 _pDataLeftOld = tupleData.Item1;
                 _pDataRightOld = tupleData.Item2;
 
                 // Mid Points
-                List<Vector2> midPoints = CalculatePathMidPoints(
-                    CalculateBezierCurvePoints(dataLeft, PointsOnCurve, ref _boundCountLeft),
-                    CalculateBezierCurvePoints(dataRight, PointsOnCurve, ref _boundCountRight));
-                _lastTwoMidPointsOld.Add(new Vector2(midPoints[midPoints.Count - 2].X, midPoints[midPoints.Count - 2].Y));
-                _lastTwoMidPointsOld.Add(new Vector2(midPoints[midPoints.Count - 1].X, midPoints[midPoints.Count - 1].Y));
+                Vector2[] midPoints = new Vector2[8];
+                midPoints = CalculatePathMidPoints(
+                    CalculateBezierCurvePoints(dataLeft, (PointsOnCurve * 2), ref _boundCountLeft),
+                    CalculateBezierCurvePoints(dataRight, (PointsOnCurve * 2), ref _boundCountRight));
+
+                _lastTwoMidPointsOld[0] = new Vector2(midPoints[0].X, midPoints[0].Y);
+                _lastTwoMidPointsOld[1] = new Vector2(midPoints[1].X, midPoints[1].Y);
 
                 // Path Points
                 Path = CalculatePathData(midPoints);
                 _isFirstTimeRunning = false;
+                _pathSize = Path.Count(s => s != null);
 
 
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
                 foreach (var item in midPoints)
                 {
-                    Console.WriteLine(item.ToString());
+                    if (item != null)
+                        Console.WriteLine(item.ToString());
                 }
                 Console.WriteLine("\n\n");
                 foreach (var item in Path)
                 {
-                    Console.WriteLine(item.ToString());
+                    if(item != null)
+                        Console.WriteLine(item.ToString());
                 }
-                //foreach (var item in _lastTwoMidPointsOld)
-                //{
-                //    Console.WriteLine(item);
-                //}
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
             }
         }
@@ -148,7 +160,7 @@ namespace FollowTrack
         }
 
         // TODO: Find relevant Points -> need test
-        private double[] CalculateBezierCurvePoints(List<Vector2> pData, int pointsOnCurve, ref int boundCount)
+        private double[] CalculateBezierCurvePoints(Vector2[] pData, int pointsOnCurve, ref int boundCount)
         {
             double[] data = new double[pointsOnCurve];
 
@@ -173,31 +185,36 @@ namespace FollowTrack
         }
 
         // DONE
-        private List<Vector2> CalculatePathMidPoints(double[] pLeft, double[] pRight)
+        private Vector2[] CalculatePathMidPoints(double[] pLeft, double[] pRight)
         {
-            List<Vector2> midPoints = new List<Vector2>();
-            midPoints.Add(_busPoint); // Set busPoint as the first pathpoint.
+            Vector2[] midPoints = new Vector2[PointsOnCurve];
+            midPoints[0] = _busPoint; // Set busPoint as the first pathpoint.
 
             //int pCount = pLeft.Length <= pRight.Length ? pLeft.Length : pRight.Length;
             int pCount = _boundCountLeft <= _boundCountRight ? _boundCountLeft : _boundCountRight;
+            int midPointCount = 1;
 
-            for (int i = 1; i != pCount - 1; i += 2)
+            for (int i = 1; i < pCount - 1; i += 2)
             {
-                midPoints.Add(new Vector2((pLeft[i + 1] + pRight[i + 1]) / 2, (pLeft[i] + pRight[i]) / 2));
+                midPoints[midPointCount] = new Vector2((pLeft[i + 1] + pRight[i + 1]) / 2, (pLeft[i] + pRight[i]) / 2);
+                midPointCount++;
             }
             return midPoints;
         }
 
         // DONE
-        private List<PathPoint> CalculatePathData(List<Vector2> midPoints)
+        private PathPoint[] CalculatePathData(Vector2[] midPoints)
         {
-            List<PathPoint> pathPoints = new List<PathPoint>();
+           PathPoint[] pathPoints = new PathPoint[midPoints.Length];
 
-            for (int i = 1; i < midPoints.Count; i++)
+            for (int i = 1; i < midPoints.Length; i++)
             {
-                pathPoints.Add(new PathPoint(
+                if (midPoints[i] == null)
+                    break;
+
+                pathPoints[i-1] = new PathPoint(
                     Math.Atan((midPoints[i].X - midPoints[i - 1].X) / (midPoints[i].Y - midPoints[i - 1].Y)) * 180 / Math.PI,
-                    Math.Sqrt(Math.Pow(midPoints[i].X - midPoints[i - 1].X, 2) + Math.Pow(midPoints[i].Y - midPoints[i - 1].Y, 2))));
+                    Math.Sqrt(Math.Pow(midPoints[i].X - midPoints[i - 1].X, 2) + Math.Pow(midPoints[i].Y - midPoints[i - 1].Y, 2)));
             }
             return pathPoints;
         }
@@ -207,78 +224,81 @@ namespace FollowTrack
 
         //TODO: tilpas til NxtCam
         private int _dataCount = 0;
-        private List<Vector2> GetNewDataFromNxtCam()
+        private Vector2[] GetNewDataFromNxtCam()
         {
-            List<Vector2> data = new List<Vector2>();
-            data.Clear();
+            Vector2[] data = new Vector2[8];
+            Array.Clear(data,0,8);
 
             if (_dataCount == 0)
             {
-
-                data.Add(new Vector2(12, 0));
-                data.Add(new Vector2(144, 13));
-                data.Add(new Vector2(132, 32));
-                data.Add(new Vector2(12, 19));
-                data.Add(new Vector2(12, 38));
-                data.Add(new Vector2(132, 51));
-                data.Add(new Vector2(12, 57));
-                data.Add(new Vector2(132, 70));
+                data[0] = (new Vector2(12, 0));
+                data[1] = (new Vector2(144, 13));
+                data[2] = (new Vector2(132, 32));
+                data[3] = (new Vector2(12, 19));
+                data[4] = (new Vector2(12, 38));
+                data[5] = (new Vector2(132, 51));
+                data[6] = (new Vector2(12, 57));
+                data[7] = (new Vector2(132, 70));
 
                 _dataCount++;
             }
             else if (_dataCount == 1)
             {
-                //data.Add(new Vector2(MaxNxtCamX, MaxNxtCamY));
-                //data.Add(new Vector2(MaxNxtCamX, MaxNxtCamY));
-                //data.Add(new Vector2(MaxNxtCamX, MaxNxtCamY));
-                //data.Add(new Vector2(MaxNxtCamX, MaxNxtCamY));
-                data.Add(new Vector2(12, 0));
-                data.Add(new Vector2(144, 13));
-                data.Add(new Vector2(132, 32));
-                data.Add(new Vector2(12, 19));
-                data.Add(new Vector2(12, 38));
-                data.Add(new Vector2(132, 51));
-                data.Add(new Vector2(12, 57));
-                data.Add(new Vector2(132, 70));
+                data[0] = (new Vector2(12, 0));
+                data[1] = (new Vector2(144, 13));
+                data[2] = (new Vector2(132, 32));
+                data[3] = (new Vector2(12, 19));
+                data[4] = (new Vector2(12, 38));
+                data[5] = (new Vector2(132, 51));
+                data[6] = (new Vector2(12, 57));
+                data[7] = (new Vector2(132, 70));
 
                 _dataCount++;
             }
             else if (_dataCount == 2)
             {
-                data.Add(new Vector2(12, 0));
-                data.Add(new Vector2(144, 13));
-                data.Add(new Vector2(132, 32));
-                data.Add(new Vector2(12, 19));
-                data.Add(new Vector2(12, 38));
-                data.Add(new Vector2(132, 51));
-                data.Add(new Vector2(12, 57));
-                data.Add(new Vector2(132, 70));
+                data[0] = (new Vector2(12, 0));
+                data[1] = (new Vector2(144, 13));
+                data[2] = (new Vector2(132, 32));
+                data[3] = (new Vector2(12, 19));
+                data[4] = (new Vector2(12, 38));
+                data[5] = (new Vector2(132, 51));
+                data[6] = (new Vector2(12, 57));
+                data[7] = (new Vector2(132, 70));
 
                 _dataCount++;
             }
 
 
             // Handle empty data
-            if (data.Count == 0)
+            if (data[0] == null)
                 data = GetNewDataFromNxtCam(); // vent til næste data fra cam er klar.
 
             return data;
         }
 
         // DONE TODO: Lav bedre sorting. maybe?
-        public Tuple<List<Vector2>, List<Vector2>> SortNxtCamData(List<Vector2> nxtCamData)
+        public Tuple<Vector2[], Vector2[]> SortNxtCamData(Vector2[] nxtCamData)
         {
-            List<Vector2> leftPoints = new List<Vector2>();
-            List<Vector2> rightPoints = new List<Vector2>();
+            Vector2[] leftPoints = new Vector2[8];
+            Vector2[] rightPoints = new Vector2[8];
 
             int maxIndexY = 0;
+            int leftCount = 0;
+            int rightCount = 0;
 
-            for (int i = 0; i < nxtCamData.Count; i++)
+            for (int i = 0; i < nxtCamData.Length; i++)
             {
                 if (nxtCamData[i].X <= MaxNxtCamX / 2)
-                    leftPoints.Add(nxtCamData[i]);
+                {
+                    leftPoints[leftCount] = nxtCamData[i];
+                    leftCount++;
+                }
                 else
-                    rightPoints.Add(nxtCamData[i]);
+                {
+                    rightPoints[rightCount] = nxtCamData[i];
+                    rightCount++;
+                }
 
                 if (nxtCamData[i].Y > nxtCamData[maxIndexY].Y)
                 {
@@ -286,61 +306,61 @@ namespace FollowTrack
                 }
             }
 
-            leftPoints = leftPoints.OrderBy(p => p.Y).ToList();
-            rightPoints = rightPoints.OrderBy(p => p.Y).ToList();
+            Array.Sort(leftPoints, (x, y) => y.Y.CompareTo(x.Y));
+            Array.Sort(rightPoints, (x, y) => y.Y.CompareTo(x.Y));
+            //leftPoints = leftPoints.OrderBy(p => p.Y).ToList();
+            //rightPoints = rightPoints.OrderBy(p => p.Y).ToList();
+
 
             // Handle unbalanced data
             // Lav trekant;     90 grader, længden mellem Last[] Last[-1] og længden fra 
             if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
             {
-                double AB = Math.Sqrt(
-                    Math.Pow(leftPoints[leftPoints.Count - 1].Y - leftPoints[leftPoints.Count - 2].Y, 2) + 
-                    Math.Pow(leftPoints[leftPoints.Count - 1].X - leftPoints[leftPoints.Count - 2].X, 2));
-                double AC = 120; // Bredde af track lane
-                double BC = Math.Sqrt(Math.Pow(AB, 2) + Math.Pow(AC, 2));
-
-
-                double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
-                double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
-
-                rightPoints.Add(new Vector2(x, y));
-
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-                Console.WriteLine("x: " + leftPoints[leftPoints.Count - 2].X + "  y: " + leftPoints[leftPoints.Count - 2].Y);
-                Console.WriteLine("x: " + leftPoints[leftPoints.Count - 1].X + "  y: " + leftPoints[leftPoints.Count - 1].Y);
-
-                Console.WriteLine("x:" + x + "y:" + y);
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-            }
-            else
-            {
-                double AB = Math.Sqrt(
-                    Math.Pow(rightPoints[rightPoints.Count - 1].X - rightPoints[rightPoints.Count - 2].X, 2) +
-                    Math.Pow(rightPoints[rightPoints.Count - 1].Y - rightPoints[rightPoints.Count - 2].Y, 2));
-
-                double AC = 52; // Bredde af track lane
-                double BC = Math.Sqrt(Math.Pow(AB, 2) + Math.Pow(AC, 2));
-
-
+                //double AB = Math.Sqrt(
+                //    Math.Pow(leftPoints[leftPoints.Length - 1].Y - leftPoints[leftPoints.Length - 2].Y, 2) + 
+                //    Math.Pow(leftPoints[leftPoints.Length - 1].X - leftPoints[leftPoints.Length - 2].X, 2));
+                //double AC = 120; // Bredde af track lane
+                //double BC = Math.Sqrt(Math.Pow(AB, 2) + Math.Pow(AC, 2));
 
 
                 //double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
                 //double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
 
-                double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
-                double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
+                //rightPoints.Add(new Vector2(x, y));
+
+                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                //Console.WriteLine("x: " + leftPoints[leftPoints.Length - 2].X + "  y: " + leftPoints[leftPoints.Length - 2].Y);
+                //Console.WriteLine("x: " + leftPoints[leftPoints.Length - 1].X + "  y: " + leftPoints[leftPoints.Length - 1].Y);
+
+                //Console.WriteLine("x:" + x + "y:" + y);
+                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            }
+            else
+            {
+                //double AB = Math.Sqrt(
+                //    Math.Pow(rightPoints[rightPoints.Length - 1].X - rightPoints[rightPoints.Length - 2].X, 2) +
+                //    Math.Pow(rightPoints[rightPoints.Length - 1].Y - rightPoints[rightPoints.Length - 2].Y, 2));
+
+                //double AC = 52; // Bredde af track lane
+                //double BC = Math.Sqrt(Math.Pow(AB, 2) + Math.Pow(AC, 2));
 
 
 
 
-                leftPoints.Add(new Vector2(x,y));
+                ////double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
+                ////double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
 
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-                Console.WriteLine("x: " + rightPoints[rightPoints.Count - 2].X + "  y: " + rightPoints[rightPoints.Count - 2].Y);
-                Console.WriteLine("x: " + rightPoints[rightPoints.Count - 1].X + "  y: " + rightPoints[rightPoints.Count - 1].Y);
+                //double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
+                //double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
 
-                Console.WriteLine("x:" + x + "y:" + y);
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                //leftPoints.Add(new Vector2(x,y));
+
+                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                //Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
+                //Console.WriteLine("x: " + rightPoints[rightPoints.Length - 1].X + "  y: " + rightPoints[rightPoints.Length - 1].Y);
+
+                //Console.WriteLine("x:" + x + "y:" + y);
+                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
             }
 
 
@@ -368,13 +388,12 @@ namespace FollowTrack
         }
 
         // TODO: 100% lort.
-        private List<Vector2> CombineData(List<Vector2> pData, List<Vector2> pDataOld)
+        private Vector2[] CombineData(Vector2[] pData, Vector2[] pDataOld)
         {
-            List<Vector2> data = new List<Vector2>();
-            data.AddRange(pDataOld);
-            data.AddRange(pData);
+            Vector2[] data = new Vector2[pData.Length + pDataOld.Length];
+            Array.Copy(pDataOld, data, pDataOld.Length);
+            Array.Copy(pData, 0, data, pDataOld.Length, pData.Length);
 
-            //return data.OrderBy(p => p.Y).ToList();
             return data;
         }
 
@@ -385,8 +404,8 @@ namespace FollowTrack
 
 
 
-        //DONE?!?
-        private void RotateAndDisplaceData(List<Vector2> dataL, List<Vector2> dataR, List<Vector2> lastTwoPoints)
+        //DONE
+        private void RotateAndDisplaceData(Vector2[] dataL, Vector2[] dataR, Vector2[] lastTwoPoints)
         {
             int rotationDirection;
 
@@ -404,36 +423,45 @@ namespace FollowTrack
             // for (int i = 0; i < 8; i+=2)
             int i = 0;
 
-            while (dataL.Count-1 >= i )
+            while (dataL.Length-1 >= i )
             {
-                double tempXValue = dataL[i].X; // we will override x value, but still need original when rotating y
-                double tempYValue = dataL[i].Y; // i dont think this is needed but it makes it pretty
-                  
-                /*
-                 * take care
-                 * what way is it rotating?
-                 * if the bus has rotated clockwise
-                 * rotate the cordinats counterclockwise
-                 */
-                dataL[i].X = tempXValue * Math.Cos(rotationSumInDegrees) - tempYValue * Math.Sin(rotationSumInDegrees); // rotation
-                dataL[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) + tempYValue * Math.Cos(rotationSumInDegrees);
+                if (dataL[i] != null)
+                {
+                    double tempXValue = dataL[i].X; // we will override x value, but still need original when rotating y
+                    double tempYValue = dataL[i].Y; // i dont think this is needed but it makes it pretty
+
+                    /*
+                     * take care
+                     * what way is it rotating?
+                     * if the bus has rotated clockwise
+                     * rotate the cordinats counterclockwise
+                     */
+                    dataL[i].X = tempXValue * Math.Cos(rotationSumInDegrees) - tempYValue * Math.Sin(rotationSumInDegrees); // rotation
+                    dataL[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) + tempYValue * Math.Cos(rotationSumInDegrees);
+                }
                 i += 1;
             }
             i = 0;
 
-            while (dataR.Count-1 >= i )
+            while (dataR.Length-1 >= i )
             {
-                double tempXValue = dataR[i].X; // we will override x value, but still need original when rotating y
-                double tempYValue = dataR[i].Y; // i dont think this is needed but it makes it pretty
+                if (dataL[i] != null)
+                {
 
-                /*
-                 * take care
-                 * what way is it rotating?
-                 * if the bus has rotated clockwise
-                 * rotate the cordinats counterclockwise
-                 */
-                dataR[i].X = tempXValue * Math.Cos(rotationSumInDegrees) - tempYValue * Math.Sin(rotationSumInDegrees); // rotation
-                dataR[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) + tempYValue * Math.Cos(rotationSumInDegrees);
+                    double tempXValue = dataR[i].X; // we will override x value, but still need original when rotating y
+                    double tempYValue = dataR[i].Y; // i dont think this is needed but it makes it pretty
+
+                    /*
+                     * take care
+                     * what way is it rotating?
+                     * if the bus has rotated clockwise
+                     * rotate the cordinats counterclockwise
+                     */
+                    dataR[i].X = tempXValue * Math.Cos(rotationSumInDegrees) -
+                                 tempYValue * Math.Sin(rotationSumInDegrees); // rotation
+                    dataR[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) +
+                                 tempYValue * Math.Cos(rotationSumInDegrees);
+                }
                 i += 1;
             }
             i = 0;
@@ -456,18 +484,24 @@ namespace FollowTrack
              * lastly we displace all of the cordinats
              */
             // for (int i = 0; i < 8; i+=2)
-            while (dataL.Count-1 >= i )
+            while (dataL.Length-1 >= i )
             {
-                dataL[i].X = dataL[i].X + displacementX;
-                dataL[i].Y = dataL[i].Y + displacementY;
+                if (dataL[i] != null)
+                {
+                    dataL[i].X = dataL[i].X + displacementX;
+                    dataL[i].Y = dataL[i].Y + displacementY;
+                }
                 i += 1;
             }
             i = 0;
             // for (int i = 0; i < 8; i += 2)
-            while (dataR.Count-1 >= i )
+            while (dataR.Length-1 >= i )
             {
-                dataR[i].X = dataR[i].X + displacementX;
-                dataR[i].Y = dataR[i].Y + displacementY;
+                if (dataL[i] != null)
+                {
+                    dataR[i].X = dataR[i].X + displacementX;
+                    dataR[i].Y = dataR[i].Y + displacementY;
+                }
                 i += 1;
             }
 
@@ -476,11 +510,6 @@ namespace FollowTrack
              * override the old old cordinats, and its done
              */
 
-        }
-
-        private void ConvertDataFromFieldOfView(double[] data)
-        {
-            throw new NotImplementedException();
         }
 
 
@@ -520,45 +549,5 @@ namespace FollowTrack
         #endregion
 
 
-
-
-
-
-
-
-
-
-
-
-        // Remove ???
-        //private double CalculateAvgDistanceBetweenPoints()
-        //{
-        //    double distance;
-        //    double avgdistance = 0;
-
-        //    for (int i = 1; i != PointsOnCurve - 1; i += 2)
-        //    {
-        //        distance = Math.Sqrt(Math.Pow(_pLeft[i + 1] - _pRight[i + 1], 2) + Math.Pow(_pLeft[i] - _pRight[i], 2));
-        //        avgdistance += distance;
-
-        //        //Test
-        //        //Console.WriteLine("x:" + (int)_pLeft[i + 1] + "\t y:" + (int)_pLeft[i] + "\t Afstand:" + distance);
-        //        //Console.WriteLine("x:" + (int)_pRight[i + 1] + "\t y:" + (int)_pRight[i]);
-        //    }
-        //    return avgdistance / ((PointsOnCurve / 2) - 1);
-        //}
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
 }
