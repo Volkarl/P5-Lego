@@ -18,7 +18,7 @@ namespace FollowTrack
         private const int MaxNxtCamX = 176;
         private const int MaxNxtCamY = 144;
         private const int PointsOnCurve = 18; //    Points = (value / 2) - 1
-        private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, MaxNxtCamY - MaxNxtCamY); // TODO: Lav til Const
+        private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, MaxNxtCamY-MaxNxtCamY); // TODO: Lav til Const
 
         // Old Data
         private List<Vector2> _pDataLeftOld = new List<Vector2>();
@@ -191,9 +191,12 @@ namespace FollowTrack
         private int _dataCount = 0;
         private List<Vector2> GetNewDataFromNxtCam()
         {
+            List<Vector2> data = new List<Vector2>();
+            data.Clear();
+
             if (_dataCount == 0)
             {
-                List<Vector2> data = new List<Vector2>();
+
                 data.Add(new Vector2(12, 0));
                 data.Add(new Vector2(144, 13));
                 data.Add(new Vector2(132, 32));
@@ -204,11 +207,13 @@ namespace FollowTrack
                 data.Add(new Vector2(132, 70));
 
                 _dataCount++;
-                return data;
             }
             else if (_dataCount == 1)
             {
-                List<Vector2> data = new List<Vector2>();
+                //data.Add(new Vector2(MaxNxtCamX, MaxNxtCamY));
+                //data.Add(new Vector2(MaxNxtCamX, MaxNxtCamY));
+                //data.Add(new Vector2(MaxNxtCamX, MaxNxtCamY));
+                //data.Add(new Vector2(MaxNxtCamX, MaxNxtCamY));
                 data.Add(new Vector2(12, 0));
                 data.Add(new Vector2(144, 13));
                 data.Add(new Vector2(132, 32));
@@ -219,11 +224,9 @@ namespace FollowTrack
                 data.Add(new Vector2(132, 70));
 
                 _dataCount++;
-                return data;
             }
             else if (_dataCount == 2)
             {
-                List<Vector2> data = new List<Vector2>();
                 data.Add(new Vector2(12, 0));
                 data.Add(new Vector2(144, 13));
                 data.Add(new Vector2(132, 32));
@@ -234,10 +237,14 @@ namespace FollowTrack
                 data.Add(new Vector2(132, 70));
 
                 _dataCount++;
-                return data;
             }
 
-            return null;
+
+            // Handle empty data
+            if (data.Count == 0)
+                data = GetNewDataFromNxtCam(); // vent til næste data fra cam er klar.
+
+            return data;
         }
 
         // DONE TODO: Lav bedre sorting. maybe?
@@ -246,13 +253,98 @@ namespace FollowTrack
             List<Vector2> leftPoints = new List<Vector2>();
             List<Vector2> rightPoints = new List<Vector2>();
 
-            foreach (var point in nxtCamData)
+            int maxIndexY = 0;
+
+            for (int i = 0; i < nxtCamData.Count; i++)
             {
-                if (point.X <= MaxNxtCamX / 2)
-                    leftPoints.Add(point);
+                if (nxtCamData[i].X <= MaxNxtCamX / 2)
+                    leftPoints.Add(nxtCamData[i]);
                 else
-                    rightPoints.Add(point);
+                    rightPoints.Add(nxtCamData[i]);
+
+                if (nxtCamData[i].Y > nxtCamData[maxIndexY].Y)
+                {
+                    maxIndexY = i;
+                }
             }
+
+            leftPoints = leftPoints.OrderBy(p => p.Y).ToList();
+            rightPoints = rightPoints.OrderBy(p => p.Y).ToList();
+
+            // Handle unbalanced data
+            // Lav trekant;     90 grader, længden mellem Last[] Last[-1] og længden fra 
+            if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
+            {
+                double AB = Math.Sqrt(
+                    Math.Pow(leftPoints[leftPoints.Count - 1].Y - leftPoints[leftPoints.Count - 2].Y, 2) + 
+                    Math.Pow(leftPoints[leftPoints.Count - 1].X - leftPoints[leftPoints.Count - 2].X, 2));
+                double AC = 120; // Bredde af track lane
+                double BC = Math.Sqrt(Math.Pow(AB, 2) + Math.Pow(AC, 2));
+
+
+                double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
+                double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
+
+                rightPoints.Add(new Vector2(x, y));
+
+                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                Console.WriteLine("x: " + leftPoints[leftPoints.Count - 2].X + "  y: " + leftPoints[leftPoints.Count - 2].Y);
+                Console.WriteLine("x: " + leftPoints[leftPoints.Count - 1].X + "  y: " + leftPoints[leftPoints.Count - 1].Y);
+
+                Console.WriteLine("x:" + x + "y:" + y);
+                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            }
+            else
+            {
+                double AB = Math.Sqrt(
+                    Math.Pow(rightPoints[rightPoints.Count - 1].X - rightPoints[rightPoints.Count - 2].X, 2) +
+                    Math.Pow(rightPoints[rightPoints.Count - 1].Y - rightPoints[rightPoints.Count - 2].Y, 2));
+
+                double AC = 52; // Bredde af track lane
+                double BC = Math.Sqrt(Math.Pow(AB, 2) + Math.Pow(AC, 2));
+
+
+
+
+                //double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
+                //double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
+
+                double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
+                double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
+
+
+
+
+                leftPoints.Add(new Vector2(x,y));
+
+                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                Console.WriteLine("x: " + rightPoints[rightPoints.Count - 2].X + "  y: " + rightPoints[rightPoints.Count - 2].Y);
+                Console.WriteLine("x: " + rightPoints[rightPoints.Count - 1].X + "  y: " + rightPoints[rightPoints.Count - 1].Y);
+
+                Console.WriteLine("x:" + x + "y:" + y);
+                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            }
+
+
+            //foreach (Vector2 point in nxtCamData)
+            //{
+            //    double maxValueY = double.MinValue;
+            //    double maxValueX = 0;
+            //    Vector2 maxPoint;
+
+            //    if (point.X <= MaxNxtCamX / 2)
+            //        leftPoints.Add(point);
+            //    else
+            //        rightPoints.Add(point);
+
+            //    if (point.Y > maxValueY)
+            //    {
+            //        maxValueY = point.Y;
+            //        maxValueX = point.X;
+            //    }
+            //}
+
+
 
             return Tuple.Create(leftPoints, rightPoints);
         }
@@ -264,7 +356,8 @@ namespace FollowTrack
             data.AddRange(pDataOld);
             data.AddRange(pData);
 
-            return data.OrderBy(p => p.Y).ToList();
+            //return data.OrderBy(p => p.Y).ToList();
+            return data;
         }
 
 
