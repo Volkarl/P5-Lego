@@ -465,14 +465,14 @@ namespace FollowTrack
          * distance is the distance to the other side of the road
          */
 
-        private Vector2 ApproximationOfTheOtherSideOfTheRoad(Vector2[] lastPoints, bool leftOrRightSide, double distance) // right side should give negative number left positive
+        private Vector2 ApproximationOfTheOtherSideOfTheRoad(Vector2 lastPoint1, Vector2 lastPoint2, bool leftOrRightSide, double distance) // right side should give negative number left positive
         {
-            Vector2 vectorBetweenTheTwoLastPoints = new Vector2(Math.Abs(lastPoints[0].X-lastPoints[1].X),Math.Abs(lastPoints[0].Y-lastPoints[1].Y)); // calculation of the vector between the two points
-            double ortogolalyValue = (vectorBetweenTheTwoLastPoints.X * (leftOrRightSide ? -1 : 1)) / vectorBetweenTheTwoLastPoints.Y; // calculation of the ortogonal vector
-            double multiplyer = (distance) / Math.Sqrt(1 * 1 + ortogolalyValue * ortogolalyValue); // calculation of the multiplyer required for the ortogonal vector to be distance long
-            Vector2 k = new Vector2(vectorBetweenTheTwoLastPoints.X+ (leftOrRightSide ? -1 : 1) * multiplyer, vectorBetweenTheTwoLastPoints.Y +ortogolalyValue * multiplyer); // addition of the ortogonalvector times the multiplyer, added to the last point
-            return k;
+            Vector2 vectorBetweenTheTwoLastPoints = new Vector2(Math.Abs(lastPoint1.X-lastPoint2.X),Math.Abs(lastPoint1.Y-lastPoint2.Y)); // calculation of the vector between the two points
+            double orthogonalY = (vectorBetweenTheTwoLastPoints.X * (leftOrRightSide ? -1 : 1)) / vectorBetweenTheTwoLastPoints.Y; // calculation of the ortogonal vector
+            double multiplyer = distance / Math.Sqrt(1 * 1 + Math.Pow(orthogonalY,2)); // calculation of the multiplyer required for the ortogonal vector to be distance long
+            Vector2 k = new Vector2(lastPoint2.X+ (leftOrRightSide ? -1 : 1) * multiplyer, lastPoint2.X +orthogonalY * multiplyer); // addition of the ortogonalvector times the multiplyer, added to the last point
 
+            return k;
         }
 
 
