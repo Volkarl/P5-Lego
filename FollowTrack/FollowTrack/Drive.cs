@@ -286,7 +286,7 @@ namespace FollowTrack
             int maxIndexY = 0;
             int leftCount = 0;
             int rightCount = 0;
-
+            
             for (int i = 0; i < nxtCamData.Length; i++)
             {
                 if (nxtCamData[i].X <= MaxNxtCamX / 2)
@@ -306,11 +306,11 @@ namespace FollowTrack
                 }
             }
 
-            Array.Sort(leftPoints, (x, y) => y.Y.CompareTo(x.Y));
-            Array.Sort(rightPoints, (x, y) => y.Y.CompareTo(x.Y));
-            //leftPoints = leftPoints.OrderBy(p => p.Y).ToList();
-            //rightPoints = rightPoints.OrderBy(p => p.Y).ToList();
+            //Array.Sort(leftPoints, (x, y) => y.Y.CompareTo(x.Y));
+            //Array.Sort(rightPoints, (x, y) => y.Y.CompareTo(x.Y));
 
+            Array.Sort(leftPoints);
+            Array.Sort(rightPoints);
 
             // Handle unbalanced data
             // Lav trekant;     90 grader, længden mellem Last[] Last[-1] og længden fra 
@@ -363,27 +363,6 @@ namespace FollowTrack
                 //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
             }
 
-
-            //foreach (Vector2 point in nxtCamData)
-            //{
-            //    double maxValueY = double.MinValue;
-            //    double maxValueX = 0;
-            //    Vector2 maxPoint;
-
-            //    if (point.X <= MaxNxtCamX / 2)
-            //        leftPoints.Add(point);
-            //    else
-            //        rightPoints.Add(point);
-
-            //    if (point.Y > maxValueY)
-            //    {
-            //        maxValueY = point.Y;
-            //        maxValueX = point.X;
-            //    }
-            //}
-
-
-
             return Tuple.Create(leftPoints, rightPoints);
         }
 
@@ -396,13 +375,6 @@ namespace FollowTrack
 
             return data;
         }
-
-
-
-
-
-
-
 
         //DONE
         private void RotateAndDisplaceData(Vector2[] dataL, Vector2[] dataR, Vector2[] lastTwoPoints)
@@ -531,20 +503,6 @@ namespace FollowTrack
             Console.WriteLine("The Bus drove " + p + "km.");
 
         }
-
-        // Done
-        private static double[] RemoveAt(double[] source, int index)
-        {
-            double[] dest = new double[source.Length - 1];
-            if (index > 0)
-                Array.Copy(source, 0, dest, 0, index);
-
-            if (index < source.Length - 1)
-                Array.Copy(source, index + 1, dest, index, source.Length - index - 1);
-
-            return dest;
-        }
-
 
         #endregion
 
