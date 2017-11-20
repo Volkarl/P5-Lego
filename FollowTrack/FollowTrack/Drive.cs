@@ -270,7 +270,7 @@ namespace FollowTrack
             }
 
 
-            // Handle empty data
+            // Handle empty data TODO: Laver stack overflow.
             if (data[0] == null)
                 data = GetNewDataFromNxtCam(); // vent til næste data fra cam er klar.
 
@@ -316,27 +316,27 @@ namespace FollowTrack
             // Lav trekant;     90 grader, længden mellem Last[] Last[-1] og længden fra 
             if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
             {
-                rightPoints[rightCount] = ApproximationOfTheOtherSideOfTheRoad(leftPoints[leftCount-1], leftPoints[leftCount - 2], true, 520);
+                rightPoints[rightCount] = ApproximationOfTheOtherSideOfTheRoad(leftPoints[leftPoints.Length - 2], leftPoints[leftPoints.Length - 1], false, 520);
 
 
 
-                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-                //Console.WriteLine("x: " + leftPoints[leftPoints.Length - 2].X + "  y: " + leftPoints[leftPoints.Length - 2].Y);
-                //Console.WriteLine("x: " + leftPoints[leftPoints.Length - 1].X + "  y: " + leftPoints[leftPoints.Length - 1].Y);
+                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                Console.WriteLine("x: " + leftPoints[leftPoints.Length - 2].X + "  y: " + leftPoints[leftPoints.Length - 2].Y);
+                Console.WriteLine("x: " + leftPoints[leftPoints.Length - 1].X + "  y: " + leftPoints[leftPoints.Length - 1].Y);
 
-                //Console.WriteLine("x:" + x + "y:" + y);
-                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                Console.WriteLine(rightPoints[rightCount].ToString());
+                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
             }
             else
             {
-                leftPoints[leftCount] = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightCount - 1], rightPoints[rightCount - 2], true, 520);
+                leftPoints[leftCount] = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightPoints.Length - 2], rightPoints[rightPoints.Length - 1], false, 520);
 
-                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-                //Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
-                //Console.WriteLine("x: " + rightPoints[rightPoints.Length - 1].X + "  y: " + rightPoints[rightPoints.Length - 1].Y);
+                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
+                Console.WriteLine("x: " + rightPoints[rightPoints.Length - 1].X + "  y: " + rightPoints[rightPoints.Length - 1].Y);
 
-                //Console.WriteLine("x:" + x + "y:" + y);
-                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                Console.WriteLine(leftPoints[leftCount].ToString());
+                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
             }
 
             return Tuple.Create(leftPoints, rightPoints);
