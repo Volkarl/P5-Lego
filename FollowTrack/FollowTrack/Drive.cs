@@ -316,17 +316,9 @@ namespace FollowTrack
             // Lav trekant;     90 grader, længden mellem Last[] Last[-1] og længden fra 
             if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
             {
-                //double AB = Math.Sqrt(
-                //    Math.Pow(leftPoints[leftPoints.Length - 1].Y - leftPoints[leftPoints.Length - 2].Y, 2) + 
-                //    Math.Pow(leftPoints[leftPoints.Length - 1].X - leftPoints[leftPoints.Length - 2].X, 2));
-                //double AC = 120; // Bredde af track lane
-                //double BC = Math.Sqrt(Math.Pow(AB, 2) + Math.Pow(AC, 2));
+                rightPoints[rightCount] = ApproximationOfTheOtherSideOfTheRoad(leftPoints[leftCount-1], leftPoints[leftCount - 2], true, 520);
 
 
-                //double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
-                //double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
-
-                //rightPoints.Add(new Vector2(x, y));
 
                 //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
                 //Console.WriteLine("x: " + leftPoints[leftPoints.Length - 2].X + "  y: " + leftPoints[leftPoints.Length - 2].Y);
@@ -337,23 +329,7 @@ namespace FollowTrack
             }
             else
             {
-                //double AB = Math.Sqrt(
-                //    Math.Pow(rightPoints[rightPoints.Length - 1].X - rightPoints[rightPoints.Length - 2].X, 2) +
-                //    Math.Pow(rightPoints[rightPoints.Length - 1].Y - rightPoints[rightPoints.Length - 2].Y, 2));
-
-                //double AC = 52; // Bredde af track lane
-                //double BC = Math.Sqrt(Math.Pow(AB, 2) + Math.Pow(AC, 2));
-
-
-
-
-                ////double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
-                ////double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
-
-                //double y = (Math.Pow(AB, 2) + Math.Pow(AC, 2) - Math.Pow(BC, 2)) / 2 * AB;
-                //double x = Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(y, 2));
-
-                //leftPoints.Add(new Vector2(x,y));
+                leftPoints[leftCount] = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightCount - 1], rightPoints[rightCount - 2], true, 520);
 
                 //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
                 //Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
