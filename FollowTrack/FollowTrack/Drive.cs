@@ -376,12 +376,18 @@ namespace FollowTrack
                 dataR[i].Y = dataR[i].Y + displacementY;
                 i += 1;
             }
-
-            /*
-             * we new have the new old cordinats 
-             * override the old old cordinats, and its done
-             */
-
+        }
+        /*
+         * leftOrRightSide, true if last point if on the right side false if left side
+         * distance is the distance to the other side of the road
+         * 
+         */
+        private Vector2 ApproximationOfTheOtherSideOfTheRoad(Vector2 lastPoint,bool leftOrRightSide, double distance) // right side should give negative number left positive
+        {
+            double ortogolalxValue =(lastPoint.X*(leftOrRightSide?-1:1))/ lastPoint.X;
+            double multiplyer =(distance)/Math.Sqrt(1*1 + ortogolalxValue*ortogolalxValue) ;
+            Vector2 k = new Vector2(ortogolalxValue * multiplyer, (leftOrRightSide ? -1 : 1) * multiplyer);
+            return k;
         }
 
         private void ConvertDataFromFieldOfView(double[] data)
