@@ -329,7 +329,16 @@ namespace FollowTrack
             //}
             //else
             //{
-            //    leftPoints[leftCount] = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightPoints.Length - 2], rightPoints[rightPoints.Length - 1], true, 52); // TODO: Den bliver insat forkert.
+
+
+            //    Vector2 newVector = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightPoints.Length - 2], rightPoints[rightPoints.Length - 1], true, 52); // TODO: Den bliver insat forkert.
+
+            //    for (int i = 7; i > 0; i--)
+            //    {
+            //        leftPoints[i-1] = leftPoints[i];
+            //    }
+
+
 
             //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
             //    Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
