@@ -18,6 +18,7 @@ namespace FollowTrack
         private const int MaxNxtCamX = 176;
         private const int MaxNxtCamY = 144;
         private const int PointsOnCurve = 9; //    Points = (value / 2) - 1
+        private const int LanewWidth = 52;
 
         private const int NxtCamHeight = 22;
         private const int FieldOfView = 40;
@@ -310,43 +311,47 @@ namespace FollowTrack
             //Array.Sort(leftPoints, (x, y) => y.Y.CompareTo(x.Y));
             //Array.Sort(rightPoints, (x, y) => y.Y.CompareTo(x.Y));
 
-            Console.WriteLine();
-
             Array.Sort(leftPoints);
             Array.Sort(rightPoints);
 
             // Handle unbalanced data
             // Lav trekant;     90 grader, længden mellem Last[] Last[-1] og længden fra 
-            //if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
-            //{
-            //    rightPoints[rightCount] = ApproximationOfTheOtherSideOfTheRoad(leftPoints[leftPoints.Length - 2], leftPoints[leftPoints.Length - 1], false, 52); // TODO: Den bliver insat forkert.
+            if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
+            {
+                for (int i = 1; i < rightPoints.Length; i++)
+                {
+                    if (rightPoints[i] != null)
+                    {
+                        rightPoints[i - 1] = rightPoints[i];
+                    }
+                }
 
-            //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-            //    Console.WriteLine("x: " + leftPoints[leftPoints.Length - 2].X + "  y: " + leftPoints[leftPoints.Length - 2].Y);
-            //    Console.WriteLine("x: " + leftPoints[leftPoints.Length - 1].X + "  y: " + leftPoints[leftPoints.Length - 1].Y);
-            //    Console.WriteLine(rightPoints[rightCount].ToString());
-            //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-            //}
-            //else
-            //{
+                rightPoints[rightPoints.Length - 1] = ApproximationOfTheOtherSideOfTheRoad(leftPoints[leftPoints.Length - 2], leftPoints[leftPoints.Length - 1], false, LanewWidth);
 
+                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                //Console.WriteLine("x: " + leftPoints[leftPoints.Length - 2].X + "  y: " + leftPoints[leftPoints.Length - 2].Y);
+                //Console.WriteLine("x: " + leftPoints[leftPoints.Length - 1].X + "  y: " + leftPoints[leftPoints.Length - 1].Y);
+                //Console.WriteLine(rightPoints[rightCount].ToString());
+                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            }
+            else
+            {            
+                for (int i = 1; i < leftPoints.Length; i++)
+                {
+                    if (leftPoints[i] != null)
+                    {
+                        leftPoints[i - 1] = leftPoints[i];
+                    }
+                }
 
-            //    Vector2 newVector = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightPoints.Length - 2], rightPoints[rightPoints.Length - 1], true, 52); // TODO: Den bliver insat forkert.
+                leftPoints[leftPoints.Length - 1] = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightPoints.Length - 2], rightPoints[rightPoints.Length - 1], true, LanewWidth);
 
-            //    for (int i = 7; i > 0; i--)
-            //    {
-            //        leftPoints[i-1] = leftPoints[i];
-            //    }
-
-
-
-            //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-            //    Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
-            //    Console.WriteLine("x: " + rightPoints[rightPoints.Length - 1].X + "  y: " + rightPoints[rightPoints.Length - 1].Y);
-            //    Console.WriteLine(leftPoints[leftCount].ToString());
-            //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-            //}
-
+                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+                //Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
+                //Console.WriteLine("x: " + rightPoints[rightPoints.Length - 1].X + "  y: " + rightPoints[rightPoints.Length - 1].Y);
+                //Console.WriteLine(leftPoints[leftCount].ToString());
+                //Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            }
             return Tuple.Create(leftPoints, rightPoints);
         }
 
@@ -403,7 +408,7 @@ namespace FollowTrack
 
             while (dataR.Length-1 >= i )
             {
-                if (dataL[i] != null)
+                if (dataR[i] != null)
                 {
 
                     double tempXValue = dataR[i].X; // we will override x value, but still need original when rotating y
@@ -455,7 +460,7 @@ namespace FollowTrack
             // for (int i = 0; i < 8; i += 2)
             while (dataR.Length-1 >= i )
             {
-                if (dataL[i] != null)
+                if (dataR[i] != null)
                 {
                     dataR[i].X = dataR[i].X + displacementX;
                     dataR[i].Y = dataR[i].Y + displacementY;
