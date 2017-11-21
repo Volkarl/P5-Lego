@@ -309,31 +309,33 @@ namespace FollowTrack
             //Array.Sort(leftPoints, (x, y) => y.Y.CompareTo(x.Y));
             //Array.Sort(rightPoints, (x, y) => y.Y.CompareTo(x.Y));
 
+            Console.WriteLine();
+
             Array.Sort(leftPoints);
             Array.Sort(rightPoints);
 
             // Handle unbalanced data
             // Lav trekant;     90 grader, længden mellem Last[] Last[-1] og længden fra 
-            if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
-            {
-                rightPoints[rightCount] = ApproximationOfTheOtherSideOfTheRoad(leftPoints[leftPoints.Length - 2], leftPoints[leftPoints.Length - 1], false, 52);
+            //if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
+            //{
+            //    rightPoints[rightCount] = ApproximationOfTheOtherSideOfTheRoad(leftPoints[leftPoints.Length - 2], leftPoints[leftPoints.Length - 1], false, 52); // TODO: Den bliver insat forkert.
 
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-                Console.WriteLine("x: " + leftPoints[leftPoints.Length - 2].X + "  y: " + leftPoints[leftPoints.Length - 2].Y);
-                Console.WriteLine("x: " + leftPoints[leftPoints.Length - 1].X + "  y: " + leftPoints[leftPoints.Length - 1].Y);
-                Console.WriteLine(rightPoints[rightCount].ToString());
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-            }
-            else
-            {
-                leftPoints[leftCount] = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightPoints.Length - 2], rightPoints[rightPoints.Length - 1], true, 52);
+            //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            //    Console.WriteLine("x: " + leftPoints[leftPoints.Length - 2].X + "  y: " + leftPoints[leftPoints.Length - 2].Y);
+            //    Console.WriteLine("x: " + leftPoints[leftPoints.Length - 1].X + "  y: " + leftPoints[leftPoints.Length - 1].Y);
+            //    Console.WriteLine(rightPoints[rightCount].ToString());
+            //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            //}
+            //else
+            //{
+            //    leftPoints[leftCount] = ApproximationOfTheOtherSideOfTheRoad(rightPoints[rightPoints.Length - 2], rightPoints[rightPoints.Length - 1], true, 52); // TODO: Den bliver insat forkert.
 
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-                Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
-                Console.WriteLine("x: " + rightPoints[rightPoints.Length - 1].X + "  y: " + rightPoints[rightPoints.Length - 1].Y);
-                Console.WriteLine(leftPoints[leftCount].ToString());
-                Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
-            }
+            //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            //    Console.WriteLine("x: " + rightPoints[rightPoints.Length - 2].X + "  y: " + rightPoints[rightPoints.Length - 2].Y);
+            //    Console.WriteLine("x: " + rightPoints[rightPoints.Length - 1].X + "  y: " + rightPoints[rightPoints.Length - 1].Y);
+            //    Console.WriteLine(leftPoints[leftCount].ToString());
+            //    Console.WriteLine("///////////////////////////////////////////////////////////////////////////");
+            //}
 
             return Tuple.Create(leftPoints, rightPoints);
         }
@@ -344,6 +346,8 @@ namespace FollowTrack
             Vector2[] data = new Vector2[pData.Length + pDataOld.Length];
             Array.Copy(pDataOld, data, pDataOld.Length);
             Array.Copy(pData, 0, data, pDataOld.Length, pData.Length);
+
+            //Array.Sort(data);
 
             return data;
         }
