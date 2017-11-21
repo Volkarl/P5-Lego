@@ -131,8 +131,9 @@ namespace FollowTrack
                     CalculateBezierCurvePoints(dataLeft, (PointsOnCurve * 2), ref _boundCountLeft),
                     CalculateBezierCurvePoints(dataRight, (PointsOnCurve * 2), ref _boundCountRight));
 
-                _lastTwoMidPointsOld[0] = new Vector2(midPoints[0].X, midPoints[0].Y);
-                _lastTwoMidPointsOld[1] = new Vector2(midPoints[1].X, midPoints[1].Y);
+                int midpointCount = midPoints.Count(x => x != null);
+                _lastTwoMidPointsOld[0] = new Vector2(midPoints[midpointCount - 2].X, midPoints[midpointCount - 2].Y);
+                _lastTwoMidPointsOld[1] = new Vector2(midPoints[midpointCount - 1].X, midPoints[midpointCount - 1].Y);
 
                 // Path Points
                 Path = CalculatePathData(midPoints);
@@ -373,20 +374,16 @@ namespace FollowTrack
             int rotationDirection;
 
             if (lastTwoPoints[0].X < lastTwoPoints[1].X) // we are turning clockwise, soo rotate counterclockwise -1 is cloclwise and 1 is counterclockwise
-            {
                 rotationDirection = 1;
-            }
-            else //we are turning counterclockwise so turn clockwise
-            {
-                rotationDirection = -1;
-            }
+            else
+                rotationDirection = -1; //we are turning counterclockwise so turn clockwise
+
 
             double rotationSumInDegrees = Math.Atan(Math.Abs((lastTwoPoints[0].X - lastTwoPoints[1].X)) / Math.Abs(lastTwoPoints[0].Y - lastTwoPoints[1].Y)); // math.abs is the absolute value e.g always positive
             rotationSumInDegrees = rotationSumInDegrees * rotationDirection;
-            // for (int i = 0; i < 8; i+=2)
-            int i = 0;
 
-            while (dataL.Length-1 >= i )
+
+            for (int i = 0; dataL.Length - 1 >= i; i++)
             {
                 if (dataL[i] != null)
                 {
@@ -402,11 +399,9 @@ namespace FollowTrack
                     dataL[i].X = tempXValue * Math.Cos(rotationSumInDegrees) - tempYValue * Math.Sin(rotationSumInDegrees); // rotation
                     dataL[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) + tempYValue * Math.Cos(rotationSumInDegrees);
                 }
-                i += 1;
             }
-            i = 0;
 
-            while (dataR.Length-1 >= i )
+            for (int i = 0; dataR.Length - 1 >= i; i++)
             {
                 if (dataR[i] != null)
                 {
@@ -425,9 +420,7 @@ namespace FollowTrack
                     dataR[i].Y = tempXValue * Math.Sin(rotationSumInDegrees) +
                                  tempYValue * Math.Cos(rotationSumInDegrees);
                 }
-                i += 1;
             }
-            i = 0;
             
             double tempXValue2 = lastTwoPoints[0].X; // we will override x value, but still need original when rotating y
             double tempYValue2 = lastTwoPoints[0].Y; // i dont think this is needed but it makes it pretty
@@ -446,26 +439,21 @@ namespace FollowTrack
             /*
              * lastly we displace all of the cordinats
              */
-            // for (int i = 0; i < 8; i+=2)
-            while (dataL.Length-1 >= i )
+            for (int i = 0; dataL.Length-1 >= i; i++)
             {
                 if (dataL[i] != null)
                 {
                     dataL[i].X = dataL[i].X + displacementX;
                     dataL[i].Y = dataL[i].Y + displacementY;
                 }
-                i += 1;
             }
-            i = 0;
-            // for (int i = 0; i < 8; i += 2)
-            while (dataR.Length-1 >= i )
+            for (int i = 0; dataR.Length - 1 >= i; i++)
             {
                 if (dataR[i] != null)
                 {
                     dataR[i].X = dataR[i].X + displacementX;
                     dataR[i].Y = dataR[i].Y + displacementY;
                 }
-                i += 1;
             }
 
             /*
@@ -479,22 +467,21 @@ namespace FollowTrack
          * leftOrRightSide, true if last point if on the right side false if left side
          * distance is the distance to the other side of the road
          */
-
         private Vector2 ApproximationOfTheOtherSideOfTheRoad(Vector2 lastPoint1, Vector2 lastPoint2, bool leftOrRightSide, double distance) // right side should give negative number left positive
         {
             Vector2 vectorBetweenTheTwoLastPoints = new Vector2(Math.Abs(lastPoint1.X - lastPoint2.X),Math.Abs(lastPoint1.Y - lastPoint2.Y)); // calculation of the vector between the two points
+
             if (vectorBetweenTheTwoLastPoints.Y != 0)
             {
                 double orthogonalY = - (vectorBetweenTheTwoLastPoints.X * (leftOrRightSide ? -1 : 1)) / vectorBetweenTheTwoLastPoints.Y; // calculation of the ortogonal vector
                 double multiplier = distance / ( Math.Sqrt(Math.Pow(1, 2) + Math.Pow(orthogonalY, 2))); // calculation of the multiplyer required for the ortogonal vector to be distance long
-                Vector2 k = new Vector2(lastPoint2.X + ( (leftOrRightSide ? -1 : 1) * multiplier ), lastPoint2.Y + (orthogonalY * multiplier) ); // addition of the ortogonalvector times the multiplyer, added to the last point
 
-                return k;
+                return new Vector2(lastPoint2.X + ((leftOrRightSide ? -1 : 1) * multiplier), lastPoint2.Y + (orthogonalY * multiplier)); // addition of the ortogonalvector times the multiplyer, added to the last point
+
             }
             else
             {
-                //fix
-                return null;
+                return new Vector2(lastPoint2.X, lastPoint2.Y + (distance * (leftOrRightSide ? -1 : 1)));
             }
         }
 
