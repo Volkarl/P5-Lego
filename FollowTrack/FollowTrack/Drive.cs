@@ -80,8 +80,9 @@ namespace FollowTrack
                     CalculateBezierCurvePoints(dataLeft, (PointsOnCurve*2), ref _boundCountLeft),
                     CalculateBezierCurvePoints(dataRight, (PointsOnCurve*2), ref _boundCountRight));
 
-                _lastTwoMidPointsOld[0] = new Vector2(midPoints[0].X, midPoints[0].Y);
-                _lastTwoMidPointsOld[1] = new Vector2(midPoints[1].X, midPoints[1].Y);
+                int midpointCount = midPoints.Count(x => x != null);         
+                _lastTwoMidPointsOld[0] = new Vector2(midPoints[midpointCount - 2].X, midPoints[midpointCount - 2].Y);
+                _lastTwoMidPointsOld[1] = new Vector2(midPoints[midpointCount - 1].X, midPoints[midpointCount - 1].Y);
 
                 // Path Points
                 Path = CalculatePathData(midPoints);
