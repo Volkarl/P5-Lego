@@ -20,9 +20,9 @@ namespace FollowTrack
         private const double MaxRealX = 18.95;
         private const double MinRealX = -18.95;
         private const double MaxRealY = 47.18;
-        private const double MinRealY = 10.26;
+        private const double MinRealY = -10.5;
 
-        private const int PointsOnCurve = 9; //    Points = (value / 2) - 1  // TODO: ERROR: Hvis den ikke er 9 udregner den ikke points
+        private const int PointsOnCurve = 8; //    Points = (value / 2) - 1 
         private const double LanewWidth = 28.9;
 
         private const int NxtCamHeight = 22;
@@ -104,11 +104,16 @@ namespace FollowTrack
                         Console.WriteLine(item.ToString());
                 }
                 Console.WriteLine("\n\n");
+                double temp = 0.0;
                 foreach (var item in Path)
                 {
                     if (item != null)
+                    {
                         Console.WriteLine(item.ToString());
+                        temp += item.Length;
+                    }
                 }
+                Console.WriteLine("Afstand: " + temp);
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
             }
             else // Finding Path -> First run.
@@ -133,8 +138,8 @@ namespace FollowTrack
                 // Mid Points
                 Vector2[] midPoints = new Vector2[8];
                 midPoints = CalculatePathMidPoints(
-                    CalculateBezierCurvePoints(dataLeft, (PointsOnCurve * 2), ref _boundCountLeft),
-                    CalculateBezierCurvePoints(dataRight, (PointsOnCurve * 2), ref _boundCountRight));
+                    CalculateBezierCurvePoints(dataLeft, (PointsOnCurve), ref _boundCountLeft),
+                    CalculateBezierCurvePoints(dataRight, (PointsOnCurve), ref _boundCountRight));
 
                 int midpointCount = midPoints.Count(x => x != null);
                 _lastTwoMidPointsOld[0] = new Vector2(midPoints[midpointCount - 2].X, midPoints[midpointCount - 2].Y);
@@ -153,11 +158,16 @@ namespace FollowTrack
                         Console.WriteLine(item.ToString());
                 }
                 Console.WriteLine("\n\n");
+                double temp = 0.0;
                 foreach (var item in Path)
                 {
-                    if(item != null)
+                    if (item != null)
+                    {
                         Console.WriteLine(item.ToString());
+                        temp += item.Length;
+                    }
                 }
+                Console.WriteLine("Afstand: " + temp);
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
             }
         }
@@ -276,6 +286,20 @@ namespace FollowTrack
 
                 _dataCount++;
             }
+            else if (_dataCount == 3)
+            {
+                data[0] = (new Vector2(12, 0));
+                data[1] = (new Vector2(144, 13));
+                data[2] = (new Vector2(132, 32));
+                data[3] = (new Vector2(12, 19));
+                data[4] = (new Vector2(12, 38));
+                data[5] = (new Vector2(132, 51));
+                data[6] = (new Vector2(12, 57));
+                data[7] = (new Vector2(132, 70));
+
+                _dataCount++;
+            }
+
 
 
             // Handle empty data TODO: Laver stack overflow.

@@ -38,6 +38,11 @@ namespace FollowTrack
             d.Run(); // 6
             d.Run(); // 7
             d.Run(); // 8
+            d.Run(); // 9
+            d.Run(); // 10
+            d.Run(); // 11
+            Console.ReadKey();
+            d.Run(); // 3. DataSet
             Console.ReadKey();
         }
     }
