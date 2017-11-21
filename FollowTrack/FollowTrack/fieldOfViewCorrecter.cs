@@ -37,7 +37,7 @@ namespace FollowTrack
             _cameraBlindSpotDeg = cameraAngle - _fieldOfViewYdeg / 2;
         }
 
-        public List<Vector2> CalcFloorCoordinates(List<Vector2> nxtCamData)
+        public Vector2[] CalcFloorCoordinates(Vector2[] nxtCamData)
         {
             // todo Nothing nxtcam specific should be in here! Move it later
 
@@ -48,7 +48,9 @@ namespace FollowTrack
             {
                 floorCoordinates.Add(CalcFloorCoordinates(coordinate.X, coordinate.Y, false));
             }
-            List<Vector2> correctedCoords = new List<Vector2>(floorCoordinates.ConvertAll(fc => new Vector2(fc.Item1, fc.Item2)));
+            Vector2[] correctedCoords = new Vector2[nxtCamData.Length];
+            correctedCoords = floorCoordinates.ConvertAll(fc => new Vector2(fc.Item1, fc.Item2)).ToArray();
+
             return correctedCoords;
         }
 
@@ -110,7 +112,7 @@ namespace FollowTrack
 
         ///////////////////////////////
 
-        private List<Vector2> DisplaceCoordinates(List<Vector2> coordinates)
+        private Vector2[] DisplaceCoordinates(Vector2[] coordinates)
         {
             // Moves the origin of the coordinate system. In stead of being in the very top left, it is now in the bottom-mid
 

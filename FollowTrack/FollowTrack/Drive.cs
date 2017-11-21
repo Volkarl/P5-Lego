@@ -17,14 +17,19 @@ namespace FollowTrack
         // Const
         private const int MaxNxtCamX = 176;
         private const int MaxNxtCamY = 144;
-        private const int PointsOnCurve = 9; //    Points = (value / 2) - 1
-        private const int LanewWidth = 52;
+        private const double MaxRealX = 18.95;
+        private const double MinRealX = -18.95;
+        private const double MaxRealY = 47.18;
+        private const double MinRealY = 10.26;
+
+        private const int PointsOnCurve = 9; //    Points = (value / 2) - 1  // TODO: ERROR: Hvis den ikke er 9 udregner den ikke points
+        private const double LanewWidth = 28.9;
 
         private const int NxtCamHeight = 22;
         private const int FieldOfView = 40;
         private const int CameraAngle = 45;
 
-        private readonly Vector2 _busPoint = new Vector2(MaxNxtCamX / 2, -(FieldOfView / 2)); // TODO: Lav til Const todo: I changed this from hardcoded -20, is it correct?
+        private readonly Vector2 _busPoint = new Vector2(0, -10.5); // TODO: Lav til Const todo: Need convert??!?
         private readonly FieldOfViewCorrecter _foV;
 
         // Old Data
@@ -60,7 +65,7 @@ namespace FollowTrack
                 // Get & Update New Data
                 Vector2[] nxtCamData = new Vector2[8];
                 nxtCamData = GetNewDataFromNxtCam(); // Need to balance data, and handle only left side data. //
-                //nxtCamData = CorrectFieldOfView(nxtCamData);
+                nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Update Old Data
                 RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
@@ -114,7 +119,7 @@ namespace FollowTrack
                 nxtCamData = GetNewDataFromNxtCam();
 
                 // Correct Data
-                //nxtCamData = CorrectFieldOfView(nxtCamData);
+                nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Sort Left/Right
                 Tuple<Vector2[], Vector2[]> tupleData = SortNxtCamData(nxtCamData);
@@ -157,7 +162,7 @@ namespace FollowTrack
             }
         }
 
-        private List<Vector2> CorrectFieldOfView(List<Vector2> nxtCamData)
+        private Vector2[] CorrectFieldOfView(Vector2[] nxtCamData)
         {
             return _foV.CalcFloorCoordinates(nxtCamData);
         }
@@ -177,7 +182,7 @@ namespace FollowTrack
 
             for (int i = 0; i < data.Length; i += 2)
             {
-                if (data[i] <= MaxNxtCamX && data[i] >= 0 && data[i + 1] <= MaxNxtCamY && data[i + 1] >= 0)
+                if (data[i] <= MaxRealX && data[i] >= MinRealX && data[i + 1] <= MaxRealY && data[i + 1] >= MinRealY)
                 {
                     dataUpdated[boundCount] = data[i];
                     dataUpdated[boundCount + 1] = data[i + 1];
@@ -292,7 +297,7 @@ namespace FollowTrack
             
             for (int i = 0; i < nxtCamData.Length; i++)
             {
-                if (nxtCamData[i].X <= MaxNxtCamX / 2)
+                if (nxtCamData[i].X <= 0)
                 {
                     leftPoints[leftCount] = nxtCamData[i];
                     leftCount++;
@@ -317,7 +322,7 @@ namespace FollowTrack
 
             // Handle unbalanced data
             // Lav trekant;     90 grader, længden mellem Last[] Last[-1] og længden fra 
-            if (nxtCamData[maxIndexY].X <= MaxNxtCamX / 2)
+            if (nxtCamData[maxIndexY].X <= 0)
             {
                 for (int i = 1; i < rightPoints.Length; i++)
                 {
