@@ -56,7 +56,7 @@ namespace FollowTrack
             {
                 Console.WriteLine("\n***************************************************");
                 Drive.Turn(CurrentAngle + Path[_pathCounter].Slope);
-                Drive.Length(Path[_pathCounter].Length); // Set how ofte Run needs to be called. //
+                Drive.Length(Path[_pathCounter].Length); // Set how often Run needs to be called. //
                 _pathCounter++;
                 _pathSize--;
             }
@@ -71,7 +71,7 @@ namespace FollowTrack
                 RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
                 //Array.Clear(_lastTwoMidPointsOld,0,2); // TODO: Remove?
 
-                // Sort Left/Right & Combine Old New Data 
+                // Sort Left/Right & Combine Old and New Data.
                 Tuple<Vector2[], Vector2[]> tupleData = SortNxtCamData(nxtCamData);
                 Vector2[] dataLeft = new Vector2[8];
                 dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
@@ -177,7 +177,7 @@ namespace FollowTrack
             return _foV.CalcFloorCoordinates(nxtCamData);
         }
 
-        // TODO: Find relevant Points -> need test
+        // TODO: Find relevant Points -> need test.
         private double[] CalculateBezierCurvePoints(Vector2[] pData, int pointsOnCurve, ref int boundCount)
         {
             double[] data = new double[pointsOnCurve];
@@ -459,16 +459,16 @@ namespace FollowTrack
 
 
             /*
-             * Set end point to startpoint cordinats,
-             * all start points must be at the same spot in the graph 
+             * Set end point to startpoint coordinats,
+             * all start points must be at the same spot in the graph .
              */
             double displacementX = _busPoint.X - lastTwoPoints[1].X; //after endpoint has been rotated
             double displacementY = _busPoint.Y - lastTwoPoints[1].Y;
 
             /*
-             * lastly we displace all of the cordinats
+             * lastly we displace all of the coordinats.
              */
-            for (int i = 0; dataL.Length-1 >= i; i++)
+            for (int i = 0; dataL.Length - 1 >= i; i++)
             {
                 if (dataL[i] != null)
                 {
@@ -493,7 +493,7 @@ namespace FollowTrack
         }
 
         /*
-         * leftOrRightSide, true if last point if on the right side false if left side
+         * leftOrRightSide, true if last point is on the right side, false if on left side.
          * distance is the distance to the other side of the road
          */
         private Vector2 ApproximationOfTheOtherSideOfTheRoad(Vector2 lastPoint1, Vector2 lastPoint2, bool leftOrRightSide, double distance) // right side should give negative number left positive
