@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace FollowTrack
 {
+    /// <summary> 
+    /// A photo is a representation of the 3D world onto 2 dimensions. The position of coordinates on a picture doesn't transfer directly to the position of  
+    /// those coordinates in the real world. This class uses coordinates from the picture along with information about the camera angle and how much the camera 
+    /// can see to calculate the actual coordinates of those points in the real world. It is assumed that any point in the real world has a z-value of 0. 
+    /// </summary> 
     public class FieldOfViewCorrecter
     {
         private readonly double _cameraHeight;

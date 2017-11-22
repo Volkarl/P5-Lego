@@ -81,8 +81,8 @@ namespace FollowTrackTests
         [Test]
         public void CorrectFieldOfView_TopLeft_IsCorrect()
         {
-            List<Vector2> topLeft = CreateFovCorrecter(maxPossibleX:176, maxPossibleY:144)
-                .CalcFloorCoordinates(new List<Vector2> {new Vector2(0, 0)});
+            Vector2[] topLeft = CreateFovCorrecter(maxPossibleX:176, maxPossibleY:144)
+                .CalcFloorCoordinates(new[] {new Vector2(0, 0)});
             Assert.AreEqual(-18, (int) topLeft[0].X);
             Assert.AreEqual(47, (int) topLeft[0].Y);
         }
@@ -90,8 +90,8 @@ namespace FollowTrackTests
         [Test]
         public void CorrectFieldOfView_BottomRight_IsCorrect()
         {
-            List<Vector2> topLeft = CreateFovCorrecter(maxPossibleX: 176, maxPossibleY: 144)
-                .CalcFloorCoordinates(new List<Vector2> { new Vector2(176, 144) });
+            Vector2[] topLeft = CreateFovCorrecter(maxPossibleX: 176, maxPossibleY: 144)
+                .CalcFloorCoordinates(new[] { new Vector2(176, 144) });
             Assert.AreEqual(8, (int) topLeft[0].X); // Minimum x value when the y value is lowest 
             Assert.AreEqual(10, (int) topLeft[0].Y); 
         }
@@ -99,8 +99,8 @@ namespace FollowTrackTests
         [Test]
         public void CorrectFieldOfView_BottomMid_IsCorrect()
         {
-            List<Vector2> topLeft = CreateFovCorrecter(maxPossibleX: 176, maxPossibleY: 144)
-                .CalcFloorCoordinates(new List<Vector2> { new Vector2(176 / 2, 144) });
+            Vector2[] topLeft = CreateFovCorrecter(maxPossibleX: 176, maxPossibleY: 144)
+                .CalcFloorCoordinates(new[] { new Vector2(176 / 2, 144) });
             Assert.AreEqual(0, (int) topLeft[0].X);
             Assert.AreEqual(10, (int) topLeft[0].Y);
         }
