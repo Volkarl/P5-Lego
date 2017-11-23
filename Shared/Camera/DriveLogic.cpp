@@ -1,5 +1,6 @@
 #include "DriveLogic.h"
 #include <cmath>
+#include <algorithm>
 #include "BezierCurve.h"
 
 DriveLogic::DriveLogic()
@@ -64,6 +65,114 @@ void DriveLogic::CalculatePathData(PathPoint* pathPoints, Vector2* midPoints, si
 }
 
 /* TODO: Sort NXTCam, combine func */
+
+
+
+void SortNxtCamData() // TODO: How much is going to be class-wide?
+{
+	const int dataLen = 16;
+
+	Vector2 leftPoints[8];
+	Vector2 rightPoints[8];
+
+	int maxIndexY = 0;
+	int leftCount = 0;
+	int rightCount = 0;
+
+	for (int i = 0; i < dataLen; i++) {
+		const Vector2& point = nxtCamData[i];
+
+		if (point.x <= 0)
+		{
+			leftPoints[leftCount] = point;
+			leftCount++;
+		}
+		else
+		{
+			rightPoints[rightCount] = point;
+			rightCount++;
+		}
+
+		if (point.y > nxtCamData[maxIndexY].y)
+		{
+			maxIndexY = i;
+		}
+	}
+
+	// TODO: fix: default comparison (operator <):
+	std::sort(leftPoints.begin(), leftPoints.end());
+	std::sort(rightPoints.begin(), rightPoints.end());
+
+	// TODO: Convert the rest
+}
+
+void CombineData(Vector2* data, Vector2* pData, Vector2* pDataOld) // TODO: FIX I DONT GET IT
+{
+	//Vector2 data[] = new Vector2[pData.Length + pDataOld.Length];
+	Array.Copy(pDataOld, data, 8);
+	Array.Copy(pData, 0, data, 8, 8);
+
+	//Array.Sort(data);
+}
+
+void RotateAndDisplaceData(Vector2* dataL, Vector2* dataR, Vector2* lastTwoPoints)
+{
+	int leftLen = 8;  // TODO: Research length
+	int rightLen = 8; // TODO: Research length
+
+	const Vector2& last2Point1 = lastTwoPoints[0];
+	const Vector2& last2Point2 = lastTwoPoints[1];
+
+	int rotationDirection = last2Point1.x < last2Point2.x ? 1 : -1;
+	double rotationSumInDegrees = (atan(abs((last2Point1.x - last2Point2.x)) / abs(last2Point1.y - last2Point2.y))) * rotationDirection;
+
+
+	for (int i = 0; i <= leftLen - 1; i++)
+	{
+		double tempX = dataL[i].x;
+		double tempY = dataL[i].y;
+
+		dataL[i].x = tempX * cos(rotationSumInDegrees) - tempY * sin(rotationSumInDegrees); // rotation
+		dataL[i].y = tempX * sin(rotationSumInDegrees) + tempY * cos(rotationSumInDegrees);
+	}
+
+	for (int i = 0; i <= rightLen - 1; i++)
+	{
+		double tempX = dataR[i].x;
+		double tempY = dataR[i].y;
+
+		dataR[i].x = tempX * cos(rotationSumInDegrees) - tempY * sin(rotationSumInDegrees); // rotation
+		dataR[i].y = tempX * sin(rotationSumInDegrees) + tempY * cos(rotationSumInDegrees);
+	}
+
+	double tempX = last2Point1.x;
+	double tempY = last2Point1.y;
+
+	last2Point2.X = tempX * Math.Cos(rotationSumInDegrees) - tempY * Math.Sin(rotationSumInDegrees); // rotation
+	last2Point2.Y = tempX * Math.Sin(rotationSumInDegrees) + tempY * Math.Cos(rotationSumInDegrees);
+
+	double displacementX = _busPoint.x - last2Point2.x;
+	double displacementY = _busPoint.y - last2Point2.y;
+
+	for (int i = 0; leftLen - 1 >= i; i++)
+	{
+		if (dataL[i] != nullptr) // TODO: the fuck
+		{
+			dataL[i].x = dataL[i].x + displacementX;
+			dataL[i].y = dataL[i].y + displacementY;
+		}
+	}
+	for (int i = 0; leftLen - 1 >= i; i++)
+	{
+		if (dataR[i] != nullptr)
+		{
+			dataR[i].x = dataR[i].x + displacementX;
+			dataR[i].y = dataR[i].y + displacementY;
+		}
+	}
+
+}
+
 
 void DriveLogic::ApproximationOfTheOtherSideOfTheRoad(Vector2* returnData, Vector2* lastPoint1, Vector2* lastPoint2, bool leftOrRightSide, double distance) // right side should give negative number left positive
 {

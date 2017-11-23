@@ -50,6 +50,9 @@ HEADERS += \
     includes/nxtcommfantom/nxtcommfantom.h \
     commcamera.h
 
+INCLUDEPATH += \
+    $$PWD/../Shared
+
 FORMS += \
     mainwindow.ui \
     camerawidget.ui
