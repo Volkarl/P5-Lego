@@ -99,6 +99,7 @@ namespace FollowTrack
             return basis;
         }
 
+        //  Seems the entire point of this Bezier2D function is to update p, but the caller is not using ref.
         public void Bezier2D(Vector2[] b, int cpts, double[] p)
         {
             b = Array.FindAll(b, x => x != null ); // TODO: FIX THIS SHIT
@@ -110,7 +111,7 @@ namespace FollowTrack
             // Calculate points on curve
             icount = 0;
             t = 0;
-            step = (double)1.0 / (cpts - 1);
+            step = (double)1.0 / (cpts - 1);   //Why the (double)?
 
             for (int i1 = 0; i1 != cpts; i1++)
             {

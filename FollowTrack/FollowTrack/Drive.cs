@@ -136,11 +136,11 @@ namespace FollowTrack
         // TODO: Find relevant Points -> need test.
         private double[] CalculateBezierCurvePoints(Vector2[] pData, int pointsOnCurve, ref int boundCount)
         {
-            double[] data = new double[pointsOnCurve];
+            double[] data = new double[pointsOnCurve];             // Why is it new double instead of new int when PointsOnCurve is an int?
 
             BezierCurve bc = new BezierCurve();
-            bc.Bezier2D(pData, pointsOnCurve / 2, data);
-
+            bc.Bezier2D(pData, pointsOnCurve / 2, data);             //PointsOnCurve is an int. This means that PointsOnCurve / 2 discards some data, is this intended?
+                                             // Shouln't there be a ref before data?
 
             // TODO: gem kun 1-2 old points, og sort data efter Bezier til kun relevante points.
             double[] dataUpdated = new double[data.Length];
