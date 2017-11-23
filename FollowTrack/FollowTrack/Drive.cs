@@ -54,13 +54,13 @@ namespace FollowTrack
         {
             if (_pathSize > 0) // Following Path
             {
-                Console.WriteLine("\n***************************************************");
+               // Console.WriteLine("\n***************************************************");
                 Drive.Turn(CurrentAngle + Path[_pathCounter].Slope);
                 Drive.Length(Path[_pathCounter].Length); // Set how often Run needs to be called. //
                 _pathCounter++;
                 _pathSize--;
             }
-            else if (!_isFirstTimeRunning) // Finding Path
+            else // Finding Path
             {
                 // Get & Update New Data
                 Vector2[] nxtCamData = new Vector2[8];
@@ -68,7 +68,10 @@ namespace FollowTrack
                 nxtCamData = CorrectFieldOfView(nxtCamData);
 
                 // Update Old Data
-                RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
+                if (!_isFirstTimeRunning)
+                {
+                    RotateAndDisplaceData(_pDataLeftOld, _pDataRightOld, _lastTwoMidPointsOld);
+                }
                 //Array.Clear(_lastTwoMidPointsOld,0,2); // TODO: Remove?
 
                 // Sort Left/Right & Combine Old and New Data.
@@ -83,8 +86,8 @@ namespace FollowTrack
                 // Mid Points
                 Vector2[] midPoints = new Vector2[8];
                 midPoints = CalculatePathMidPoints(
-                    CalculateBezierCurvePoints(dataLeft, (PointsOnCurve*2), ref _boundCountLeft),
-                    CalculateBezierCurvePoints(dataRight, (PointsOnCurve*2), ref _boundCountRight));
+                    CalculateBezierCurvePoints(dataLeft, (PointsOnCurve * (_isFirstTimeRunning?1:2)), ref _boundCountLeft),
+                    CalculateBezierCurvePoints(dataRight, (PointsOnCurve * (_isFirstTimeRunning?1:2) ), ref _boundCountRight));
 
                 int midpointCount = midPoints.Count(x => x != null);         
                 _lastTwoMidPointsOld[0] = new Vector2(midPoints[midpointCount - 2].X, midPoints[midpointCount - 2].Y);
@@ -92,66 +95,19 @@ namespace FollowTrack
 
                 // Path Points
                 Path = CalculatePathData(midPoints);
-                _pathCounter = 0;
+                if (_isFirstTimeRunning)
+                {
+                    _isFirstTimeRunning = false;
+                }
+                else
+                {
+                    _pathCounter = 0;
+                }
                 _pathSize = Path.Count(s => s != null);
 
                 ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
                 //long memory = GC.GetTotalMemory(true);
                 //Console.WriteLine("MEMORY" + memory);
-                foreach (var item in midPoints)
-                {
-                    if (item != null)
-                        Console.WriteLine(item.ToString());
-                }
-                Console.WriteLine("\n\n");
-                double temp = 0.0;
-                foreach (var item in Path)
-                {
-                    if (item != null)
-                    {
-                        Console.WriteLine(item.ToString());
-                        temp += item.Length;
-                    }
-                }
-                Console.WriteLine("Afstand: " + temp);
-                ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
-            }
-            else // Finding Path -> First run.
-            {
-                // If it's first time, we don't combine multiple datasets
-                // Get & Update New Data
-                Vector2[] nxtCamData = new Vector2[8];
-                nxtCamData = GetNewDataFromNxtCam();
-
-                // Correct Data
-                nxtCamData = CorrectFieldOfView(nxtCamData);
-
-                // Sort Left/Right
-                Tuple<Vector2[], Vector2[]> tupleData = SortNxtCamData(nxtCamData);
-                Vector2[] dataLeft = new Vector2[8];
-                dataLeft = CombineData(tupleData.Item1, _pDataLeftOld);
-                Vector2[] dataRight = new Vector2[8];
-                dataRight = CombineData(tupleData.Item2, _pDataRightOld);
-                _pDataLeftOld = tupleData.Item1;
-                _pDataRightOld = tupleData.Item2;
-
-                // Mid Points
-                Vector2[] midPoints = new Vector2[8];
-                midPoints = CalculatePathMidPoints(
-                    CalculateBezierCurvePoints(dataLeft, (PointsOnCurve), ref _boundCountLeft),
-                    CalculateBezierCurvePoints(dataRight, (PointsOnCurve), ref _boundCountRight));
-
-                int midpointCount = midPoints.Count(x => x != null);
-                _lastTwoMidPointsOld[0] = new Vector2(midPoints[midpointCount - 2].X, midPoints[midpointCount - 2].Y);
-                _lastTwoMidPointsOld[1] = new Vector2(midPoints[midpointCount - 1].X, midPoints[midpointCount - 1].Y);
-
-                // Path Points
-                Path = CalculatePathData(midPoints);
-                _isFirstTimeRunning = false;
-                _pathSize = Path.Count(s => s != null);
-
-
-                ////////////////////////////////////////////////////////////////////////TEST//////////////////////////////////////////
                 foreach (var item in midPoints)
                 {
                     if (item != null)
@@ -525,13 +481,13 @@ namespace FollowTrack
         private static void Turn(double v)
         {
 
-            Console.WriteLine("The Bus turned " + v + "degrees.");
+            //Console.WriteLine("The Bus turned " + v + "degrees.");
         }
 
         private static void Length(double p)
         {
 
-            Console.WriteLine("The Bus drove " + p + "km.");
+            //Console.WriteLine("The Bus drove " + p + "km.");
 
         }
 
