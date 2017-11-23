@@ -28,5 +28,22 @@ size_t insertNumberToArray(unsigned char *array, size_t offset, int number)
 	strncpy( ((char*) array) + offset, (char*)numArray, numberLen + 2);
 	array[offset] = PACKET_SEPERATOR; // TODO: Change
 
+	delete numArray;
+
 	return offset += numberLen + 1;
+}
+
+
+/*
+ * Numerics
+ */
+
+double RadianToDegree(double angle)
+{
+	return angle * (180.0 / M_PI);
+}
+
+double DegreeToRadian(double angle)
+{
+	return M_PI * angle / 180.0;
 }

@@ -16,7 +16,7 @@ namespace ecrobot {
 			void getCameraTest();
 			void getCameraLineTest(unsigned char *data);
 			int getCameraLineTestLoop(); // TODO
-			void Communication::getCameraHeatmapTest();
+			void getCameraHeatmapTest();
 
 
 			unsigned char data[64]; //Usb::MAX_USB_DATA_LEN];
