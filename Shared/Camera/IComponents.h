@@ -24,28 +24,29 @@ class ISteeringSuggestionComponent
 {
    public: 
         virtual SteeringSequence CalculateSteering() = 0;
+        virtual void CalibrateSensors() = 0;
         virtual ~ISteeringSuggestionComponent() = default;
 };
 
-class IStayWithinLane : public ISteeringSuggestionComponent
+class IStayWithinLaneComponent : public ISteeringSuggestionComponent
 {
    public:
         virtual ~IStayWithinLane() = 0;
 };
 
-class IObstacleDetection : public ISteeringSuggestionComponent
+class IObstacleDetectionComponent : public ISteeringSuggestionComponent
 {
    public:
         virtual ~IObstacleDetection() = default;
 };
 
-class IBusStopDetection : public ISteeringSuggestionComponent
+class IBusStopDetectionComponent : public ISteeringSuggestionComponent
 {
    public:
         virtual ~IBusStopDetection() = default;
 };
 
-class ISpeedZoneDetection : public ISteeringSuggestionComponent
+class ISpeedZoneDetectionComponent : public ISteeringSuggestionComponent
 {
    public:
         virtual ~ISpeedZoneDetection() = default;

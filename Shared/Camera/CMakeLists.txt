@@ -11,6 +11,6 @@ set(SOURCE_FILES
         DriveLogic.h
         FieldOfViewCorrector.cpp
         FieldOfViewCorrector.h
-        IComponents.cpp SteeringTypes.cpp ISensorControllers.cpp program.cpp)
+        IComponents.h SteeringTypes.cpp ISensorControllers.cpp program.cpp Driving.cpp Driving.h StayWithinLaneComponent.cpp StayWithinLaneComponent.h ObstacleDetectionComponent.cpp ObstacleDetectionComponent.h BusStopDetectionComponent.cpp BusStopDetectionComponent.h SpeedZoneDetectionComponent.cpp SpeedZoneDetectionComponent.h)
 
 add_executable(Camera ${SOURCE_FILES})
