@@ -11,6 +11,6 @@ set(SOURCE_FILES
         DriveLogic.h
         FieldOfViewCorrector.cpp
         FieldOfViewCorrector.h
-        IComponents.cpp SteeringTypes.cpp ISensorControllers.cpp)
+        IComponents.cpp SteeringTypes.cpp ISensorControllers.cpp program.cpp)
 
 add_executable(Camera ${SOURCE_FILES})

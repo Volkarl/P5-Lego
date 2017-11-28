@@ -16,8 +16,8 @@ class IDriving
         virtual void InitializeSystem() = 0;
         virtual ~IDriving() = default;
 
-        SteeringCommand CurrentSteeringCommand;
-        int CurrentSteeringInstructionIndex;
+        SteeringSequence CurrentSteeringSequence;
+        int CurrentSteeringSequenceIndex;
 };
 
 class ISteeringSuggestionComponent
@@ -30,7 +30,7 @@ class ISteeringSuggestionComponent
 class IStayWithinLane : public ISteeringSuggestionComponent
 {
    public:
-        virtual ~IStayWithinLane() = default;;
+        virtual ~IStayWithinLane() = 0;
 };
 
 class IObstacleDetection : public ISteeringSuggestionComponent
@@ -49,4 +49,17 @@ class ISpeedZoneDetection : public ISteeringSuggestionComponent
 {
    public:
         virtual ~ISpeedZoneDetection() = default;
+};
+
+
+/////////////// Other Stuff /////////////////
+class IManoeuvre
+{
+    // The class containing high-level manoeuvres
+public:
+    virtual static SteeringSequence StopAtBusStop() = 0;
+    virtual static SteeringSequence DriveFromBusStop() = 0;
+
+    virtual ~IManoeuvre() = default;
+    // Todo: Do I need this class? I could put it all into bus stop component
 };

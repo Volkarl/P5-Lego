@@ -3,7 +3,6 @@
 //
 #include "CamCalcTypes.h"
 #include "SteeringTypes.cpp"
-#include <vector>
 
 
 
@@ -12,7 +11,7 @@ class ISensorController
 {
 public:
     virtual void Calibrate() = 0;
-    virtual ~ISensorController() = default;
+    virtual ~ISensorController() = 0;
 };
 
 class IMotorController : public ISensorController
@@ -20,10 +19,8 @@ class IMotorController : public ISensorController
     // The inherited calibrate-method handles things like centering the wheels of the bus during setup
 public:
     virtual void SetSpeed(int rpm) = 0;
-    virtual void SetTurningAngle() = 0;
-    virtual IMotorController() = default;
-
-    virtual ~IMotorController() override = default;
+    virtual void SetTurningAngle(Turn turn) = 0;
+    virtual ~IMotorController() = 0;
 
     int CurrentSpeedRpm;
     Turn CurrentTurningAngle;
@@ -33,7 +30,7 @@ class IUltrasonicSensorController : public ISensorController
 {
 public:
     virtual int GetDistance() = 0;
-    virtual ~IUltrasonicSensorController() = default;
+    virtual ~IUltrasonicSensorController() = 0;
     // This method sorts out invalid measurements and finds the median to remove sensor inaccuracies and more
     // Returns -1 if no objects are in range; not 255 which is the ultrasonic sensor standard return value
 };
@@ -42,7 +39,7 @@ class INxtCamLineTrackingController : public ISensorController
 {
 public:
     virtual std::vector<Vector2> TrackLanes() = 0;
-    virtual ~INxtCamLineTrackingController() = default;
+    virtual ~INxtCamLineTrackingController() = 0;
 
     double CameraDistanceFromBusAxisY;
     // Elevation of the camera from the ground
@@ -56,7 +53,7 @@ class ISoundSignalController : public ISensorController
 {
 public:
     virtual void SignalTurn(Direction direction) = 0;
-    virtual ~ISoundSignalController() = default;
+    virtual ~ISoundSignalController() = 0;
 };
 
 class IColourSensorController : public ISensorController
@@ -65,17 +62,5 @@ public:
     virtual int DetectColour() = 0;
     // RETURNS INT? What does it return?
     // Sorts out bad or inconsistent measurements
-    virtual ~IColourSensorController() = default;
-};
-
-/////////////// Other Stuff /////////////////
-class IManoeuvre
-{
-    // The class containing high-level manoeuvres
-public:
-    virtual static SteeringSequence StopAtBusStop() = 0;
-    virtual static SteeringSequence DriveFromBusStop() = 0;
-
-    virtual ~IManoeuvre() = default;
-    // Todo: Do I need this class? I could put it all into bus stop component
+    virtual ~IColourSensorController() = 0;
 };
