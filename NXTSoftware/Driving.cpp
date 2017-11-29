@@ -80,7 +80,8 @@ void Driving::halt()
 {
 	motorForward.setPWM(0);
 	motorTurn.setPWM(0);
-	data.speed = 0;
+	//data.speed = 0;
+	data.halt = true;
 }
 
 

@@ -50,7 +50,7 @@ bool NXTCommunication::SendArray(char* buf, size_t len)
 	if(!connected)
 		return false;
 	
-	NXTCommFantom_send(nxt, buf, 0, 4);
+	NXTCommFantom_send(nxt, buf, 0, (int) len);
 	return true;
 }
 

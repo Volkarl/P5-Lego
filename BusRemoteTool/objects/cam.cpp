@@ -50,7 +50,7 @@ bool Cam::UpdateSight() {
 		RectangleF wall(rawwall);
 		
 		if (collision.Intersects(wall)) {
-			rawwall.objColor = 1; // todo add a field or so to mark this
+			rawwall.objColor = 1; // TODO: add a field or alike to mark collision instead
 			evac = true;
 			
 			if (closestwall.y + closestwall.h < wall.y + wall.h) {
