@@ -5,7 +5,7 @@
 #ifndef P5_LEGO_SPEEDZONEDETECTIONCOMPONENT_H
 #define P5_LEGO_SPEEDZONEDETECTIONCOMPONENT_H
 
-#include "IComponents.h"
+#include "../IComponents.h"
 
 class SpeedZoneDetectionComponent : ISpeedZoneDetectionComponent {
 public:

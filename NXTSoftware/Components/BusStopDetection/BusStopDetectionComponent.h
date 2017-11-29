@@ -5,7 +5,7 @@
 #ifndef P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H
 #define P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H
 
-#include "IComponents.h"
+#include "../IComponents.h"
 
 class BusStopDetectionComponent : IBusStopDetectionComponent {
 public:

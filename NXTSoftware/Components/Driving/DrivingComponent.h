@@ -5,11 +5,11 @@
 #ifndef P5_LEGO_DRIVING_H
 #define P5_LEGO_DRIVING_H
 
-#include "IComponents.h"
-#include "StayWithinLaneComponent.h"
-#include "ObstacleDetectionComponent.h"
-#include "BusStopDetectionComponent.h"
-#include "SpeedZoneDetectionComponent.h"
+#include "../IComponents.h"
+#include "../StayWithinLane/StayWithinLaneComponent.h"
+#include "../ObstacleDetection/ObstacleDetectionComponent.h"
+#include "../BusStopDetection/BusStopDetectionComponent.h"
+#include "../SpeedZoneDetection/SpeedZoneDetectionComponent.h"
 
 class Driving : IDriving {
 public:

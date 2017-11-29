@@ -5,7 +5,7 @@
 #ifndef P5_LEGO_STAYWITHINLANECOMPONENT_H
 #define P5_LEGO_STAYWITHINLANECOMPONENT_H
 
-#include "IComponents.h"
+#include "../IComponents.h"
 
 class StayWithinLaneComponent : IStayWithinLaneComponent {
 public:
