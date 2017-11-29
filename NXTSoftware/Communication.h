@@ -4,24 +4,27 @@
 #include "Usb.h"
 #include "Camera.h"
 #include "Clock.h"
+#include "Driving.h"
 
 namespace ecrobot {
 	class Communication {
 		public:
-			Communication(Usb* usb, Camera* camera);
+			Communication(Usb* usb, Camera* camera, Driving* drive);
 			void handle();
 
 		private:
+			void sendData(unsigned char *data);
 			void sendCameraData(unsigned char *data);
-			void getCameraTest();
-			void getCameraLineTest(unsigned char *data);
-			int getCameraLineTestLoop(); // TODO
+			//void getCameraLineTest(unsigned char *data);
+			//int  getCameraLineTestLoop();
 			void getCameraHeatmapTest();
+			void driveCmd(unsigned char *data);
 
 
 			unsigned char data[64]; //Usb::MAX_USB_DATA_LEN];
 			Usb* usb;
 			Camera* camera;
+			Driving* drive;
 			Clock clock;
 	};
 };

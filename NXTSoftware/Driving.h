@@ -5,18 +5,22 @@
 
 
 #define TURN_ANGLE 25
-#define TURN_SPEED 50
-#define TURN_JITTER 2
+#define TURN_SPEED 45
+#define TURN_JITTER 3
 #define FORWARD_SPEED 38
-
-#define TURN_LEFT -1
-#define TURN_RIGHT 1
-#define TURN_CENTER 2
-#define TURN_STOP 0
 
 #define DRIVE_FORWARD 1
 #define DRIVE_REVERSE -1
 #define DRIVE_STOP 0
+
+
+struct DrivingData {
+	bool halt;
+
+	int speed;
+	int angle;
+	bool calibrated;
+};
 
 namespace ecrobot {
 	class Driving {
@@ -25,12 +29,10 @@ namespace ecrobot {
 			Motor motorTurn(unsigned char _port);
 		*/
 		public:
-			// Driving(Motor drive, Motor turn); // TODO: Not working
 			Driving();
 
-			void turn(int direction);
-
 			void forward();
+			void forward(int speed);
 			void reverse();
 			void stop();
 			void halt();
@@ -43,10 +45,16 @@ namespace ecrobot {
 			void calibrate();
 
 			void center();
-			void setTurnAngle(int angle);
+			bool setTurnAngle(int angle);
 
-		private:
-			bool calibrated;
+			void update();
+
+
+
+		//private:
+			DrivingData data;
+
+
 	};
 };
 

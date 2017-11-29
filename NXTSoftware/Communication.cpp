@@ -4,13 +4,16 @@
 #include "Communication.h"
 #include "../Shared/Connectivity.h"
 #include "../Shared/Tools.h"
+#include "Driving.h"
+
 
 using namespace ecrobot;
 
-Communication::Communication(Usb* usbobj, Camera* cam)
+Communication::Communication(Usb* usbobj, Camera* cam, Driving* drive)
 {
 	this->usb = usbobj;
 	this->camera = cam;
+	this->drive = drive;
 }
 
 void Communication::handle()
@@ -22,19 +25,39 @@ void Communication::handle()
 
 		if (len > 0)
 		{
-			if (data[0] == DISCONNECT_REQ)
+			const unsigned char& type = data[0];
+
+			if (type == DISCONNECT_REQ)
 				usb->close(); // close usb connection
-			else if (data[0] == PACKET_CAM)
+			else if (type == PACKET_CAM)
 				this->sendCameraData(this->data);
-			else if (data[0] == PACKET_TEST)
+			else if (type == PACKET_POLL)
+				this->sendData(this->data);
+
+			/*else if (type == PACKET_TEST)
 				this->getCameraLineTest(this->data);
+			else if (type == PACKET_DRIVE)
+				this->driveCmd(this->data);*/
 		}
 
 	}
 }
 
 
+void Communication::driveCmd(unsigned char *data)
+{
+	char forwardSpeed = (char)data[1];
+	char angle = (char)data[2];
 
+	if (forwardSpeed < 0 || forwardSpeed > 100 ||
+		angle < -90 || angle > 90)
+		return;
+
+	//this->drive->forward(forwardSpeed);
+	//this->drive->setTurnAngle(angle);
+	this->drive->data.speed = forwardSpeed;
+	this->drive->data.angle = angle;
+}
 
 /**
  * Heatmaps are ranges, as thus - if converted to signed they'll return -128 if they're
@@ -55,6 +78,49 @@ void Communication::getCameraHeatmapTest()
 	camera->receive(0x80, buf, 41);
 
 	usb->send(buf, 0, 41);
+}
+
+
+
+void Communication::sendData(unsigned char *data)
+{
+	int amountOfObjects = 0;
+	size_t offset = 0;
+	Camera::Rectangle_T rec;
+	data[0] = PACKET_END; data[1] = '\0'; // TODO: Ditch this? Seems a bit odd when you look at the next if clause
+
+	//camera.update();
+	//clock.wait(10); // Wait for camera data, we can possibly lower the time waited
+
+	int numOfObjects = camera->getNumberOfObjects();
+
+	if (numOfObjects >= 1 && numOfObjects <= 8)
+		amountOfObjects = numOfObjects;
+	else
+	{
+		data[0] = 0;
+		usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
+		return;
+	}
+
+	data[offset++] = amountOfObjects;
+
+	for (int i = 0; i < amountOfObjects; i++)
+	{
+		camera->getRectangle(i, &rec);
+		data[offset++] = rec.width;
+		data[offset++] = rec.height;
+		data[offset++] = rec.upperLeftX;
+		data[offset++] = rec.upperLeftY;
+		data[offset++] = camera->getObjectColor(i);
+		data[offset] = PACKET_END;
+	}
+
+	data[offset++] = drive->data.speed;
+	data[offset++] = drive->getTurnCount();
+	data[offset++] = drive->data.halt;
+
+	usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 }
 
 
@@ -96,6 +162,11 @@ void Communication::sendCameraData(unsigned char *data)
 	usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 }
 
+
+
+
+
+/*
 void Communication::getCameraLineTest(unsigned char *data)
 {
 	int amountOfObjects = 0;
@@ -160,3 +231,4 @@ int Communication::getCameraLineTestLoop()
 
 	return 0;
 }
+*/

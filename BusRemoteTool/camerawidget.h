@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "../Shared/Connectivity.h"
-#include "commcamera.h"
+#include "controllers/car.h"
 
 namespace Ui {
 class cameraWidget;
@@ -17,12 +17,14 @@ public:
     explicit cameraWidget(QWidget *parent = 0);
     void refreshView();
     ~cameraWidget();
+	const Car* m_Car;
 
 protected:
     virtual void paintEvent(QPaintEvent *event) override;
 
 private:
     Ui::cameraWidget *ui;
+	float m_fDegree;
 };
 
 #endif // CAMERAWIDGET_H

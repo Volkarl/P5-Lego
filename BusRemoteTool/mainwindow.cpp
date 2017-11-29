@@ -3,10 +3,12 @@
 
 #include "../Shared/Connectivity.h"
 #include "includes/nxtcommfantom/nxtcommfantom.h"
-#include "commcamera.h"
+#include "controllers/car.h"
 
-extern Rectangle_T CommCamera::rect[];
-CommCamera cam;
+#include <QTimer>
+#include <QDebug>
+
+#define TIMER_REFRESH_RATE 350
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,10 +16,19 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setupTable();
-
-    // Stuff, (144+32) 176 width
+	
+	ui->camWidget->m_Car = &this->m_Car;
+	
+	this->m_iTimerID = startTimer(TIMER_REFRESH_RATE);
+	
+	this->testVar = false;
+	
+	ui->currentAngleBox->setText(QString::number(90) + "°");
+	
+    // Stuff, (144+32) 176 width	
 
     // Dummy data
+	/*
     CommCamera::rect[0].upperLeftX =  12; CommCamera::rect[0].upperLeftY =  0; CommCamera::rect[0].width = 11; CommCamera::rect[0].height = 18;
     CommCamera::rect[1].upperLeftX = 144; CommCamera::rect[1].upperLeftY = 13; CommCamera::rect[1].width = 32; CommCamera::rect[1].height = 18;
     CommCamera::rect[2].upperLeftX = 132; CommCamera::rect[2].upperLeftY = 32; CommCamera::rect[2].width = 23; CommCamera::rect[2].height = 18;
@@ -26,20 +37,22 @@ MainWindow::MainWindow(QWidget *parent) :
     CommCamera::rect[5].upperLeftX = 132; CommCamera::rect[5].upperLeftY = 51; CommCamera::rect[5].width = 15; CommCamera::rect[5].height = 18;
     CommCamera::rect[6].upperLeftX =  12; CommCamera::rect[6].upperLeftY = 57; CommCamera::rect[6].width =  7; CommCamera::rect[6].height = 18;
     CommCamera::rect[7].upperLeftX = 132; CommCamera::rect[7].upperLeftY = 70; CommCamera::rect[7].width = 11; CommCamera::rect[7].height = 18;
-
+	*/
     // End
 }
 
 MainWindow::~MainWindow()
 {
+	killTimer(this->m_iTimerID);
+	
+	this->m_Car.Deinit();
     delete ui;
 }
 
 /* Create event for button for this*/
 void MainWindow::on_refreshButton_clicked()
 {
-    cam.getObjects();
-
+	this->m_Car.Update();
     ui->camWidget->refreshView();
     this->fillTable();
 }
@@ -58,29 +71,49 @@ void MainWindow::setupTable()
 
 void MainWindow::fillTable()
 {
-    ui->tableWidget->setRowCount(cam.amountOfObjects()); // TODO: Not hardcoded
-
-    for (int i = 0; i < cam.amountOfObjects(); i++)
-    {
-        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(CommCamera::rect[i].width)));
-        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(CommCamera::rect[i].height)));
-        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(CommCamera::rect[i].upperLeftX)));
-        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(CommCamera::rect[i].upperLeftY)));
+	this->setupTable();
+	
+	std::vector<Rectangle_T>& lines = this->m_Car.m_Cam.m_lstObjects;
+	ui->tableWidget->setRowCount(lines.size());
+	
+	for (int i = 0; i < lines.size(); i++) {
+		const Rectangle_T& line = lines[i];
+		
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(line.width)));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(line.height)));
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(line.upperLeftX)));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(line.upperLeftY)));
+		
     }
 }
 
-void MainWindow::on_testButton_clicked()
+void MainWindow::timerEvent(QTimerEvent *event)
 {
-    cam.getObjects();
-
+	this->m_Car.Update();
     ui->camWidget->refreshView();
     this->fillTable();
 }
 
+void MainWindow::on_testButton_clicked()
+{
+	testVar = !testVar;
+	const int angle = ui->angleBox->value();
+	
+	if (testVar)
+	{
+		this->m_Car.m_Motor.SetForce(40);
+		//this->m_Car.m_Motor.SetAngle(0);
+		this->m_Car.m_Motor.SetAngle(angle);
+	}
+	else
+		this->m_Car.m_Motor.SetForce(0);
+	
+	this->m_Car.m_Motor.Send();
+}
+
 void MainWindow::on_connectButton_clicked()
 {
-    cam.Connect();
-    if (cam.isConnected())
+    if (this->m_Car.Init())
     {
         ui->connectButton->setEnabled(false);
         ui->disconnectButton->setEnabled(true);
@@ -92,7 +125,7 @@ void MainWindow::on_connectButton_clicked()
 
 void MainWindow::on_disconnectButton_clicked()
 {
-    cam.Disconnect();
+	this->m_Car.Deinit();
 
     ui->connectButton->setEnabled(true);
     ui->disconnectButton->setEnabled(false);

@@ -8,7 +8,7 @@
 #define PACKET_CAM 0xE1
 #define PACKET_TEST 0xE2
 #define PACKET_POLL 0xE3
-#define PACKET_MORE 0xE4
+#define PACKET_DRIVE 0xE4
 #define PACKET_ACK 0xFC
 
 typedef struct {

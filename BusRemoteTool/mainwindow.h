@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "commcamera.h"
+#include "controllers/car.h"
 
 namespace Ui {
 class MainWindow;
@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
+	
 private slots:
 
     void on_testButton_clicked();
@@ -27,10 +27,17 @@ private slots:
     void on_refreshButton_clicked();
 
 private:
+	int m_iTimerID;
+	Car m_Car;
+	
     Ui::MainWindow *ui;
     void setupTable();
     void fillTable();
-
+	
+	bool testVar; // TODO: Remove
+	
+protected:
+	void timerEvent(QTimerEvent *event);
 };
 
 #endif // MAINWINDOW_H

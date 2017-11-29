@@ -35,7 +35,7 @@ size_t insertNumberToArray(unsigned char *array, size_t offset, int number)
 
 
 /*
- * Numerics
+ * Numerics TODO: Remove?
  */
 
 double RadianToDegree(double angle)

@@ -28,7 +28,11 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     includes/nxtcommfantom/nxtcommfantom.cpp \
-    commcamera.cpp
+    controllers/car.cpp \
+    objects/cam.cpp \
+    objects/motor.cpp \
+    objects/nxtcommunication.cpp \
+    objects/rectangle.cpp
 
 HEADERS += \
     includes/nxtcommfantom/fantom/iFile.h \
@@ -48,7 +52,11 @@ HEADERS += \
     camerawidget.h \
     mainwindow.h \
     includes/nxtcommfantom/nxtcommfantom.h \
-    commcamera.h
+    controllers/car.h \
+    objects/cam.h \
+    objects/motor.h \
+    objects/nxtcommunication.h \
+    objects/rectangle.h
 
 INCLUDEPATH += \
     $$PWD/../Shared

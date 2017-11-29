@@ -99,4 +99,23 @@ CPU ATMEL_AT91SAM7S256
 
         };
     };
+
+	TASK drivingUpdate
+	{
+		AUTOSTART = FALSE;
+		PRIORITY = 4;
+		ACTIVATION = 1;
+		SCHEDULE = FULL;
+		STACKSIZE = 512;
+	};
+
+	ALARM AlarmDrivingUpdate
+	{
+		COUNTER = SysTimerCnt;
+		ACTION = ACTIVATETASK
+		{
+			TASK = drivingUpdate;
+		};
+		AUTOSTART = FALSE;
+	};
 };

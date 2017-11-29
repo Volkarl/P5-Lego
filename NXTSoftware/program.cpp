@@ -26,6 +26,7 @@ extern "C"
 DeclareCounter(SysTimerCnt);
 DeclareAlarm(AlarmUpdateCam);
 DeclareAlarm(AlarmUpdateSonar);
+DeclareAlarm(AlarmDrivingUpdate);
 DeclareEvent(EventSleepI2C);
 DeclareEvent(EventSleep);
 
@@ -41,7 +42,7 @@ int distance;
  */
 Driving driving;
 Usb usb;
-Communication communication(&usb, &camera);
+Communication communication(&usb, &camera, &driving);
 
 /**
  * NXT Objects
@@ -75,7 +76,18 @@ TASK(TaskUpdateCam)
 TASK(TaskUpdateSonar)
 {
     distance = sonar.getDistance();
+	if (distance < 10)
+		driving.halt();
+	else
+		driving.data.halt = false; // TODO: Change to new function
+
     TerminateTask();
+}
+
+TASK(drivingUpdate)
+{
+	driving.update();
+	TerminateTask();
 }
 
 
@@ -83,6 +95,8 @@ TASK(TaskMain)
 {
     distance = 0;
 //	U8 data[MAX_USB_DATA_LEN]; // first byte is preserved for disconnect request from host
+
+	driving.calibrate();
 
 	lcd.clear();
 	lcd.putf("sn", "USB");
@@ -94,6 +108,9 @@ TASK(TaskMain)
 	clock.wait(25);
 	camera.enableTracking(true);
     SetRelAlarm(AlarmUpdateCam, 25, 400);
+
+	driving.calibrate();
+	SetRelAlarm(AlarmDrivingUpdate, 150, 150);
 
 	while(1)
   	{
