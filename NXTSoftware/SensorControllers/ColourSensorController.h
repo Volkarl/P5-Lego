@@ -11,6 +11,6 @@ class ColourSensorController : IColourSensorController
 	public:
 	ColourSensorController();
 	~ColourSensorController() override;
-}
+};
 
 #endif //P5_LEGO_IColourSENSORCONTROLLER_H

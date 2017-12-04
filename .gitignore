@@ -24,3 +24,4 @@ ramboot.sh
 rxeflash.sh
 kernel_cfg.c
 kernel_id.h
+NXTSoftware/CMakeLists.txt
