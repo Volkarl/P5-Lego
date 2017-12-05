@@ -19,6 +19,8 @@ public:
     void refreshView();
     ~cameraWidget();
 	const Car* m_Car;
+	
+	float m_fDegree; // TODO: TEST
 
 protected:
     virtual void paintEvent(QPaintEvent *event) override;
@@ -26,7 +28,7 @@ protected:
 private:
 	Detector m_Detector;
     Ui::cameraWidget *ui;
-	float m_fDegree;
+	//float m_fDegree;
 };
 
 #endif // CAMERAWIDGET_H

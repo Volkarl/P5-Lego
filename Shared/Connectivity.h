@@ -12,9 +12,9 @@
 #define PACKET_ACK 0xFC
 
 typedef struct {
-	char red;
-	char green;
-	char blue;	
+	unsigned int red;
+	unsigned int green;
+	unsigned int blue;
 } RGB;
 
 typedef struct {
@@ -27,6 +27,7 @@ typedef struct {
 	signed int objColor;
 	
 	RGB color;
+	bool collision;
 } Rectangle_T;
 
 #endif

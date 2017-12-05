@@ -37,19 +37,19 @@ bool Cam::UpdateSight() {
 		rect.upperLeftX = (unsigned char) buff[offset++];
 		rect.upperLeftY = (unsigned char) buff[offset++];
 		rect.objColor = (unsigned char) buff[offset++];
-		
-		// Validate and vars
-		speed = (unsigned char) buff[offset++];
-		angle = (unsigned char) buff[offset++];
-		halt = (unsigned char) buff[offset++];
-		
-		rect.color.red = (unsigned char) buff[offset++];
-		rect.color.green = (unsigned char) buff[offset++];
-		rect.color.blue = (unsigned char) buff[offset++];
-
-		rect.objColor = 0; // TODO: temp for marking collision, problem is modifying Rectangle_T
 	}
 
+	// Validate and vars
+	this->m_Detector.speed = (unsigned char) buff[offset++];
+	this->m_Detector.angle = (int) buff[offset++];
+	this->m_Detector.halt = ((unsigned char) buff[offset++]) == 1;
+	
+	/*
+	qDebug()<< "R: " << QString::number((unsigned char) buff[offset++])
+			<< "G: " << QString::number((unsigned char) buff[offset++])
+			<< "B: " << QString::number((unsigned char) buff[offset++]);
+	*/
+	
 	this->m_camBuffer = newbuff;
 	
 	return true;

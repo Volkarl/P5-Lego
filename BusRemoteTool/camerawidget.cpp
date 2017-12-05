@@ -37,7 +37,8 @@ void cameraWidget::paintEvent(QPaintEvent *) {
 	CamBuffer cambuff = this->m_Car->m_Cam.GetBuffer();
 	this->m_Detector.MarkData(cambuff);
 	
-	for (size_t i = 0; i < (size_t)cambuff.m_iCount; i++) {
+	for (size_t i = 0; i < (size_t)cambuff.m_iCount; i++)
+	{
 		const Rectangle_T& line = cambuff.m_buffRects[i];
 		
         QPoint upperLeft(line.upperLeftX * 2, line.upperLeftY * 2);
@@ -53,7 +54,7 @@ void cameraWidget::paintEvent(QPaintEvent *) {
 
         QRect rect(upperLeft, size);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(line.objColor == 0 ? Qt::black : Qt::red);
+        painter.setBrush(line.collision == false ? Qt::black : Qt::red);
         painter.drawRect(rect);
 
         painter.setPen(Qt::white);
@@ -71,29 +72,22 @@ void cameraWidget::paintEvent(QPaintEvent *) {
 			if (this->m_fDegree > -0.2 && this->m_fDegree < 0.2) {
 				this->m_fDegree = 0;
 			} else {
-				if (this->m_fDegree > 0) this->m_fDegree -= 0.5f;
-				else if (this->m_fDegree < 0) this->m_fDegree += 0.5f;
+				if (this->m_fDegree > 0) this->m_fDegree -= 0.8f;
+				else if (this->m_fDegree < 0) this->m_fDegree += 0.8f;
 			}
 			break;
 			
 		case DirectionType::Left:
-			this->m_fDegree -= 0.5f;
+			this->m_fDegree -= 0.8f;
 			break;
 			
 		case DirectionType::Right:
-			this->m_fDegree += 0.5f;
+			this->m_fDegree += 0.8f;
 			break;
 	}
 	
-	if (this->m_fDegree > 25.0f) this->m_fDegree = 25.0f;
-	if (this->m_fDegree < -25.0f) this->m_fDegree = -25.0f;
-	
-	/*if(dirtomove == DirectionType::None)
-		qDebug() << "None: " << QString::number(this->m_fDegree);
-	else if(dirtomove == DirectionType::Left)
-		qDebug() << "Left: " << QString::number(this->m_fDegree);
-	else if(dirtomove == DirectionType::Right)
-		qDebug() << "Right: " << QString::number(this->m_fDegree);*/
+	if (this->m_fDegree > 35.0f) this->m_fDegree = 35.0f;
+	if (this->m_fDegree < -35.0f) this->m_fDegree = -35.0f;
 	
 	QLineF angleline;
 	angleline.setP1(QPointF(this->width() / 2, this->height() - 30));

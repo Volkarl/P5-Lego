@@ -77,19 +77,19 @@ TASK(TaskUpdateCam)
 
 TASK(TaskUpdateSonar)
 {
-	S16 color[3];
+	//S16 color[3];
 
-	colorSensor.getRawColor(color);
+	//colorSensor.getRawColor(color);
 
 	// Validate
-	if (color[0] < 0 && color[0] > 255 &&
+	/*if (color[0] < 0 && color[0] > 255 &&
 		color[1] < 0 && color[1] > 255 &&
 		color[2] < 0 && color[2] > 255)
 	{ return; }
 
 	driving.data.color.red = color[0];
 	driving.data.color.green = color[1];
-	driving.data.color.blue = color[2];
+	driving.data.color.blue = color[2];*/
 
 
     distance = sonar.getDistance();
