@@ -72,22 +72,22 @@ void cameraWidget::paintEvent(QPaintEvent *) {
 			if (this->m_fDegree > -0.2 && this->m_fDegree < 0.2) {
 				this->m_fDegree = 0;
 			} else {
-				if (this->m_fDegree > 0) this->m_fDegree -= 0.5f;
-				else if (this->m_fDegree < 0) this->m_fDegree += 0.5f;
+				if (this->m_fDegree > 0) this->m_fDegree -= 0.8f;
+				else if (this->m_fDegree < 0) this->m_fDegree += 0.8f;
 			}
 			break;
 			
 		case DirectionType::Left:
-			this->m_fDegree -= 0.5f;
+			this->m_fDegree -= 0.8f;
 			break;
 			
 		case DirectionType::Right:
-			this->m_fDegree += 0.5f;
+			this->m_fDegree += 0.8f;
 			break;
 	}
 	
-	if (this->m_fDegree > 25.0f) this->m_fDegree = 25.0f;
-	if (this->m_fDegree < -25.0f) this->m_fDegree = -25.0f;
+	if (this->m_fDegree > 35.0f) this->m_fDegree = 35.0f;
+	if (this->m_fDegree < -35.0f) this->m_fDegree = -35.0f;
 	
 	QLineF angleline;
 	angleline.setP1(QPointF(this->width() / 2, this->height() - 30));

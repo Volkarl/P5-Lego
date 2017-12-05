@@ -22,23 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->m_iTimerID = startTimer(TIMER_REFRESH_RATE);
 	
 	this->testVar = false;
-	
-	ui->currentAngleBox->setText(QString::number(90) + "°");
-	
-    // Stuff, (144+32) 176 width	
-
-    // Dummy data
-	/*
-    CommCamera::rect[0].upperLeftX =  12; CommCamera::rect[0].upperLeftY =  0; CommCamera::rect[0].width = 11; CommCamera::rect[0].height = 18;
-    CommCamera::rect[1].upperLeftX = 144; CommCamera::rect[1].upperLeftY = 13; CommCamera::rect[1].width = 32; CommCamera::rect[1].height = 18;
-    CommCamera::rect[2].upperLeftX = 132; CommCamera::rect[2].upperLeftY = 32; CommCamera::rect[2].width = 23; CommCamera::rect[2].height = 18;
-    CommCamera::rect[3].upperLeftX =  12; CommCamera::rect[3].upperLeftY = 19; CommCamera::rect[3].width =  7; CommCamera::rect[3].height = 18;
-    CommCamera::rect[4].upperLeftX =  12; CommCamera::rect[4].upperLeftY = 38; CommCamera::rect[4].width =  7; CommCamera::rect[4].height = 18;
-    CommCamera::rect[5].upperLeftX = 132; CommCamera::rect[5].upperLeftY = 51; CommCamera::rect[5].width = 15; CommCamera::rect[5].height = 18;
-    CommCamera::rect[6].upperLeftX =  12; CommCamera::rect[6].upperLeftY = 57; CommCamera::rect[6].width =  7; CommCamera::rect[6].height = 18;
-    CommCamera::rect[7].upperLeftX = 132; CommCamera::rect[7].upperLeftY = 70; CommCamera::rect[7].width = 11; CommCamera::rect[7].height = 18;
-	*/
-    // End
 }
 
 MainWindow::~MainWindow()
@@ -93,6 +76,20 @@ void MainWindow::timerEvent(QTimerEvent *event)
     ui->camWidget->refreshView();
     this->fillTable();
 	
+	ui->currentAngleBox->setText(QString::number(this->m_Car.m_Cam.m_Detector.angle) + "°");
+	
+	qDebug() << "A: " << QString::number(-(ui->camWidget->m_fDegree));
+	this->m_Car.m_Motor.SetAngle(-(ui->camWidget->m_fDegree));
+	
+	if (this->testVar)
+	{
+		this->m_Car.m_Motor.SetForce(20);
+	} else {
+		this->m_Car.m_Motor.SetForce(0);
+	}
+	
+	this->m_Car.m_Motor.Send();
+	
 	/*CamBuffer cambuff = this->m_Car.m_Cam.GetBuffer();
 	ui->colorRedBox->setText(QString::number((int) cambuff.m_buffRects[0].color.red));
 	ui->colorGreenBox->setText(QString::number((int) cambuff.m_buffRects[0].color.green));
@@ -104,14 +101,14 @@ void MainWindow::on_testButton_clicked()
 	testVar = !testVar;
 	const int angle = ui->angleBox->value();
 	
-	this->m_Car.m_Motor.SetAngle(angle);	
+	//this->m_Car.m_Motor.SetAngle(angle);	
 	
 	if (testVar)
-		this->m_Car.m_Motor.SetForce(0);
+		this->m_Car.m_Motor.SetForce(15);
 	else
 		this->m_Car.m_Motor.SetForce(0);
 	
-	this->m_Car.m_Motor.Send();
+	//this->m_Car.m_Motor.Send();
 }
 
 void MainWindow::on_connectButton_clicked()

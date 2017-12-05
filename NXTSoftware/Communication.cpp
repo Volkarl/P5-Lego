@@ -118,7 +118,7 @@ void Communication::sendData(unsigned char *data)
 	}
 
 	data[offset++] = drive->data.speed;
-	data[offset++] = drive->getTurnCount();
+	data[offset++] = (unsigned char) drive->getTurnCount();
 	data[offset++] = drive->data.halt;
 	// Color Sensor
 	data[offset++] = drive->data.color.red;
