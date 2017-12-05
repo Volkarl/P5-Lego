@@ -4,7 +4,9 @@
 
 #include "BusStopDetectionComponent.h"
 
-BusStopDetectionComponent::BusStopDetectionComponent() = default;
+BusStopDetectionComponent::BusStopDetectionComponent(IColourSensorController colorSensor){
+    ColourSensor = colorSensor;
+}
 
 BusStopDetectionComponent::~BusStopDetectionComponent() = default;
 

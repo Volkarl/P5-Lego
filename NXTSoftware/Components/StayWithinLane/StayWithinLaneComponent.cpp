@@ -4,7 +4,9 @@
 
 #include "StayWithinLaneComponent.h"
 
-SpeedZoneDetectionComponent::SpeedZoneDetectionComponent() = default;
+SpeedZoneDetectionComponent::SpeedZoneDetectionComponent(ILaneTrackingController laneTrackingSensor) {
+    LaneTrackingSensor = laneTrackingSensor;
+}
 
 SpeedZoneDetectionComponent::~SpeedZoneDetectionComponent() = default;
 

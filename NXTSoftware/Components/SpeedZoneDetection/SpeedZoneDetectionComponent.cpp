@@ -4,7 +4,9 @@
 
 #include "SpeedZoneDetectionComponent.h"
 
-StayWithinLaneComponent::StayWithinLaneComponent() = default;
+StayWithinLaneComponent::StayWithinLaneComponent(IColourSensorController colourSensor) {
+    ColorSensor = colourSensor;
+}
 
 StayWithinLaneComponent::~StayWithinLaneComponent() = default;
 

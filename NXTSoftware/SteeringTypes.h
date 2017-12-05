@@ -27,14 +27,20 @@ class SteeringCommand
 public:
     int SpeedRotationsPerMin;
     int OverDistance;
-    Turn turn;
+    TurnData Turn;
 };
 
 enum class Direction { Left, Right };
 
-class Turn
+class TurnData
 {
 public:
     Direction TurnDirection;
     int TurnDegrees;
+};
+
+class SpeedZone
+{
+public:
+    int SpeedRpm;
 };

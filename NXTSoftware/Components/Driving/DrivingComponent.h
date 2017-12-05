@@ -11,6 +11,8 @@
 #include "../BusStopDetection/BusStopDetectionComponent.h"
 #include "../SpeedZoneDetection/SpeedZoneDetectionComponent.h"
 
+#include "../../SensorControllers/ISensorController.h"
+
 class Driving : IDriving {
 public:
     Driving();
@@ -26,19 +28,22 @@ public:
 
 private:
     // Components
-    StayWithinLaneComponent LaneCalculator;
-    ObstacleDetectionComponent ObstacleCalculator;
-    BusStopDetectionComponent BusStopCalculator;
-    SpeedZoneDetectionComponent SpeedZoneCalculator;
+    IStayWithinLaneComponent LaneCalculator;
+    IObstacleDetectionComponent ObstacleCalculator;
+    IBusStopDetectionComponent BusStopCalculator;
+    ISpeedZoneDetectionComponent SpeedZoneCalculator;
 
-    // Steering Sequences
-    SteeringSequence StayWithinLaneSuggestion;
+    // Component Results
     SteeringSequence ObstacleDetectionSuggestion;
     SteeringSequence BusStopSuggestion;
-    SteeringSequence SpeedZoneSuggestion;
+    Turn StayWithinLaneSuggestion;
+    SpeedZone CurrentSpeedZone;
 
-    // SteeringController
-    SteeringController SteeringControl;
+    // Sensor Controllers
+    ISteeringController SteeringControl;
+    IObstacleDetectionController ObstacleDetectionControl;
+    ILineTrackingController CameraControl;
+    IColourSensorController ColourControl;
 };
 
 #endif //P5_LEGO_DRIVING_H

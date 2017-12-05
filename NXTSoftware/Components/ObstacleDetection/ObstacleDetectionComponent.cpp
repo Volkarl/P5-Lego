@@ -4,7 +4,9 @@
 
 #include "ObstacleDetectionComponent.h"
 
-ObstacleDetectionComponent::ObstacleDetectionComponent() = default;
+ObstacleDetectionComponent::ObstacleDetectionComponent(IObstacleDetectionController obstacleDetectionSensor) {
+    ObstacleDetectionSensor = obstacleDetectionSensor;
+}
 
 ObstacleDetectionComponent::~ObstacleDetectionComponent() = default;
 

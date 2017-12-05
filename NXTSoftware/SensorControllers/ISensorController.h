@@ -14,39 +14,32 @@ public:
     virtual ~ISensorController() = 0;
 };
 
-class IMotorController : public ISensorController
+class ISteeringController : public ISensorController
 {
     // The inherited calibrate-method handles things like centering the wheels of the bus during setup
 public:
     virtual void SetSpeed(int rpm) = 0;
-    virtual void SetTurningAngle(Turn turn) = 0;
-    virtual ~IMotorController() = 0;
+    virtual void SetTurningAngle(TurnData turn) = 0;
+    virtual ~ISteeringController() = 0;
 
     int CurrentSpeedRpm;
-    Turn CurrentTurningAngle;
+    TurnData CurrentTurningAngle;
 };
 
-class IUltrasonicSensorController : public ISensorController
+class IObstacleDetectionController : public ISensorController
 {
 public:
     virtual int GetDistance() = 0;
-    virtual ~IUltrasonicSensorController() = 0;
+    virtual ~IObstacleDetectionController() = 0;
     // This method sorts out invalid measurements and finds the median to remove sensor inaccuracies and more
     // Returns -1 if no objects are in range; not 255 which is the ultrasonic sensor standard return value
 };
 
-class INxtCamLineTrackingController : public ISensorController
+class ILaneTrackingController : public ISensorController
 {
 public:
     virtual std::vector<Vector2> TrackLanes() = 0;
-    virtual ~INxtCamLineTrackingController() = 0;
-
-    double CameraDistanceFromBusAxisY;
-    // Elevation of the camera from the ground
-    double CameraDistanceFromBusAxisZ;
-    // How far the camera is ahead of the bus
-
-//NEEDS CAMERA HEIGHT IN ITS CONSTRUCTOR
+    virtual ~ILaneTrackingController() = 0;
 };
 
 class ISoundSignalController : public ISensorController

@@ -6,14 +6,18 @@
 #define P5_LEGO_OBSTACLEDETECTIONCOMPONENT_H
 
 #include "../IComponents.h"
+#include "../../SensorControllers/ISensorController.h"
 
 class ObstacleDetectionComponent : IObstacleDetectionComponent {
 public:
-    ObstacleDetectionComponent();
+    ObstacleDetectionComponent(IObstacleDetectionController obstacleDetectionSensor);
     ~ObstacleDetectionComponent() override;
 
     SteeringSequence CalculateSteering() override;
     void CalibrateSensors() override ;
+
+private:
+    IObstacleDetectionController ObstacleDetectionSensor;
 };
 
 #endif //P5_LEGO_OBSTACLEDETECTIONCOMPONENT_H

@@ -26,49 +26,33 @@ public:
     int CurrentSteeringSequenceIndex;
 };
 
-class ISteeringSuggestionComponent
-{
-public:
-    virtual SteeringSequence CalculateSteering() = 0;
-    virtual void CalibrateSensors() = 0;
-    virtual ~ISteeringSuggestionComponent() = default;
-};
 
-class IStayWithinLaneComponent : public ISteeringSuggestionComponent
+class IStayWithinLaneComponent
 {
 public:
     virtual ~IStayWithinLane() = 0;
+    virtual TurnData CalculateSteering() = 0;
 };
 
-class IObstacleDetectionComponent : public ISteeringSuggestionComponent
+class IObstacleDetectionComponent
 {
 public:
     virtual ~IObstacleDetection() = default;
+    virtual SteeringSequence CalculateSteering() = 0;
 };
 
-class IBusStopDetectionComponent : public ISteeringSuggestionComponent
+class IBusStopDetectionComponent
 {
 public:
     virtual ~IBusStopDetection() = default;
+    virtual SteeringSequence CalculateSteering() = 0;
 };
 
-class ISpeedZoneDetectionComponent : public ISteeringSuggestionComponent
+class ISpeedZoneDetectionComponent
 {
 public:
     virtual ~ISpeedZoneDetection() = default;
-};
-
-
-/////////////// Other Stuff /////////////////
-class IManoeuvre
-{
-    // The class containing high-level manoeuvres
-public:
-    virtual static SteeringSequence StopAtBusStop() = 0;
-    virtual static SteeringSequence DriveFromBusStop() = 0;
-
-    virtual ~IManoeuvre() = default;
-    // Todo: Do I need this class? I could put it all into bus stop component
+    virtual SpeedZone CalculateSteering() = 0;
 };
 
 #endif //P5_LEGO_ICOMPONENTS_H
