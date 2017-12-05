@@ -31,9 +31,14 @@ private:
     BusStopDetectionComponent BusStopCalculator;
     SpeedZoneDetectionComponent SpeedZoneCalculator;
 
-    // Steering Sequences Ordered by Priority
-    SteeringSequence SuggestedSteeringSequences [4];
-    // Todo: THIS SHOULD NOT JUST BE AN ARRAY! I want to be able access them by typing in the sender enum, but also access their priorities somehow.
+    // Steering Sequences
+    SteeringSequence StayWithinLaneSuggestion;
+    SteeringSequence ObstacleDetectionSuggestion;
+    SteeringSequence BusStopSuggestion;
+    SteeringSequence SpeedZoneSuggestion;
+
+    // SteeringController
+    SteeringController SteeringControl;
 };
 
 #endif //P5_LEGO_DRIVING_H

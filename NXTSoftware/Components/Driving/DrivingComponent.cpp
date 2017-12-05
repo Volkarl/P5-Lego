@@ -34,6 +34,18 @@ void Driving::Steer() {
 /* Executes the current index of the top-priority SteeringSequence with the MotorController
 Then increments the index or removes the SteeringSequence entry */
 
+    if(ObstacleDetectionSuggestion != nullptr)
+        ExecuteSteeringCommand(ObstacleDetectionSuggestion);
+
+    // ObstacleDetectionSuggestion > StayWithinLaneSuggestion > BusStopSuggestion > SpeedZoneSuggestion ???
+    // SpeedZone sets a speed, that can only be temporarily increased by ObstacleDetection
+    // It can be decreased by busstop as well though
+    // StayWithinLane decides turn, but this
+}
+
+void Driving::ExecuteSteeringCommand(SteeringSequence sequence){
+    if(sequence == nullptr) return;
+    if(sequence.GetNewActiveCommand(SteeringControl.GetCmDrivenSinceLast()))
 }
 
 void Driving::InitializeSystem() {
