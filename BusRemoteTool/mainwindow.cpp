@@ -93,10 +93,10 @@ void MainWindow::timerEvent(QTimerEvent *event)
     ui->camWidget->refreshView();
     this->fillTable();
 	
-	CamBuffer cambuff = this->m_Car.m_Cam.GetBuffer();
+	/*CamBuffer cambuff = this->m_Car.m_Cam.GetBuffer();
 	ui->colorRedBox->setText(QString::number((int) cambuff.m_buffRects[0].color.red));
 	ui->colorGreenBox->setText(QString::number((int) cambuff.m_buffRects[0].color.green));
-	ui->colorBlueBox->setText(QString::number((int) cambuff.m_buffRects[0].color.blue));
+	ui->colorBlueBox->setText(QString::number((int) cambuff.m_buffRects[0].color.blue));*/
 }
 
 void MainWindow::on_testButton_clicked()
@@ -104,12 +104,10 @@ void MainWindow::on_testButton_clicked()
 	testVar = !testVar;
 	const int angle = ui->angleBox->value();
 	
+	this->m_Car.m_Motor.SetAngle(angle);	
+	
 	if (testVar)
-	{
-		this->m_Car.m_Motor.SetForce(40);
-		//this->m_Car.m_Motor.SetAngle(0);
-		this->m_Car.m_Motor.SetAngle(angle);
-	}
+		this->m_Car.m_Motor.SetForce(0);
 	else
 		this->m_Car.m_Motor.SetForce(0);
 	

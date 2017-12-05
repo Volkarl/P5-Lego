@@ -11,17 +11,20 @@ void Detector::MarkData(CamBuffer& cambuff) {
 
 	RectangleF closestwall;
 	bool evac = false;
-	for (int i = 0; i < cambuff.m_iCount && cambuff.m_iCount < 8; i++) {
+	for (int i = 0; i < cambuff.m_iCount && cambuff.m_iCount <= 8; i++)
+	{
 		Rectangle_T& rawwall = cambuff.m_buffRects[i];
 		RectangleF wall(rawwall);
 
 		if (collision.Intersects(wall)) {
-			rawwall.objColor = 1; // TODO: add a field or alike to mark collision instead
+			rawwall.collision = true;
 			evac = true;
 
 			if (closestwall.y + closestwall.h < wall.y + wall.h) {
 				closestwall = wall;
 			}
+		} else {
+			rawwall.collision = false;
 		}
 	}
 

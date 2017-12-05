@@ -15,13 +15,14 @@ Communication::Communication(Usb* usbobj, Camera* cam, ColorSensor* colorSensor,
 	this->camera = cam;
 	this->color = colorSensor;
 	this->drive = drive;
+
+	memset(data, 0, Usb::MAX_USB_DATA_LENGTH); // flush buffer
 }
 
 void Communication::handle()
 {
 	if (this->usb->isConnected()) // check usb connection
 	{
-		memset(data, 0, Usb::MAX_USB_DATA_LENGTH); // flush buffer
 		U32 len = usb->receive(this->data, 0, Usb::MAX_USB_DATA_LENGTH); // receive data
 
 		if (len > 0)
@@ -34,11 +35,10 @@ void Communication::handle()
 				this->sendCameraData(this->data);
 			else if (type == PACKET_POLL)
 				this->sendData(this->data);
+			else if (type == PACKET_DRIVE) // TEST
+				this->driveCmd(this->data);
 
-			/*else if (type == PACKET_TEST)
-				this->getCameraLineTest(this->data);
-			else if (type == PACKET_DRIVE)
-				this->driveCmd(this->data);*/
+			memset(data, 0, Usb::MAX_USB_DATA_LENGTH); // flush buffer
 		}
 
 	}
@@ -131,29 +131,22 @@ void Communication::sendData(unsigned char *data)
 
 void Communication::sendCameraData(unsigned char *data)
 {
-	int amountOfObjects = 0;
 	size_t offset = 0;
 	Camera::Rectangle_T rec;
 	data[0] = PACKET_END; data[1] = '\0'; // TODO: Ditch this? Seems a bit odd when you look at the next if clause
 
-	//camera.update();
-	//clock.wait(10); // Wait for camera data, we can possibly lower the time waited
-
 	int numOfObjects = camera->getNumberOfObjects();
 
-	if (numOfObjects >= 1 && numOfObjects <= 8)
-		amountOfObjects = numOfObjects;
-	else
+	if (numOfObjects < 1 && numOfObjects > 8)
 	{
 		data[0] = 0;
 		usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 		return;
 	}
 
-	data[offset++] = amountOfObjects;
+	data[offset++] = numOfObjects;
 
-
-	for (int i = 0; i < amountOfObjects; i++)
+	for (int i = 0; i < numOfObjects; i++)
 	{
 		camera->getRectangle(i, &rec);
 		data[offset++] = rec.width;
