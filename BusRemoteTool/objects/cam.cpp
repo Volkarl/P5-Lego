@@ -1,88 +1,56 @@
 #include "cam.h"
-
 #include <QDebug>
 
-Cam::Cam(NXTCommunication &comm) : m_nxtComm(comm) {
+Cam::Cam(NXTCommunication* comm) : m_nxtComm(comm), m_camBuffer() {
 	for (int i = 0; i < CAM_OFFSET_BUFFER_SIZE; i++) {
-		this->m_iOffsetBuffer[i] = 0;
+ 		this->m_Detector.m_iOffsetBuffer[i] = 0;
 	}
+}
+
+CamBuffer Cam::GetBuffer() const {
+	return this->m_camBuffer;
 }
 
 bool Cam::UpdateSight() {
 	char buff[MAX_DATA_LEN];
-	this->m_nxtComm.SendPacket(PACKET_POLL); // Previously PACKET_CAM
-	this->m_nxtComm.Receive(buff, MAX_DATA_LEN);
+	int speed, angle, halt;
 	
+	this->m_nxtComm->SendPacket(PACKET_POLL); // Previously PACKET_CAM
+	this->m_nxtComm->Receive(buff, MAX_DATA_LEN);
+
 	int offset = 0;
-	int count = (int)buff[offset++];
-	
+	CamBuffer newbuff;
+
+	newbuff.m_iCount = (int) buff[offset++];
+
 	// If either ending, or not within 0 - 8 bounds
-	if (count == PACKET_END || count > 8 || count < 0) {
+	if (newbuff.m_iCount == PACKET_END || newbuff.m_iCount > 8 || newbuff.m_iCount < 0) {
+		newbuff.m_iCount = 0; // TODO
 		return false;
 	}
 
-	this->m_lstObjects.clear();
-	for (int i = 0; i < count; i++) {
-		Rectangle_T rect;
+	for (int i = 0; i < newbuff.m_iCount; i++) {
+		Rectangle_T &rect = newbuff.m_buffRects[i];
 
-		rect.width = (unsigned char)buff[offset++];
-		rect.height = (unsigned char)buff[offset++];
-		rect.upperLeftX = (unsigned char)buff[offset++];
-		rect.upperLeftY = (unsigned char)buff[offset++];
-		rect.objColor = (unsigned char)buff[offset++];
+		rect.width = (unsigned char) buff[offset++];
+		rect.height = (unsigned char) buff[offset++];
+		rect.upperLeftX = (unsigned char) buff[offset++];
+		rect.upperLeftY = (unsigned char) buff[offset++];
+		rect.objColor = (unsigned char) buff[offset++];
+		
+		// Validate and vars
+		speed = (unsigned char) buff[offset++];
+		angle = (unsigned char) buff[offset++];
+		halt = (unsigned char) buff[offset++];
+		
+		rect.color.red = (unsigned char) buff[offset++];
+		rect.color.green = (unsigned char) buff[offset++];
+		rect.color.blue = (unsigned char) buff[offset++];
 
 		rect.objColor = 0; // TODO: temp for marking collision, problem is modifying Rectangle_T
-		
-		this->m_lstObjects.push_back(rect);
 	}
-	
-	int carwidth = 80; // TODO: Modify value
-	
-	RectangleF collision;
-	collision.x = (float)(this->c_CamWidth / 2 - carwidth / 2);
-	collision.y = 0.0f;
-	collision.w = (float)carwidth;
-	collision.h = (float)this->c_CamHeight;
-	
-	RectangleF closestwall;
-	bool evac = false;
-	for (Rectangle_T& rawwall : this->m_lstObjects) {
-		RectangleF wall(rawwall);
-		
-		if (collision.Intersects(wall)) {
-			rawwall.objColor = 1; // TODO: add a field or alike to mark collision instead
-			evac = true;
-			
-			if (closestwall.y + closestwall.h < wall.y + wall.h) {
-				closestwall = wall;
-			}
-		}
-	}
-	
-	int curoffset = 0;
-	if (evac) {
-		curoffset = (this->c_CamWidth / 2) - (closestwall.x + closestwall.w / 2);
-	}
-	
-	for (int i = 0; i < CAM_OFFSET_BUFFER_SIZE - 1; i++) {
-		this->m_iOffsetBuffer[i] = this->m_iOffsetBuffer[i + 1];
-	}
-	
-	this->m_iOffsetBuffer[CAM_OFFSET_BUFFER_SIZE - 1] = curoffset;
-}
 
-DirectionType Cam::ShouldEvade() const {
-	int balancedoffset = 0;
-	for (int i = 0; i < CAM_OFFSET_BUFFER_SIZE; i++) {
-		balancedoffset += this->m_iOffsetBuffer[i];
-	}
-	balancedoffset /= CAM_OFFSET_BUFFER_SIZE;
-		
-	if (balancedoffset == 0) {
-		return DirectionType::None;
-	} else if (balancedoffset < 0) {
-		return DirectionType::Left;
-	} else {
-		return DirectionType::Right;
-	}
+	this->m_camBuffer = newbuff;
+	
+	return true;
 }

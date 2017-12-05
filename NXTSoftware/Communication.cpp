@@ -9,10 +9,11 @@
 
 using namespace ecrobot;
 
-Communication::Communication(Usb* usbobj, Camera* cam, Driving* drive)
+Communication::Communication(Usb* usbobj, Camera* cam, ColorSensor* colorSensor, Driving* drive)
 {
 	this->usb = usbobj;
 	this->camera = cam;
+	this->color = colorSensor;
 	this->drive = drive;
 }
 
@@ -119,6 +120,10 @@ void Communication::sendData(unsigned char *data)
 	data[offset++] = drive->data.speed;
 	data[offset++] = drive->getTurnCount();
 	data[offset++] = drive->data.halt;
+	// Color Sensor
+	data[offset++] = drive->data.color.red;
+	data[offset++] = drive->data.color.green;
+	data[offset++] = drive->data.color.blue;
 
 	usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 }

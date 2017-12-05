@@ -24,7 +24,9 @@ Motor motorForward(PORT_B);
  */
 Driving::Driving() : data()
 {
-	data.angle = 0, data.speed = 0, data.calibrated = false, data.halt = false; // TODO: Necessary?
+	// TODO: Necessary?
+	data.angle = 0, data.speed = 0, data.calibrated = false, data.halt = false;
+	data.color.red = 0, data.color.green = 0, data.color.blue = 0;
 }
 
 /**
@@ -44,13 +46,11 @@ void Driving::update()
  */
 void Driving::forward()
 {
-	//motorForward.setPWM(FORWARD_SPEED);
 	data.speed = FORWARD_SPEED;
 }
 
 void Driving::forward(int speed)
 {
-	//motorForward.setPWM(speed);
 	data.speed = speed;
 }
 
@@ -59,8 +59,12 @@ void Driving::forward(int speed)
  */
 void Driving::reverse()
 {
-	//motorForward.setPWM(-(FORWARD_SPEED));
 	data.speed = -(FORWARD_SPEED);
+}
+
+void Driving::reverse(int speed)
+{
+	data.speed = -speed;
 }
 
 /**
@@ -68,7 +72,6 @@ void Driving::reverse()
  */
 void Driving::stop()
 {
-	//motorForward.setPWM(0);
 	data.speed = 0;
 }
 
@@ -80,7 +83,8 @@ void Driving::halt()
 {
 	motorForward.setPWM(0);
 	motorTurn.setPWM(0);
-	//data.speed = 0;
+	data.speed = 0;
+
 	data.halt = true;
 }
 

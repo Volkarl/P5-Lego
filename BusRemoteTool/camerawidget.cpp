@@ -34,10 +34,11 @@ void cameraWidget::paintEvent(QPaintEvent *) {
     //painter.setFont(QFont("Arial", 30));
     //painter.drawText(rect(), Qt::AlignCenter, "camera");
 	
-	const std::vector<Rectangle_T>& lines = this->m_Car->m_Cam.m_lstObjects;
+	CamBuffer cambuff = this->m_Car->m_Cam.GetBuffer();
+	this->m_Detector.MarkData(cambuff);
 	
-	for (size_t i = 0; i < lines.size(); i++) {
-		const Rectangle_T& line = lines[i];
+	for (size_t i = 0; i < (size_t)cambuff.m_iCount; i++) {
+		const Rectangle_T& line = cambuff.m_buffRects[i];
 		
         QPoint upperLeft(line.upperLeftX * 2, line.upperLeftY * 2);
         QSize size(line.width * 2, line.height * 2);
@@ -62,8 +63,9 @@ void cameraWidget::paintEvent(QPaintEvent *) {
     //QRect rect1(10, 10, 50, 50);
     //painter.drawRect(rect1);
 
+
     // LETS DRAW
-	DirectionType dirtomove = this->m_Car->m_Cam.ShouldEvade();
+	DirectionType dirtomove = this->m_Detector.ShouldEvade();
 	switch(dirtomove) {
 		case DirectionType::None:
 			if (this->m_fDegree > -0.2 && this->m_fDegree < 0.2) {

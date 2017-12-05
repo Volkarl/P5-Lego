@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "../Shared/Connectivity.h"
 #include "controllers/car.h"
+#include "../Shared/objects/detector.h"
 
 namespace Ui {
 class cameraWidget;
@@ -23,6 +24,7 @@ protected:
     virtual void paintEvent(QPaintEvent *event) override;
 
 private:
+	Detector m_Detector;
     Ui::cameraWidget *ui;
 	float m_fDegree;
 };

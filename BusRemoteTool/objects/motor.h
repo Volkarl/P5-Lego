@@ -5,12 +5,12 @@
 
 class Motor {
 private:
-	NXTCommunication& m_nxtComm;
+	NXTCommunication* m_nxtComm;
 	int driveSpeed;
 	int driveAngle;
 
 public:
-	Motor(NXTCommunication& comm);
+	Motor(NXTCommunication* comm);
 
 	bool SetForce(int force);
 	bool SetAngle(int angle);
