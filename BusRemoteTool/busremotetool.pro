@@ -32,7 +32,8 @@ SOURCES += \
     objects/cam.cpp \
     objects/motor.cpp \
     objects/nxtcommunication.cpp \
-    objects/rectangle.cpp
+    ../Shared/objects/rectangle.cpp \
+	../Shared/objects/detector.cpp
 
 HEADERS += \
     includes/nxtcommfantom/fantom/iFile.h \
@@ -56,7 +57,9 @@ HEADERS += \
     objects/cam.h \
     objects/motor.h \
     objects/nxtcommunication.h \
-    objects/rectangle.h
+    ../Shared/objects/rectangle.h \
+	../Shared/objects/detector.h \
+    ../Shared/objects/camtools.h
 
 INCLUDEPATH += \
     $$PWD/../Shared

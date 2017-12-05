@@ -1,12 +1,14 @@
 #ifndef CAR_H
 #define CAR_H
 
-#include "../objects/cam.h"
+#include "objects/cam.h"
 #include "../objects/motor.h"
+#include "../Shared/objects/detector.h"
 
 class Car {
 public:
 	NXTCommunication m_nxtComm;
+	CamBuffer m_camBuffer;
 	Cam m_Cam;
     Motor m_Motor;
 	

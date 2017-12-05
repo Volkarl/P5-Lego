@@ -2,6 +2,7 @@
 #define TEST_DRIVING_H
 
 #include "Motor.h"
+#include "../Shared/Connectivity.h"
 
 
 #define TURN_ANGLE 25
@@ -20,6 +21,8 @@ struct DrivingData {
 	int speed;
 	int angle;
 	bool calibrated;
+
+	RGB color;
 };
 
 namespace ecrobot {
@@ -34,6 +37,8 @@ namespace ecrobot {
 			void forward();
 			void forward(int speed);
 			void reverse();
+			void reverse(int speed);
+
 			void stop();
 			void halt();
 

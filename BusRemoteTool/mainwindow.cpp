@@ -73,11 +73,11 @@ void MainWindow::fillTable()
 {
 	this->setupTable();
 	
-	std::vector<Rectangle_T>& lines = this->m_Car.m_Cam.m_lstObjects;
-	ui->tableWidget->setRowCount(lines.size());
+	CamBuffer cambuff = this->m_Car.m_Cam.GetBuffer();
+	ui->tableWidget->setRowCount(cambuff.m_iCount);
 	
-	for (int i = 0; i < lines.size(); i++) {
-		const Rectangle_T& line = lines[i];
+	for (size_t i = 0; i < (size_t)cambuff.m_iCount; i++) {
+		const Rectangle_T& line = cambuff.m_buffRects[i];
 		
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(line.width)));
         ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(line.height)));
@@ -92,6 +92,11 @@ void MainWindow::timerEvent(QTimerEvent *event)
 	this->m_Car.Update();
     ui->camWidget->refreshView();
     this->fillTable();
+	
+	CamBuffer cambuff = this->m_Car.m_Cam.GetBuffer();
+	ui->colorRedBox->setText(QString::number((int) cambuff.m_buffRects[0].color.red));
+	ui->colorGreenBox->setText(QString::number((int) cambuff.m_buffRects[0].color.green));
+	ui->colorBlueBox->setText(QString::number((int) cambuff.m_buffRects[0].color.blue));
 }
 
 void MainWindow::on_testButton_clicked()

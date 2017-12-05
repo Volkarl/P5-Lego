@@ -1,6 +1,6 @@
 #include "motor.h"
 
-Motor::Motor(NXTCommunication &comm) : m_nxtComm(comm) {
+Motor::Motor(NXTCommunication* comm) : m_nxtComm(comm) {
 	this->driveAngle = 0;
 	this->driveSpeed = 0;
 }
@@ -31,5 +31,5 @@ bool Motor::Send()
 	buff[2] = this->driveAngle;
 	buff[3] = '\0';
 	
-	return this->m_nxtComm.SendArray(buff, 4);
+	return this->m_nxtComm->SendArray(buff, 4);
 }

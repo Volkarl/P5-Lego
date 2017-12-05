@@ -12,6 +12,7 @@
 #include "Clock.h"
 #include "Camera.h"
 #include "SonarSensor.h"
+#include "ColorSensor.h"
 #include "Usb.h"
 
 using namespace ecrobot;
@@ -33,8 +34,9 @@ DeclareEvent(EventSleep);
 /**
  * Input
  */
-Camera camera(PORT_1);
-SonarSensor sonar(PORT_4);
+Camera camera(PORT_4);
+ColorSensor colorSensor(PORT_1);
+SonarSensor sonar(PORT_2);
 int distance;
 
 /**
@@ -42,7 +44,7 @@ int distance;
  */
 Driving driving;
 Usb usb;
-Communication communication(&usb, &camera, &driving);
+Communication communication(&usb, &camera, &colorSensor, &driving);
 
 /**
  * NXT Objects
@@ -75,6 +77,21 @@ TASK(TaskUpdateCam)
 
 TASK(TaskUpdateSonar)
 {
+	S16 color[3];
+
+	colorSensor.getRawColor(color);
+
+	// Validate
+	if (color[0] < 0 && color[0] > 255 &&
+		color[1] < 0 && color[1] > 255 &&
+		color[2] < 0 && color[2] > 255)
+	{ return; }
+
+	driving.data.color.red = color[0];
+	driving.data.color.green = color[1];
+	driving.data.color.blue = color[2];
+
+
     distance = sonar.getDistance();
 	if (distance < 10)
 		driving.halt();
@@ -108,8 +125,6 @@ TASK(TaskMain)
 	clock.wait(25);
 	camera.enableTracking(true);
     SetRelAlarm(AlarmUpdateCam, 25, 400);
-
-	driving.calibrate();
 	SetRelAlarm(AlarmDrivingUpdate, 150, 150);
 
 	while(1)

@@ -42,4 +42,4 @@ class ColourSensorController : IColourSensorController
 			return(0);
 		}
 	}
-}
+};
