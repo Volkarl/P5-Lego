@@ -35,7 +35,11 @@ Driving::Driving() : data()
 void Driving::update()
 {
 	if (data.halt)
+	{
+		motorForward.setPWM(0);
+		motorTurn.setPWM(0);
 		return;
+	}
 
 	motorForward.setPWM(data.speed);
 	this->setTurnAngle(data.angle);
@@ -81,10 +85,6 @@ void Driving::stop()
  */
 void Driving::halt()
 {
-	motorForward.setPWM(0);
-	motorTurn.setPWM(0);
-	data.speed = 0;
-
 	data.halt = true;
 }
 
@@ -116,7 +116,7 @@ void Driving::calibrate()
 		// Right
 		if (direction == 1)
 		{
-			motorTurn.setPWM(TURN_SPEED);
+			motorTurn.setPWM(TURN_SPEED + 5);
 			count = this->getTurnCount();
 
 			// Take account for jitter, albeit probably stupid
@@ -124,12 +124,12 @@ void Driving::calibrate()
 				rightPos = lastPos;
 				lastPos = INT_MAX;
 				direction = -1;
-				motorTurn.setPWM(-TURN_SPEED);
+				motorTurn.setPWM(-TURN_SPEED - 5);
 			}
 
 		// Left
 		} else if (direction == -1) {
-			motorTurn.setPWM(-TURN_SPEED);
+			motorTurn.setPWM(-TURN_SPEED - 5);
 			count = this->getTurnCount();
 
 			// Take account for jitter, albeit probably stupid
@@ -223,13 +223,13 @@ bool Driving::setTurnAngle(int angle)
 
 	if (!this->isAtAngle(angle))
 	{
-
-		if (count <= angle + TURN_JITTER)
+		if (count < angle + TURN_JITTER) {
 			motorTurn.setPWM(TURN_SPEED);
-		else if (count >= angle - TURN_JITTER)
+		} else if (count > angle - TURN_JITTER) {
 			motorTurn.setPWM(-TURN_SPEED);
-		else
+		} else {
 			motorTurn.setPWM(0); // If we get in here something is broken
+		}
 
 	} else {
 		motorTurn.setPWM(0);

@@ -1,7 +1,7 @@
 #include "detector.h"
 
 void Detector::MarkData(CamBuffer& cambuff) {
-	int carwidth = 80; // TODO: Modify value
+	int carwidth = 105; // TODO: Modify value
 
 	RectangleF collision;
 	collision.x = (float)(this->c_CamWidth / 2 - carwidth / 2);

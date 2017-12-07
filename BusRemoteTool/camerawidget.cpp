@@ -65,29 +65,32 @@ void cameraWidget::paintEvent(QPaintEvent *) {
     //painter.drawRect(rect1);
 
 
+	const float turnMultiplier = 1.5f;
+	const float maxTurnAngle = 46.0f;
+	
     // LETS DRAW
 	DirectionType dirtomove = this->m_Detector.ShouldEvade();
 	switch(dirtomove) {
 		case DirectionType::None:
-			if (this->m_fDegree > -0.2 && this->m_fDegree < 0.2) {
+			if (this->m_fDegree > -1.0f && this->m_fDegree < 1.0f) {
 				this->m_fDegree = 0;
 			} else {
-				if (this->m_fDegree > 0) this->m_fDegree -= 0.8f;
-				else if (this->m_fDegree < 0) this->m_fDegree += 0.8f;
+				if (this->m_fDegree > 0) this->m_fDegree -= turnMultiplier;
+				else if (this->m_fDegree < 0) this->m_fDegree += turnMultiplier;
 			}
 			break;
 			
 		case DirectionType::Left:
-			this->m_fDegree -= 0.8f;
+			this->m_fDegree -= turnMultiplier;
 			break;
 			
 		case DirectionType::Right:
-			this->m_fDegree += 0.8f;
+			this->m_fDegree += turnMultiplier;
 			break;
 	}
 	
-	if (this->m_fDegree > 35.0f) this->m_fDegree = 35.0f;
-	if (this->m_fDegree < -35.0f) this->m_fDegree = -35.0f;
+	if (this->m_fDegree > maxTurnAngle) this->m_fDegree = maxTurnAngle;
+	if (this->m_fDegree < -maxTurnAngle) this->m_fDegree = -maxTurnAngle;
 	
 	QLineF angleline;
 	angleline.setP1(QPointF(this->width() / 2, this->height() - 30));

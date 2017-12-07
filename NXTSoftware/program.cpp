@@ -93,7 +93,7 @@ TASK(TaskUpdateSonar)
 
 
     distance = sonar.getDistance();
-	if (distance < 10)
+	if (distance < 15 && distance > 5)
 		driving.halt();
 	else
 		driving.data.halt = false; // TODO: Change to new function
@@ -124,7 +124,7 @@ TASK(TaskMain)
 	camera.sendCommand('X'); // Sort NONE
 	clock.wait(25);
 	camera.enableTracking(true);
-    SetRelAlarm(AlarmUpdateCam, 25, 400);
+    SetRelAlarm(AlarmUpdateCam, 25, 350);
 	SetRelAlarm(AlarmDrivingUpdate, 150, 150);
 
 	while(1)

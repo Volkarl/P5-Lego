@@ -79,16 +79,32 @@ void MainWindow::timerEvent(QTimerEvent *event)
 	ui->currentAngleBox->setText(QString::number(this->m_Car.m_Cam.m_Detector.angle) + "°");
 	
 	qDebug() << "A: " << QString::number(-(ui->camWidget->m_fDegree));
+	
+	if (testVar)
+		this->m_Car.m_Motor.SetForce(38);
+	else
+		this->m_Car.m_Motor.SetForce(0);
+	
+	const int angle = ui->angleBox->value();
+	//this->m_Car.m_Motor.SetAngle(angle);	
 	this->m_Car.m_Motor.SetAngle(-(ui->camWidget->m_fDegree));
+	
+	this->m_Car.m_Motor.Send();
+	
+	
+	this->m_Car.m_Motor.SetAngle(-(ui->camWidget->m_fDegree));
+	/*
+	//this->m_Car.m_Motor.SetAngle(-45);
 	
 	if (this->testVar)
 	{
-		this->m_Car.m_Motor.SetForce(20);
+		this->m_Car.m_Motor.SetForce(25);
 	} else {
 		this->m_Car.m_Motor.SetForce(0);
 	}
 	
 	this->m_Car.m_Motor.Send();
+	*/
 	
 	/*CamBuffer cambuff = this->m_Car.m_Cam.GetBuffer();
 	ui->colorRedBox->setText(QString::number((int) cambuff.m_buffRects[0].color.red));
@@ -103,10 +119,10 @@ void MainWindow::on_testButton_clicked()
 	
 	//this->m_Car.m_Motor.SetAngle(angle);	
 	
-	if (testVar)
-		this->m_Car.m_Motor.SetForce(15);
+	/*if (testVar)
+		this->m_Car.m_Motor.SetForce(30);
 	else
-		this->m_Car.m_Motor.SetForce(0);
+		this->m_Car.m_Motor.SetForce(0);*/
 	
 	//this->m_Car.m_Motor.Send();
 }

@@ -33,7 +33,10 @@ CPU ATMEL_AT91SAM7S256
 
     TASK TaskUpdateSonar
     {
-        AUTOSTART = FALSE;
+        AUTOSTART = TRUE
+        {
+            APPMODE = appmode1;
+        };
         PRIORITY = 2;
         ACTIVATION = 1;
         SCHEDULE = FULL;
@@ -89,9 +92,9 @@ CPU ATMEL_AT91SAM7S256
     {
         COUNTER = SysTimerCnt;
         ACTION = ACTIVATETASK
-                {
-                        TASK = TaskUpdateSonar;
-                };
+        {
+            TASK = TaskUpdateSonar;
+        };
         AUTOSTART = TRUE{
                 ALARMTIME = 250;
                 CYCLETIME = 400; /* TaskLCD is executed every 500msec */
