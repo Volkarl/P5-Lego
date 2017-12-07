@@ -10,13 +10,16 @@
 
 class SteeringController : public ISteeringController {
 public:
-    SteeringController();
-    ~SteeringController() override;
+    SteeringController(Motor* motorForSpeed, Motor* motorForTurning);
     void SetSpeed(int rpm) override;
     void SetTurningAngle(TurnData turn);
 
     int CurrentSpeedRpm;
     TurnData CurrentTurningAngle;
+
+private:
+    Motor* MotorForSpeed;
+    Motor* MotorForTurning;
 };
 
 

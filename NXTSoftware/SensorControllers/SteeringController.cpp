@@ -4,12 +4,9 @@
 
 #include "SteeringController.h"
 
-SteeringController::SteeringController() {
-
-}
-
-SteeringController::~ISteeringController() {
-
+SteeringController::SteeringController(Motor* motorForSpeed, Motor* motorForTurning) {
+    this->MotorForSpeed = motorForSpeed;
+    this->MotorForTurning = motorForTurning;
 }
 
 void SteeringController::Calibrate() {

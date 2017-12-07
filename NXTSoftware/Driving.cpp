@@ -15,15 +15,17 @@ using namespace ecrobot;
  * PORT_A Turning Engine
  * PORT_B Forward Engine
  */
-Motor motorTurn(PORT_A);
-Motor motorForward(PORT_B);
+//Motor motorTurn(PORT_A);
+//Motor motorForward(PORT_B);
 
 
 /**
  * Constructor
  */
-Driving::Driving() : data()
+Driving::Driving(Motor* motorForSpeed, Motor* motorForTurning) : data()
 {
+	this->motorForward = motorForSpeed;
+	this->motorTurn = motorForTurning;
 	// TODO: Necessary?
 	data.angle = 0, data.speed = 0, data.calibrated = false, data.halt = false;
 	data.color.red = 0, data.color.green = 0, data.color.blue = 0;
@@ -36,12 +38,12 @@ void Driving::update()
 {
 	if (data.halt)
 	{
-		motorForward.setPWM(0);
-		motorTurn.setPWM(0);
+		motorForward->setPWM(0);
+		motorTurn->setPWM(0);
 		return;
 	}
 
-	motorForward.setPWM(data.speed);
+	motorForward->setPWM(data.speed);
 	this->setTurnAngle(data.angle);
 }
 
@@ -94,7 +96,7 @@ void Driving::halt()
  */
 int Driving::getTurnCount()
 {
-	return motorTurn.getCount();
+	return motorTurn->getCount();
 }
 
 /**
@@ -111,12 +113,12 @@ void Driving::calibrate()
 	Clock clock;
 
 	while(1) {
-		count = motorTurn.getCount();
+		count = motorTurn->getCount();
 
 		// Right
 		if (direction == 1)
 		{
-			motorTurn.setPWM(TURN_SPEED + 5);
+			motorTurn->setPWM(TURN_SPEED + 5);
 			count = this->getTurnCount();
 
 			// Take account for jitter, albeit probably stupid
@@ -124,19 +126,19 @@ void Driving::calibrate()
 				rightPos = lastPos;
 				lastPos = INT_MAX;
 				direction = -1;
-				motorTurn.setPWM(-TURN_SPEED - 5);
+				motorTurn->setPWM(-TURN_SPEED - 5);
 			}
 
 		// Left
 		} else if (direction == -1) {
-			motorTurn.setPWM(-TURN_SPEED - 5);
+			motorTurn->setPWM(-TURN_SPEED - 5);
 			count = this->getTurnCount();
 
 			// Take account for jitter, albeit probably stupid
 			if (count >= lastPos - TURN_JITTER && count <= lastPos + TURN_JITTER && count < rightPos - 10) {
 				leftPos = lastPos;
 				direction = -2;
-				motorTurn.setPWM(0);
+				motorTurn->setPWM(0);
 			}
 		}
 		// Center
@@ -145,8 +147,8 @@ void Driving::calibrate()
 			if (count >= (leftPos + rightPos) / 2 - TURN_JITTER && count <= (leftPos + rightPos) / 2 + TURN_JITTER)
 			{
 				direction = 0;
-				motorTurn.setCount(0);
-				motorTurn.setPWM(0);
+				motorTurn->setCount(0);
+				motorTurn->setPWM(0);
 				this->data.calibrated = true;
 
 				break;
@@ -154,9 +156,9 @@ void Driving::calibrate()
 				center = (leftPos + rightPos) / 2;
 
 				if (this->getTurnCount() < center)
-					motorTurn.setPWM(TURN_SPEED);
+					motorTurn->setPWM(TURN_SPEED);
 				else
-					motorTurn.setPWM(-TURN_SPEED);
+					motorTurn->setPWM(-TURN_SPEED);
 			}
 		}
 
@@ -224,15 +226,15 @@ bool Driving::setTurnAngle(int angle)
 	if (!this->isAtAngle(angle))
 	{
 		if (count < angle + TURN_JITTER) {
-			motorTurn.setPWM(TURN_SPEED);
+			motorTurn->setPWM(TURN_SPEED);
 		} else if (count > angle - TURN_JITTER) {
-			motorTurn.setPWM(-TURN_SPEED);
+			motorTurn->setPWM(-TURN_SPEED);
 		} else {
-			motorTurn.setPWM(0); // If we get in here something is broken
+			motorTurn->setPWM(0); // If we get in here something is broken
 		}
 
 	} else {
-		motorTurn.setPWM(0);
+		motorTurn->setPWM(0);
 	}
 
 	return true;

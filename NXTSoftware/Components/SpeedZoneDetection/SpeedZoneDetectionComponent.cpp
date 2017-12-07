@@ -4,11 +4,9 @@
 
 #include "SpeedZoneDetectionComponent.h"
 
-StayWithinLaneComponent::StayWithinLaneComponent(IColourSensorController colourSensor) {
-    ColorSensor = colourSensor;
+StayWithinLaneComponent::StayWithinLaneComponent(IColourSensorController* colourSensor) {
+    this->Colour = colourSensor;
 }
-
-StayWithinLaneComponent::~StayWithinLaneComponent() = default;
 
 SteeringSequence StayWithinLaneComponent::CalculateSteering() {
     return SteeringSequence();

@@ -4,11 +4,9 @@
 
 #include "ObstacleDetectionComponent.h"
 
-ObstacleDetectionComponent::ObstacleDetectionComponent(IObstacleDetectionController obstacleDetectionSensor) {
-    ObstacleDetectionSensor = obstacleDetectionSensor;
+ObstacleDetectionComponent::ObstacleDetectionComponent(IObstacleDetectionController* obstacleDetectionSensor) {
+    this->ObstacleDetectionSensor = obstacleDetectionSensor;
 }
-
-ObstacleDetectionComponent::~ObstacleDetectionComponent() = default;
 
 SteeringSequence ObstacleDetectionComponent::CalculateSteering() {
     return SteeringSequence();

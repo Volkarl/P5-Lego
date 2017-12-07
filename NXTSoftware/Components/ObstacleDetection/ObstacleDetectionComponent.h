@@ -10,14 +10,13 @@
 
 class ObstacleDetectionComponent : IObstacleDetectionComponent {
 public:
-    ObstacleDetectionComponent(IObstacleDetectionController obstacleDetectionSensor);
-    ~ObstacleDetectionComponent() override;
+    ObstacleDetectionComponent(IObstacleDetectionController* obstacleDetectionSensor);
 
     SteeringSequence CalculateSteering() override;
     void CalibrateSensors() override ;
 
 private:
-    IObstacleDetectionController ObstacleDetectionSensor;
+    IObstacleDetectionController* ObstacleDetectionSensor;
 };
 
 #endif //P5_LEGO_OBSTACLEDETECTIONCOMPONENT_H

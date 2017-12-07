@@ -10,14 +10,13 @@
 
 class StayWithinLaneComponent : IStayWithinLaneComponent {
 public:
-    StayWithinLaneComponent(ILaneTrackingController laneTrackingSensor);
-    ~StayWithinLaneComponent() override;
+    StayWithinLaneComponent(ILaneTrackingController* laneTrackingSensor);
 
     SteeringSequence CalculateSteering() override;
     void CalibrateSensors() override;
 
 private:
-    ILaneTrackingController LaneTrackingSensor;
+    ILaneTrackingController* LaneTrackingSensor;
 };
 
 #endif //P5_LEGO_STAYWITHINLANECOMPONENT_H

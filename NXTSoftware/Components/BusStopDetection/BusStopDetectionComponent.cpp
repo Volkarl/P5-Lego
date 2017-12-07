@@ -4,14 +4,13 @@
 
 #include "BusStopDetectionComponent.h"
 
-BusStopDetectionComponent::BusStopDetectionComponent(IColourSensorController colorSensor){
-    ColourSensor = colorSensor;
+BusStopDetectionComponent::BusStopDetectionComponent(IColourSensorController* colorSensor){
+    this->ColourSensor = colorSensor;
 }
-
-BusStopDetectionComponent::~BusStopDetectionComponent() = default;
 
 SteeringSequence BusStopDetectionComponent::CalculateSteering() {
     return SteeringSequence();
+    //todo
 }
 
 void BusStopDetectionComponent::CalibrateSensors() {

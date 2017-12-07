@@ -40,9 +40,15 @@ SonarSensor sonar(PORT_2);
 int distance;
 
 /**
+ *  Output
+ * */
+Motor motorForward(PORT_B);
+Motor motorTurn(PORT_A);
+
+/**
  * Variables
  */
-Driving driving;
+Driving driving(&motorForward, &motorTurn);
 Usb usb;
 Communication communication(&usb, &camera, &colorSensor, &driving);
 

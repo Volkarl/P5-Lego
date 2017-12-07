@@ -10,9 +10,11 @@
 
 class UltrasonicSensorController : public IObstacleDetectionController {
 public:
-    UltrasonicSensorController();
-    ~UltrasonicSensorController() override;
+    UltrasonicSensorController(SonarSensor* ultrasonicSensor);
     int GetDistance() override;
+
+private:
+    SonarSensor* UltrasonicSensor;
 };
 
 #endif //P5_LEGO_ULTRASONICSENSORCONTROLLER_H

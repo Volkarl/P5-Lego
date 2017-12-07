@@ -4,12 +4,8 @@
 
 #include "UltrasonicSensorController.h"
 
-UltrasonicSensorController::UltrasonicSensorController() {
-
-}
-
-UltrasonicSensorController::~IUltrasonicSensorController() {
-
+UltrasonicSensorController::UltrasonicSensorController(SonarSensor* ultrasonicSensor) {
+    this->UltrasonicSensor = ultrasonicSensor;
 }
 
 void UltrasonicSensorController::Calibrate() {

@@ -10,14 +10,13 @@
 
 class SpeedZoneDetectionComponent : ISpeedZoneDetectionComponent {
 public:
-    SpeedZoneDetectionComponent(IColourSensorController colourSensor);
-    ~SpeedZoneDetectionComponent() override;
+    SpeedZoneDetectionComponent(IColourSensorController* colourSensor);
 
     SteeringSequence CalculateSteering() override;
     void CalibrateSensors() override ;
 
 private:
-    IColourSensorController ColourSensor;
+    IColourSensorController* ColourSensor;
 };
 
 #endif //P5_LEGO_SPEEDZONEDETECTIONCOMPONENT_H

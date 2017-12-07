@@ -4,13 +4,11 @@
 
 #include "NxtCamLineTrackingController.h"
 
-NxtCamLineTrackingController::NxtCamLineTrackingController(double CameraDistanceFromBusAxisY,
-                                                           double CameraDistanceFromBusAxisZ) {
-
-}
-
-NxtCamLineTrackingController::~INxtCamLineTrackingController() {
-
+NxtCamLineTrackingController::NxtCamLineTrackingController(Camera* cameraSensor, double cameraDistanceFromBusAxisY,
+                                                           double cameraDistanceFromBusAxisZ) {
+    this->CameraSensor = cameraSensor;
+    this->CameraDistanceFromBusAxisY = cameraDistanceFromBusAxisY;
+    this->CameraDistanceFromBusAxisZ = cameraDistanceFromBusAxisZ;
 }
 
 void NxtCamLineTrackingController::Calibrate() {

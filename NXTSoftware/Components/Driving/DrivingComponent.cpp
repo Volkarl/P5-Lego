@@ -4,10 +4,19 @@
 
 #include "DrivingComponent.h"
 
-Driving::Driving() = default;
+void Driving::Driving(IStayWithinLaneComponent *laneDetector, IObstacleDetectionComponent *obstacleDetector,
+                      IBusStopDetectionComponent *busStopDetector, ISpeedZoneDetectionComponent *speedZoneDetector,
+                      ISteeringController *steeringController, IObstacleDetectionController *obstacleDetectionController,
+                      ILaneTrackingController *laneTrackingController, IColourSensorController *colourSensorController) {
+    this->LaneCalculator = laneDetector;
+    this->ObstacleDetectionControl = obstacleDetector;
+    this->BusStopCalculator = busStopDetector;
+    this->SpeedZoneCalculator = speedZoneDetector;
 
-Driving::~Driving() {
-    delete LaneCalculator, ObstacleCalculator, BusStopCalculator, SpeedZoneCalculator;
+    this->SteeringControl = steeringController;
+    this->ObstacleDetectionControl = obstacleDetectionController;
+    this->CameraControl = laneTrackingController;
+    this->ColourControl = colourSensorController;
 }
 
 void Driving::DetectLanes() {

@@ -10,14 +10,14 @@
 
 class BusStopDetectionComponent : IBusStopDetectionComponent {
 public:
-    BusStopDetectionComponent(IColourSensorController colorSensor);
+    BusStopDetectionComponent(IColourSensorController* colorSensor);
     ~BusStopDetectionComponent() override;
 
     SteeringSequence CalculateSteering() override;
     void CalibrateSensors() override ;
 
 private:
-    IColourSensorController ColourSensor;
+    IColourSensorController* ColourSensor;
 };
 
 #endif //P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H

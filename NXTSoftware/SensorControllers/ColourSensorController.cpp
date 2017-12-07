@@ -6,9 +6,6 @@
 
 #include "ColourSensorController.h"
 
-ColourSensorController::ColourSensorController() = default;
-ColourSensorController::~ColourSensorController() = default;
-
 class ColourSensorController : IColourSensorController
 {
 	int DetectColour(int red, int green, int blue) override //I imagine the input is 3 colour variables from 0 to 255.

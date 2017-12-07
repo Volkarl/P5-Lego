@@ -15,8 +15,10 @@
 
 class Driving : IDriving {
 public:
-    Driving();
-    ~Driving() override;
+    Driving(IStayWithinLaneComponent* laneDetector, IObstacleDetectionComponent* obstacleDetector,
+            IBusStopDetectionComponent* busStopDetector, ISpeedZoneDetectionComponent* speedZoneDetector,
+            ISteeringController* steeringController, IObstacleDetectionController* obstacleDetectionController,
+            ILaneTrackingController* laneTrackingController, IColourSensorController* colourSensorController);
 
     void DetectLanes() override;
     void DetectObstacles() override;
@@ -28,10 +30,10 @@ public:
 
 private:
     // Components
-    IStayWithinLaneComponent LaneCalculator;
-    IObstacleDetectionComponent ObstacleCalculator;
-    IBusStopDetectionComponent BusStopCalculator;
-    ISpeedZoneDetectionComponent SpeedZoneCalculator;
+    IStayWithinLaneComponent* LaneCalculator;
+    IObstacleDetectionComponent* ObstacleCalculator;
+    IBusStopDetectionComponent* BusStopCalculator;
+    ISpeedZoneDetectionComponent* SpeedZoneCalculator;
 
     // Component Results
     SteeringSequence ObstacleDetectionSuggestion;
@@ -40,10 +42,10 @@ private:
     SpeedZone CurrentSpeedZone;
 
     // Sensor Controllers
-    ISteeringController SteeringControl;
-    IObstacleDetectionController ObstacleDetectionControl;
-    ILineTrackingController CameraControl;
-    IColourSensorController ColourControl;
+    ISteeringController* SteeringControl;
+    IObstacleDetectionController* ObstacleDetectionControl;
+    ILaneTrackingController* CameraControl;
+    IColourSensorController* ColourControl;
 };
 
 #endif //P5_LEGO_DRIVING_H

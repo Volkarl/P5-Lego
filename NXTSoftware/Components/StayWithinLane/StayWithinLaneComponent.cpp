@@ -4,11 +4,9 @@
 
 #include "StayWithinLaneComponent.h"
 
-SpeedZoneDetectionComponent::SpeedZoneDetectionComponent(ILaneTrackingController laneTrackingSensor) {
-    LaneTrackingSensor = laneTrackingSensor;
+SpeedZoneDetectionComponent::SpeedZoneDetectionComponent(ILaneTrackingController* laneTrackingSensor) {
+    this->LaneTrackingSensor = laneTrackingSensor;
 }
-
-SpeedZoneDetectionComponent::~SpeedZoneDetectionComponent() = default;
 
 SteeringSequence SpeedZoneDetectionComponent::CalculateSteering() {
     return SteeringSequence();
