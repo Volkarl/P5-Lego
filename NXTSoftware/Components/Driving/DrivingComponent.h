@@ -26,7 +26,7 @@ public:
     void DetectSpeedZone() override;
 
     void Steer() override;
-    void InitializeSystem() override;
+    //void InitializeSystem() override;
 
 private:
     // Components

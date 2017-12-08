@@ -13,7 +13,6 @@ public:
     ObstacleDetectionComponent(IObstacleDetectionController* obstacleDetectionSensor);
 
     SteeringSequence CalculateSteering() override;
-    void CalibrateSensors() override ;
 
 private:
     IObstacleDetectionController* ObstacleDetectionSensor;

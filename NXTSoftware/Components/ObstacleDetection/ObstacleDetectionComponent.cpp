@@ -4,14 +4,10 @@
 
 #include "ObstacleDetectionComponent.h"
 
-ObstacleDetectionComponent::ObstacleDetectionComponent(IObstacleDetectionController* obstacleDetectionSensor) {
+ObstacleDetectionComponent::ObstacleDetectionComponent(IUltrasonicSensorController* obstacleDetectionSensor) {
     this->ObstacleDetectionSensor = obstacleDetectionSensor;
 }
 
 SteeringSequence ObstacleDetectionComponent::CalculateSteering() {
-    return SteeringSequence();
-}
-
-void ObstacleDetectionComponent::CalibrateSensors() {
-
+    int dist = ObstacleDetectionSensor->GetDistance();
 }

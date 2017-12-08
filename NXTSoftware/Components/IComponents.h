@@ -19,7 +19,7 @@ public:
     virtual void DetectSpeedZone() = 0;
 
     virtual void Steer() = 0;
-    virtual void InitializeSystem() = 0;
+    //virtual void InitializeSystem() = 0;
 
     SteeringSequence CurrentSteeringSequence;
     int CurrentSteeringSequenceIndex;

@@ -4,7 +4,8 @@
 
 #include "Driving.h"
 #include "Communication.h"
-
+//#include "Components/ObstacleDetection/ObstacleDetectionComponent.h"
+#include "SensorControllers/UltrasonicSensorController.h"
 
 // ECRobot++ API
 #include "Lcd.h"
@@ -17,8 +18,8 @@
 
 using namespace ecrobot;
 
-extern "C"
-{
+extern "C"{
+
 #include "kernel.h"
 #include "kernel_id.h"
 #include "ecrobot_interface.h"
@@ -31,33 +32,28 @@ DeclareAlarm(AlarmDrivingUpdate);
 DeclareEvent(EventSleepI2C);
 DeclareEvent(EventSleep);
 
-/**
- * Input
- */
-Camera camera(PORT_4);
+/* Nxt Input Ports */
 ColorSensor colorSensor(PORT_1);
 SonarSensor sonar(PORT_2);
-int distance;
+Camera camera(PORT_4);
 
-/**
- *  Output
- * */
+/* Nxt Output Ports */
 Motor motorForward(PORT_B);
 Motor motorTurn(PORT_A);
 
-/**
- * Variables
- */
-Driving driving(&motorForward, &motorTurn);
-Usb usb;
-Communication communication(&usb, &camera, &colorSensor, &driving);
-
-/**
- * NXT Objects
- */
+/* NXT Objects */
 Lcd lcd;
 Nxt nxt;
 Clock clock;
+Usb usb;
+
+/* Sensor Controllers */
+UltrasonicSensorController ultrasonicSensorController(&sonar);
+
+/* Components */
+//ObstacleDetectionComponent obstacleDetectionComponent(ultrasonicSensorController);
+Driving driving(&motorForward, &motorTurn);
+Communication communication(&usb, &camera, &colorSensor, &driving);
 
 
 /* nxtOSEK hook to be invoked from an ISR in category 2 */
@@ -97,8 +93,7 @@ TASK(TaskUpdateSonar)
 	driving.data.color.green = color[1];
 	driving.data.color.blue = color[2];*/
 
-
-    distance = sonar.getDistance();
+    int distance = ultrasonicSensorController.GetDistance();
 	if (distance < 15 && distance > 5)
 		driving.halt();
 	else
@@ -116,8 +111,9 @@ TASK(drivingUpdate)
 
 TASK(TaskMain)
 {
-    distance = 0;
 //	U8 data[MAX_USB_DATA_LEN]; // first byte is preserved for disconnect request from host
+
+    ultrasonicSensorController.Calibrate();
 
 	driving.calibrate();
 
@@ -139,7 +135,7 @@ TASK(TaskMain)
         if (nxt.getButtons() == Nxt::ENTR_ON)
         {
             lcd.clear();
-            lcd.putf("sdn", "Dist: ", distance, 0);
+            lcd.putf("sdn", "Dist: ", ultrasonicSensorController.GetDistance(), 0);
             lcd.disp();
         }
   	}

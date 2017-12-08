@@ -7,14 +7,19 @@
 
 #include "ISensorController.h"
 #include "../SteeringTypes.h"
+#include "SonarSensor.h"
+
+namespace ecrobot{
 
 class UltrasonicSensorController : public IObstacleDetectionController {
 public:
     UltrasonicSensorController(SonarSensor* ultrasonicSensor);
-    int GetDistance() override;
+    void Calibrate();
+    int GetDistance();
 
 private:
     SonarSensor* UltrasonicSensor;
 };
 
+}
 #endif //P5_LEGO_ULTRASONICSENSORCONTROLLER_H

@@ -86,6 +86,7 @@ void Driving::ExecuteSteeringCommandSetSpeed(SteeringSequence sequence, SpeedZon
     SteeringControl.SetTurningAngle(command.Turn);
 }
 
+/*
 void Driving::InitializeSystem() {
     // Initialize Controllers
     SteeringControl = new SteeringController();
@@ -105,3 +106,4 @@ void Driving::InitializeSystem() {
     BusStopCalculator = new BusStopDetectionComponent(ColourControl);
     SpeedZoneCalculator = new SpeedZoneDetectionComponent(ColourControl);
 }
+*/
