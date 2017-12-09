@@ -4,11 +4,13 @@
 
 #include "UltrasonicSensorController.h"
 
+using namespace ecrobot;
+
 UltrasonicSensorController::UltrasonicSensorController(SonarSensor* ultrasonicSensor) {
     this->UltrasonicSensor = ultrasonicSensor;
 }
 
-void UltrasonicSensorController::Calibrate() {
+void ecrobot::UltrasonicSensorController::Calibrate(){
     // Nothing happens here
 }
 
@@ -27,7 +29,6 @@ int UltrasonicSensorController::GetDistance() {
     // Sort after size; return the median ?? Or the average?
     */
 
-
-    int distance = UltrasonicSensor.getDistance();
+    int distance = UltrasonicSensor->getDistance();
     return distance == 255 ? -1 : distance;
 }

@@ -5,13 +5,12 @@
 #ifndef P5_LEGO_ULTRASONICSENSORCONTROLLER_H
 #define P5_LEGO_ULTRASONICSENSORCONTROLLER_H
 
-#include "ISensorController.h"
 #include "../SteeringTypes.h"
 #include "SonarSensor.h"
 
 namespace ecrobot{
 
-class UltrasonicSensorController : public IObstacleDetectionController {
+class UltrasonicSensorController {
 public:
     UltrasonicSensorController(SonarSensor* ultrasonicSensor);
     void Calibrate();
