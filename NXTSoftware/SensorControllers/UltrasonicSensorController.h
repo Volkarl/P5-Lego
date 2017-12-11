@@ -7,19 +7,20 @@
 
 #include "../SteeringTypes.h"
 #include "SonarSensor.h"
-//#include "clock.h"
+#include "Clock.h"
 
-namespace ecrobot{
+using namespace ecrobot;
 
 class UltrasonicSensorController {
 public:
     UltrasonicSensorController(SonarSensor* ultrasonicSensor);
     void Calibrate();
-    int GetDistance();
+    int GetDistancePrecise();
+    int GetDistanceFast();
 
 private:
     SonarSensor* UltrasonicSensor;
+    Clock clock;
 };
 
-}
 #endif //P5_LEGO_ULTRASONICSENSORCONTROLLER_H

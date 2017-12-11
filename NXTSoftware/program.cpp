@@ -6,11 +6,12 @@
 #include "Communication.h"
 //#include "Components/ObstacleDetection/ObstacleDetectionComponent.h"
 #include "SensorControllers/UltrasonicSensorController.h"
+#include "SensorControllers/DisplayController.h"
 
 // ECRobot++ API
-#include "Lcd.h"
+//#include "Lcd.h"        Gets included in Displaycontroller.h
 #include "Nxt.h"
-#include "Clock.h"
+//#include "Clock.h"      Gets included in UltrasonicSensorController.h.
 #include "Camera.h"
 #include "SonarSensor.h"
 #include "ColorSensor.h"
@@ -49,6 +50,7 @@ Usb usb;
 
 /* Sensor Controllers */
 UltrasonicSensorController ultrasonicSensorController(&sonar);
+DisplayController displayController(&lcd);
 
 /* Components */
 //ObstacleDetectionComponent obstacleDetectionComponent(ultrasonicSensorController);
@@ -93,7 +95,7 @@ TASK(TaskUpdateSonar)
 	driving.data.color.green = color[1];
 	driving.data.color.blue = color[2];*/
 
-    int distance = ultrasonicSensorController.GetDistance();
+    int distance = ultrasonicSensorController.GetDistanceFast();
 	if (distance < 15 && distance > 5)
 		driving.halt();
 	else
@@ -113,13 +115,11 @@ TASK(TaskMain)
 {
 //	U8 data[MAX_USB_DATA_LEN]; // first byte is preserved for disconnect request from host
 
-    ultrasonicSensorController.Calibrate();
+    ultrasonicSensorController.Calibrate();  //Currently does nothing.
 
 	driving.calibrate();
 
-	lcd.clear();
-	lcd.putf("sn", "USB");
-	lcd.disp();
+    displayController.SetText("USB"); //Gotta check if this works. Would have thought it was "".
 
 	camera.sendCommand('L'); // Line mode
 	clock.wait(10);
@@ -134,9 +134,7 @@ TASK(TaskMain)
 		communication.handle();
         if (nxt.getButtons() == Nxt::ENTR_ON)
         {
-            lcd.clear();
-            lcd.putf("sdn", "Dist: ", ultrasonicSensorController.GetDistance(), 0);
-            lcd.disp();
+            displayController.SetText("Dist: ",ultrasonicSensorController.GetDistanceFast(), 0);
         }
   	}
 }
