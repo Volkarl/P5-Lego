@@ -7,7 +7,8 @@ TARGET_CPP_SOURCES = \
         Driving.cpp \
         Communication.cpp \
         ../Shared/objects/rectangle.cpp \
-        SensorControllers/UltrasonicSensorController.cpp
+        SensorControllers/UltrasonicSensorController.cpp \
+        Components/ObstacleDetection/ObstacleDetectionComponent.cpp
 
 TOPPERS_OSEK_OIL_SOURCE = ./program.oil
 

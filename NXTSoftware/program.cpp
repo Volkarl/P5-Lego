@@ -2,10 +2,16 @@
 #include "../Shared/Tools.h"
 #include "../Shared/Connectivity.h"
 
+// Old stuff todo
 #include "Driving.h"
 #include "Communication.h"
-//#include "Components/ObstacleDetection/ObstacleDetectionComponent.h"
+
+// Sensor Controllers
 #include "SensorControllers/UltrasonicSensorController.h"
+
+// Components
+#include "Components/ObstacleDetection/ObstacleDetectionComponent.h"
+
 
 // ECRobot++ API
 #include "Lcd.h"
@@ -51,7 +57,8 @@ Usb usb;
 UltrasonicSensorController ultrasonicSensorController(&sonar);
 
 /* Components */
-//ObstacleDetectionComponent obstacleDetectionComponent(ultrasonicSensorController);
+ObstacleDetectionComponent obstacleDetectionComponent(&ultrasonicSensorController);
+
 Driving driving(&motorForward, &motorTurn);
 Communication communication(&usb, &camera, &colorSensor, &driving);
 
@@ -116,6 +123,11 @@ TASK(TaskMain)
     ultrasonicSensorController.Calibrate();
 
 	driving.calibrate();
+
+    SteeringSequence* obstacleDetectionSequence;
+    obstacleDetectionComponent.CalculateSteering(obstacleDetectionSequence);
+
+
 
 	lcd.clear();
 	lcd.putf("sn", "USB");

@@ -7,6 +7,7 @@
 #ifndef P5_LEGO_STEERINGTYPES_H
 #define P5_LEGO_STEERINGTYPES_H
 
+namespace ecrobot{
 
 enum Direction { Left, Right };
 // It's not happy about enum class for some reason
@@ -15,6 +16,10 @@ enum Direction { Left, Right };
 class TurnData
 {
 public:
+    TurnData(Direction direction, int degrees){
+        TurnDirection = direction;
+        TurnDegrees = degrees;
+    }
     Direction TurnDirection;
     int TurnDegrees;
 };
@@ -22,9 +27,14 @@ public:
 class SteeringCommand
 {
 public:
+    SteeringCommand(int rpm, int distance, TurnData turn){
+        SpeedRotationsPerMin = rpm;
+        OverDistance = distance;
+        Turn = &turn;
+    }
     int SpeedRotationsPerMin;
     int OverDistance;
-    TurnData Turn;
+    TurnData* Turn;
 };
 
 
@@ -47,21 +57,36 @@ class SteeringSequence
 {
     // If I want a smooth turn, speed up or down and similar, I just split it into multiple steeringCommands
 public:
-    SteeringCommand GetNewActiveCommand(int cmDrivenSinceLast){
-        if(cmDrivenSinceLast >= CmToNextSteeringCommand)
-            commandIndex++;
-//        if(commandIndex >= maximumCommands)
-        return Commands[commandIndex];
+    SteeringSequence(SteeringCommand commands[], int items){
+        Commands = commands;
+        Items = items;
+        CmToNextSteeringCommand = 0;
+        CommandIndex = 0;
     }
 
-    enum SenderComponent { StayWithinLane, ObstacleDetection, BusStopDetection, SpeedZoneDetection };
-    SenderComponent Sender;
-    int CmToNextSteeringCommand, commandIndex, maximumCommands;
-    //todo initialize these
+    SteeringSequence(SteeringCommand command){
+        Commands = &command;
+        Items = 1;
+        CmToNextSteeringCommand = 0;
+        CommandIndex = 0;
+    }
 
-    SteeringCommand Commands[10];
+    SteeringCommand* GetNewActiveCommand(int cmDrivenSinceLast){
+        if(cmDrivenSinceLast >= CmToNextSteeringCommand){
+            CommandIndex++;
+        }
+
+        if(CommandIndex >= Items) return 0;
+        else return &Commands[CommandIndex];
+    }
+
+    int CmToNextSteeringCommand, CommandIndex;
+
+    SteeringCommand* Commands;
     // Can contain multiple commands because, for instance:
     // halting at a bus stop requires a sequence of commands while just braking only requires one
+    int Items;
+};
 };
 
 #endif //P5_LEGO_STEERINGTYPES_H
