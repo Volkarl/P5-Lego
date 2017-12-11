@@ -126,9 +126,8 @@ TASK(TaskMain)
 
 	driving.calibrate();
 
-<<<<<<< HEAD
     displayController.SetText("USB"); //Gotta check if this works. Would have thought it was "".
-=======
+
     SteeringSequence* obstacleDetectionSequence;
     obstacleDetectionComponent.CalculateSteering(obstacleDetectionSequence);
 
@@ -137,7 +136,6 @@ TASK(TaskMain)
 	lcd.clear();
 	lcd.putf("sn", "USB");
 	lcd.disp();
->>>>>>> origin/NewSoftware2
 
 	camera.sendCommand('L'); // Line mode
 	clock.wait(10);
