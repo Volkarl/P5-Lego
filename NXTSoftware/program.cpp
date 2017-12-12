@@ -131,12 +131,6 @@ TASK(TaskMain)
     SteeringSequence* obstacleDetectionSequence;
     obstacleDetectionComponent.CalculateSteering(obstacleDetectionSequence);
 
-
-
-	lcd.clear();
-	lcd.putf("sn", "USB");
-	lcd.disp();
-
 	camera.sendCommand('L'); // Line mode
 	clock.wait(10);
 	camera.sendCommand('X'); // Sort NONE
