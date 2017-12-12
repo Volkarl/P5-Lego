@@ -4,13 +4,11 @@
 
 #include "SteeringController.h"
 
-SteeringController::SteeringController(Motor* motorForSpeed, Motor* motorForTurning) {
+using namespace ecrobot;
+
+SteeringController::SteeringController(Motor *motorForSpeed, Motor *motorForTurning){
     this->MotorForSpeed = motorForSpeed;
     this->MotorForTurning = motorForTurning;
-}
-
-void SteeringController::Calibrate() {
-
 }
 
 void SteeringController::SetSpeed(int rpm) {

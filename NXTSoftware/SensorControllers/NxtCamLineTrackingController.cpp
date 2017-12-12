@@ -4,6 +4,8 @@
 
 #include "NxtCamLineTrackingController.h"
 
+using namespace ecrobot;
+
 NxtCamLineTrackingController::NxtCamLineTrackingController(Camera* cameraSensor, double cameraDistanceFromBusAxisY,
                                                            double cameraDistanceFromBusAxisZ) {
     this->CameraSensor = cameraSensor;
@@ -15,6 +17,6 @@ void NxtCamLineTrackingController::Calibrate() {
 
 }
 
-std::vector<Vector2> NxtCamLineTrackingController::TrackLanes() {
+void NxtCamLineTrackingController::TrackLines(int *lanePointArray, int *size) {
 
 }

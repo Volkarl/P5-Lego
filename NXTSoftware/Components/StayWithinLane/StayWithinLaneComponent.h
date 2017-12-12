@@ -5,18 +5,16 @@
 #ifndef P5_LEGO_STAYWITHINLANECOMPONENT_H
 #define P5_LEGO_STAYWITHINLANECOMPONENT_H
 
-#include "../IComponents.h"
-#include "../../SensorControllers/ISensorController.h"
+#include "../../SensorControllers/NxtCamLineTrackingController.h"
+#include "../../SteeringTypes.h"
 
-class StayWithinLaneComponent : IStayWithinLaneComponent {
+class StayWithinLaneComponent {
 public:
-    StayWithinLaneComponent(ILaneTrackingController* laneTrackingSensor);
-
-    SteeringSequence CalculateSteering() override;
-    void CalibrateSensors() override;
+    StayWithinLaneComponent(NxtCamLineTrackingController* laneTrackingSensor);
+    bool CalculateSteering(TurnData* turn);
 
 private:
-    ILaneTrackingController* LaneTrackingSensor;
+    NxtCamLineTrackingController* LaneTrackingSensor;
 };
 
 #endif //P5_LEGO_STAYWITHINLANECOMPONENT_H

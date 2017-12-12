@@ -7,11 +7,18 @@
 #include "Communication.h"
 
 // Sensor Controllers
-#include "SensorControllers/UltrasonicSensorController.h"
+#include "SensorControllers/ColourSensorController.h"
 #include "SensorControllers/DisplayController.h"
+#include "SensorControllers/NxtCamLineTrackingController.h"
+#include "SensorControllers/SteeringController.h"
+#include "SensorControllers/UltrasonicSensorController.h"
 
 // Components
+#include "Components/BusStopDetection/BusStopDetectionComponent.h"
+#include "Components/Driver/DrivingComponent.h"
 #include "Components/ObstacleDetection/ObstacleDetectionComponent.h"
+#include "Components/SpeedZoneDetection/SpeedZoneDetectionComponent.h"
+#include "Components/StayWithinLane/StayWithinLaneComponent.h"
 
 
 // ECRobot++ API
@@ -55,12 +62,22 @@ Clock clock;
 Usb usb;
 
 /* Sensor Controllers */
-UltrasonicSensorController ultrasonicSensorController(&sonar);
+ColourSensorController colourSensorController(&colorSensor);
 DisplayController displayController(&lcd);
+NxtCamLineTrackingController nxtCamLineTrackingController(&camera, 3, 20); //Todo: is 3 cm. correct??
+SteeringController steeringController(&motorForward, &motorTurn);
+UltrasonicSensorController ultrasonicSensorController(&sonar);
 
 /* Components */
+BusStopDetectionComponent busStopDetectionComponent(&colourSensorController);
 ObstacleDetectionComponent obstacleDetectionComponent(&ultrasonicSensorController);
+SpeedZoneDetectionComponent speedZoneDetectionComponent(&colourSensorController);
+StayWithinLaneComponent stayWithinLaneComponent(&nxtCamLineTrackingController);
 
+DrivingComponent drivingComponent(&stayWithinLaneComponent, &obstacleDetectionComponent, &busStopDetectionComponent,
+&speedZoneDetectionComponent, &steeringController, &displayController);
+
+// TODO OLD Stuff below
 Driving driving(&motorForward, &motorTurn);
 Communication communication(&usb, &camera, &colorSensor, &driving);
 
@@ -86,9 +103,19 @@ TASK(TaskUpdateCam)
     TerminateTask();
 }
 
+void DisplayAndWait(char* textToDisplay){
+    displayController.SetText(textToDisplay);
+    clock.wait(1000);
+}
+
 TASK(TaskUpdateSonar)
 {
-	//S16 color[3];
+
+    drivingComponent.DetectObstacles();
+    TerminateTask();
+
+// Something that was already commented out prior to my involvement
+//S16 color[3];
 
 	//colorSensor.getRawColor(color);
 
@@ -102,6 +129,8 @@ TASK(TaskUpdateSonar)
 	driving.data.color.green = color[1];
 	driving.data.color.blue = color[2];*/
 
+// Jakob's old code for ultrasonic sensor
+/*
     int distance = ultrasonicSensorController.GetDistanceFast();
 	if (distance < 15 && distance > 5)
 		driving.halt();
@@ -109,6 +138,7 @@ TASK(TaskUpdateSonar)
 		driving.data.halt = false; // TODO: Change to new function
 
     TerminateTask();
+    */
 }
 
 TASK(drivingUpdate)
@@ -117,25 +147,14 @@ TASK(drivingUpdate)
 	TerminateTask();
 }
 
-
 TASK(TaskMain)
 {
 //	U8 data[MAX_USB_DATA_LEN]; // first byte is preserved for disconnect request from host
-
     ultrasonicSensorController.Calibrate();  //Currently does nothing.
 
 	driving.calibrate();
 
-    displayController.SetText("USB"); //Gotta check if this works. Would have thought it was "".
-
-    SteeringSequence* obstacleDetectionSequence;
-    obstacleDetectionComponent.CalculateSteering(obstacleDetectionSequence);
-
-
-
-	lcd.clear();
-	lcd.putf("sn", "USB");
-	lcd.disp();
+    displayController.SetText("USB");
 
 	camera.sendCommand('L'); // Line mode
 	clock.wait(10);

@@ -5,7 +5,6 @@
 #ifndef P5_LEGO_ULTRASONICSENSORCONTROLLER_H
 #define P5_LEGO_ULTRASONICSENSORCONTROLLER_H
 
-#include "../SteeringTypes.h"
 #include "SonarSensor.h"
 #include "Clock.h"
 

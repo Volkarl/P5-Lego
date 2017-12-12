@@ -10,13 +10,13 @@ DisplayController::DisplayController(Lcd *display) {
     this->lcd = display;
 }
 
-void DisplayController::SetText(char* DisplayText) {
+void DisplayController::SetText(char* textToDisplay) {
     lcd->clear();
-    lcd->putf("sdn", DisplayText);
+    lcd->putf("sn", textToDisplay);
     lcd->disp();
 }
-void DisplayController::SetText(char* DisplayText, double Display, int decimals) {
+void DisplayController::SetText(char* textToDisplay, double numberToDisplay, int spaceForNumber) {
     lcd->clear();
-    lcd->putf("sdn", DisplayText, Display, decimals);
+    lcd->putf("sdn", textToDisplay, numberToDisplay, spaceForNumber);
     lcd->disp();
 }

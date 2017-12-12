@@ -5,18 +5,16 @@
 #ifndef P5_LEGO_SPEEDZONEDETECTIONCOMPONENT_H
 #define P5_LEGO_SPEEDZONEDETECTIONCOMPONENT_H
 
-#include "../IComponents.h"
-#include "../../SensorControllers/ISensorController.h"
+#include "../../SensorControllers/ColourSensorController.h"
+#include "../../SteeringTypes.h"
 
-class SpeedZoneDetectionComponent : ISpeedZoneDetectionComponent {
+class SpeedZoneDetectionComponent{
 public:
-    SpeedZoneDetectionComponent(IColourSensorController* colourSensor);
-
-    SteeringSequence CalculateSteering() override;
-    void CalibrateSensors() override ;
+    SpeedZoneDetectionComponent(ColourSensorController* colourSensor);
+    bool CalculateSteering(SteeringSequence* sequence);
 
 private:
-    IColourSensorController* ColourSensor;
+    ColourSensorController* ColourSensor;
 };
 
 #endif //P5_LEGO_SPEEDZONEDETECTIONCOMPONENT_H

@@ -5,16 +5,17 @@
 #ifndef NXTSOFTWARE_DISPLAYCONTROLLER_H
 #define NXTSOFTWARE_DISPLAYCONTROLLER_H
 
-//#include <ntdef.h>  Where did this come from?
 #include "Lcd.h"
+
+using namespace ecrobot;
 
 namespace ecrobot {
 
     class DisplayController {
     public:
         DisplayController(Lcd *display);
-        void SetText(char* DisplayText);
-        void SetText(char* DisplayText, double Distance, int decimals);
+        void SetText(char* textToDisplay);
+        void SetText(char* textToDisplay, double numberToDisplay, int spaceForNumber);
 
     private:
         Lcd* lcd;

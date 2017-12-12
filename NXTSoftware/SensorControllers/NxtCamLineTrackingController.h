@@ -5,12 +5,16 @@
 #ifndef P5_LEGO_NXTCAMLINETRACKINGCONTROLLER_H
 #define P5_LEGO_NXTCAMLINETRACKINGCONTROLLER_H
 
-#include "ISensorController.h"
+#include "Camera.h"
 
-class NxtCamLineTrackingController : public ILineTrackingController {
+using namespace ecrobot;
+
+class NxtCamLineTrackingController {
 public:
-    NxtCamLineTrackingController(Camera* cameraSensor, double CameraDistanceFromBusAxisY, double CameraDistanceFromBusAxisZ);
-    std::vector<Vector2> TrackLanes() override;
+    NxtCamLineTrackingController(Camera* cameraSensor, double CameraDistanceFromBusAxisY,
+                                 double CameraDistanceFromBusAxisZ);
+    void TrackLines(int* lanePointArray, int* size);
+    void Calibrate();
 
     double CameraDistanceFromBusAxisY;
     // Elevation of the camera from the ground

@@ -5,13 +5,15 @@
 #ifndef P5_LEGO_STEERINGCONTROLLER_H
 #define P5_LEGO_STEERINGCONTROLLER_H
 
-#include "ISensorController.h"
 #include "../SteeringTypes.h"
+#include "Motor.h"
 
-class SteeringController : public ISteeringController {
+using namespace ecrobot;
+
+class SteeringController {
 public:
     SteeringController(Motor* motorForSpeed, Motor* motorForTurning);
-    void SetSpeed(int rpm) override;
+    void SetSpeed(int rpm);
     void SetTurningAngle(TurnData turn);
 
     int CurrentSpeedRpm;

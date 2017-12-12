@@ -7,9 +7,17 @@ TARGET_CPP_SOURCES = \
         Driving.cpp \
         Communication.cpp \
         ../Shared/objects/rectangle.cpp \
-        SensorControllers/UltrasonicSensorController.cpp \
+        SensorControllers/ColourSensorController.cpp \
         SensorControllers/DisplayController.cpp \
-        Components/ObstacleDetection/ObstacleDetectionComponent.cpp
+        SensorControllers/NxtCamLineTrackingController.cpp \
+        SensorControllers/SteeringController.cpp \
+        SensorControllers/UltrasonicSensorController.cpp \
+        Components/BusStopDetection/BusStopDetectionComponent.cpp \
+        Components/Driver/DrivingComponent.cpp \
+        Components/ObstacleDetection/ObstacleDetectionComponent.cpp \
+        Components/SpeedZoneDetection/SpeedZoneDetectionComponent.cpp \
+        Components/StayWithinLane/StayWithinLaneComponent.cpp
+
 
 
 TOPPERS_OSEK_OIL_SOURCE = ./program.oil

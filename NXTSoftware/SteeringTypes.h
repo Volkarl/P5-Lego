@@ -7,8 +7,6 @@
 #ifndef P5_LEGO_STEERINGTYPES_H
 #define P5_LEGO_STEERINGTYPES_H
 
-namespace ecrobot{
-
 enum Direction { Left, Right };
 // It's not happy about enum class for some reason
 
@@ -16,7 +14,12 @@ enum Direction { Left, Right };
 class TurnData
 {
 public:
+    TurnData(){}
     TurnData(Direction direction, int degrees){
+        TurnDirection = direction;
+        TurnDegrees = degrees;
+    }
+    void SetData(Direction direction, int degrees){
         TurnDirection = direction;
         TurnDegrees = degrees;
     }
@@ -41,6 +44,10 @@ public:
 class SpeedZone
 {
 public:
+    SpeedZone(){}
+    void SetData(int rpm){
+        SpeedRpm = rpm;
+    }
     int SpeedRpm;
 };
 
@@ -57,14 +64,16 @@ class SteeringSequence
 {
     // If I want a smooth turn, speed up or down and similar, I just split it into multiple steeringCommands
 public:
-    SteeringSequence(SteeringCommand commands[], int items){
+    SteeringSequence(){}
+
+    void SetData(SteeringCommand commands[], int items){
         Commands = commands;
         Items = items;
         CmToNextSteeringCommand = 0;
         CommandIndex = 0;
     }
 
-    SteeringSequence(SteeringCommand command){
+    void SetData(SteeringCommand command){
         Commands = &command;
         Items = 1;
         CmToNextSteeringCommand = 0;
@@ -86,7 +95,6 @@ public:
     // Can contain multiple commands because, for instance:
     // halting at a bus stop requires a sequence of commands while just braking only requires one
     int Items;
-};
 };
 
 #endif //P5_LEGO_STEERINGTYPES_H

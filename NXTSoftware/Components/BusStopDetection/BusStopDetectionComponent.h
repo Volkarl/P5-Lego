@@ -5,19 +5,16 @@
 #ifndef P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H
 #define P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H
 
-#include "../IComponents.h"
-#include "../../SensorControllers/ISensorController.h"
+#include "../../SensorControllers/ColourSensorController.h"
+#include "../../SteeringTypes.h"
 
-class BusStopDetectionComponent : IBusStopDetectionComponent {
+class BusStopDetectionComponent {
 public:
-    BusStopDetectionComponent(IColourSensorController* colorSensor);
-    ~BusStopDetectionComponent() override;
-
-    SteeringSequence CalculateSteering() override;
-    void CalibrateSensors() override ;
+    BusStopDetectionComponent(ColourSensorController* colorSensor);
+    bool CalculateSteering(SteeringSequence* sequence);
 
 private:
-    IColourSensorController* ColourSensor;
+    ColourSensorController* ColourSensor;
 };
 
 #endif //P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H

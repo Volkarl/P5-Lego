@@ -4,14 +4,10 @@
 
 #include "StayWithinLaneComponent.h"
 
-SpeedZoneDetectionComponent::SpeedZoneDetectionComponent(ILaneTrackingController* laneTrackingSensor) {
+StayWithinLaneComponent::StayWithinLaneComponent(NxtCamLineTrackingController *laneTrackingSensor) {
     this->LaneTrackingSensor = laneTrackingSensor;
 }
 
-SteeringSequence SpeedZoneDetectionComponent::CalculateSteering() {
-    return SteeringSequence();
-}
-
-void SpeedZoneDetectionComponent::CalibrateSensors() {
-
+bool StayWithinLaneComponent::CalculateSteering(TurnData *turn){
+    return false;
 }

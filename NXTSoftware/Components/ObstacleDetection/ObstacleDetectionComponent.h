@@ -6,6 +6,7 @@
 #define P5_LEGO_OBSTACLEDETECTIONCOMPONENT_H
 
 #include "../../SensorControllers/UltrasonicSensorController.h"
+#include "../../SteeringTypes.h"
 
 namespace ecrobot{
 
@@ -16,10 +17,11 @@ public:
     // It should be able to take any IObstacleDetectionController, because the logic works for either.
     // Removed because interface inheritance is dumb in c++.
 
-    bool CalculateSteering(SteeringSequence* sequenceToOverride);
+    bool CalculateSteering(SteeringSequence* sequence);
 
 private:
     UltrasonicSensorController* ObstacleDetectionSensor;
+    int oldDistance;
 };
 };
 
