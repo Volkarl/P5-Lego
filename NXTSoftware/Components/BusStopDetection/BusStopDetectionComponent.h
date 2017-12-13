@@ -11,10 +11,15 @@
 class BusStopDetectionComponent {
 public:
     BusStopDetectionComponent(ColourSensorController* colorSensor);
-    bool CalculateSteering(SteeringSequence* sequence);
+    //bool CalculateSteering(SteeringCommand* command);
+
+    bool DetectBusStop();
+    bool IsBusStopSequenceOngoing(int cmDrivenSinceLastCall);
+    void GetNextBusStopCommand(SteeringCommand *command, int cmDrivenSinceLastCall);
 
 private:
     ColourSensorController* ColourSensor;
+    SteeringSequence StoppingSequence;
 };
 
 #endif //P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H

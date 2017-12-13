@@ -7,13 +7,12 @@
 
 #include "Lcd.h"
 
-using namespace ecrobot;
-
 namespace ecrobot {
 
     class DisplayController {
     public:
         DisplayController(Lcd *display);
+        void Calibrate();
         void SetText(char* textToDisplay);
         void SetText(char* textToDisplay, double numberToDisplay, int spaceForNumber);
 

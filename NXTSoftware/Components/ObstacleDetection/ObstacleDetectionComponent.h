@@ -17,7 +17,7 @@ public:
     // It should be able to take any IObstacleDetectionController, because the logic works for either.
     // Removed because interface inheritance is dumb in c++.
 
-    bool CalculateSteering(SteeringSequence* sequence);
+    bool DetectObstacles();
 
 private:
     UltrasonicSensorController* ObstacleDetectionSensor;

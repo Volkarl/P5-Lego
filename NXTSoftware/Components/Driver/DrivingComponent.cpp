@@ -16,106 +16,102 @@ DrivingComponent::DrivingComponent(StayWithinLaneComponent *laneDetector,
     this->SpeedZoneCalculator = speedZoneDetector;
 
     this->SteeringControl = steeringController;
-//    this->ObstacleDetectionControl = obstacleDetectionController;
-//    this->CameraControl = laneTrackingController;
-//    this->ColourControl = colourSensorController;
     this->DisplayControl = displayController;
+
+    CurrentSpeedZone.SetData(10);
+    StayWithinLaneTurnSuggestion.SetData(Direction(Left), 0);
+    // Default values
+
+    IsObstacleDetected = false;
+    IsBusStopDetected = false;
 }
 
 void DrivingComponent::DetectLanes(){
-    //TurnData turn = LaneCalculator.CalculateSteering();
-    //if(turn != nullptr) StayWithinLaneSuggestion = turn;
+    DisplayControl->SetText("LANE");
+
+    TurnData turn;
+    LaneCalculator->CalculateSteering(&turn);
+    StayWithinLaneTurnSuggestion.SetData(turn.TurnDirection, turn.TurnDegrees);
 }
 
 void DrivingComponent::DetectObstacles(){
-    SteeringSequence obstacleDetectionSequence;
-    if(ObstacleCalculator->CalculateSteering(&obstacleDetectionSequence)){
-        ObstacleDetectionSuggestion.SetData(obstacleDetectionSequence.Commands, obstacleDetectionSequence.Items);
-        // todo does the commands-array die after this call? Because then we cannot use it for Steer();
-        DisplayControl->SetText("Obstacle: STOP");
+    DisplayControl->SetText("OBSTACLE");
+
+    if(ObstacleCalculator->DetectObstacles()){
+        IsObstacleDetected = true;
     }
     else{
-        // DisplayControl->SetText("DRIVE");
+        IsObstacleDetected = false;
     }
-    //todo fix
 }
 
-void DrivingComponent::DetectBusStop(){
-    //SteeringSequence sequence = BusStopCalculator.CalculateSteering();
-    //if(sequence != nullptr) BusStopSuggestion = sequence;
+void DrivingComponent::DetectBusStop() {
+    DisplayControl->SetText("BUS STOP");
+
+    if(!BusStopCalculator->IsBusStopSequenceOngoing(SteeringControl->GetCmDrivenSinceLast())){
+        if(BusStopCalculator->DetectBusStop())
+            IsBusStopDetected = true;
+        else
+            IsBusStopDetected = false;
+    }
+    // If we're already executing a bus stop, we don't override it with a new measurement
 }
 
 void DrivingComponent::DetectSpeedZone(){
-    //SpeedZone currentSpeedZone = SpeedZoneCalculator.CalculateSteering();
-    //if(currentSpeedZone != nullptr) CurrentSpeedZone = currentSpeedZone;
+    DisplayControl->SetText("SPEED ZONE");
+
+    SpeedZone speedZone;
+    if(SpeedZoneCalculator->DetectSpeedZone(&speedZone)){
+        CurrentSpeedZone.SetData(speedZone.SpeedRpm);
+    }
 }
 
 void DrivingComponent::Steer(){
-/* Executes the current index of the top-priority SteeringSequence with the MotorController
-Then increments the index or removes the SteeringSequence entry */
-/*
-    if(ObstacleDetectionSuggestion != nullptr)
-        ExecuteSteeringCommand(ObstacleDetectionSuggestion);
-        // ObstacleDetection overrides all other commands
+    DisplayControl->SetText("STEER");
 
-    else if(BusStopSuggestion != nullptr)
-        ExecuteSteeringCommandMaxSpeed(BusStopSuggestion, CurrentSpeedZone);
-        // Uses the current speed zone as its maximum speed; cannot exceed that
+    if(IsObstacleDetected)
+        ExecuteHalt();
 
-    else ExecuteSteeringCommandSetSpeed(CurrentLaneTrackTurn, CurrentSpeedZone);
-    // Whenever otherwise idle, the bus drives according to LaneTracking and CurrentSpeedZone
-    // Uses the current speed zone as its actual speed, not only as max value
-    */
+    else if(IsBusStopDetected)
+        ExecuteBusStop();
+
+    else
+        ExecuteFollowTrack();
 }
 
-void DrivingComponent::ExecuteSteeringCommand(SteeringSequence sequence){/*
-    if(sequence == nullptr) return;
-    SteeringCommand command = sequence.GetNewActiveCommand(SteeringControl.GetCmDrivenSinceLast);
-    if(command == nullptr) return;
+void DrivingComponent::ExecuteFollowTrack(){
+    DisplayControl->SetText("STEER: Follow");
 
-    SteeringControl.SetSpeed(command.SpeedRotationsPerMin);
-    SteeringControl.SetTurningAngle(command.Turn);*/
+    // The bus drives according to LaneTracking turn and CurrentSpeedZone speed
+    Execute(CurrentSpeedZone.SpeedRpm, StayWithinLaneTurnSuggestion);
 }
 
-void DrivingComponent::ExecuteSteeringCommandMaxSpeed(SteeringSequence sequence, SpeedZone currentSpeedZone){/*
-    if(sequence == nullptr) return;
-    SteeringCommand command = sequence.GetNewActiveCommand(SteeringControl.GetCmDrivenSinceLast);
-    if(command == nullptr) return;
+void DrivingComponent::ExecuteHalt() {
+    DisplayControl->SetText("STEER: Halt");
 
-    if(command.SpeedRotationsPerMin > currentSpeedZone.SpeedRpm)
-        SteeringControl.SetSpeed(currentSpeedZone.SpeedRpm);
-    else SteeringControl.SetSpeed(command.SpeedRotationsPerMin);
-
-    SteeringControl.SetTurningAngle(command.Turn);*/
+    Execute(0, TurnData(Direction(Left), 0));
 }
 
-void DrivingComponent::ExecuteSteeringCommandSetSpeed(SteeringSequence sequence, SpeedZone currentSpeedZone){/*
-    if(sequence == nullptr) return;
-    SteeringCommand command = sequence.GetNewActiveCommand(SteeringControl.GetCmDrivenSinceLast);
-    if(command == nullptr) return;
+void DrivingComponent::ExecuteBusStop() {
+    DisplayControl->SetText("STEER: Bus Stop");
 
-    SteeringControl.SetSpeed(currentSpeedZone.SpeedRpm);
-    SteeringControl.SetTurningAngle(command.Turn);*/
+    SteeringCommand cmd;
+    BusStopCalculator->GetNextBusStopCommand(&cmd, SteeringControl->GetCmDrivenSinceLast());
+    ExecuteSteeringCommandMaxSpeed(cmd, CurrentSpeedZone.SpeedRpm);
 }
 
-/*
-void DrivingComponent::InitializeSystem() {
-    // Initialize Controllers
-    SteeringControl = new SteeringController();
-    UltrasonicControl = new UltrasonicSensorController();
-    CameraControl = new NxtCamLineTrackingController();
-    ColourControl = new ColourSesnsorController();
+void DrivingComponent::ExecuteSteeringCommandMaxSpeed(SteeringCommand command, int maxRpm){
+    int rpm;
 
-    // Calibrate Sensors
-    SteeringControl.Calibrate();
-    UltrasonicControl.Calibrate();
-    CameraControl.Calibrate();
-    ColourControl.Calibrate();
+    if(command.SpeedRotationsPerMin > maxRpm)
+        rpm = maxRpm;
+    else
+        rpm = command.SpeedRotationsPerMin;
 
-    // Initialize Components
-    LaneCalculator = new StayWithinLaneComponent(CameraControl);
-    ObstacleCalculator = new ObstacleDetectionComponent(ObstacleDetectionControl);
-    BusStopCalculator = new BusStopDetectionComponent(ColourControl);
-    SpeedZoneCalculator = new SpeedZoneDetectionComponent(ColourControl);
+    Execute(rpm, TurnData(command.Turn->TurnDirection, command.Turn->TurnDegrees));
 }
-*/
+
+void DrivingComponent::Execute(int rpm, TurnData turn) {
+    SteeringControl->SetTurningAngle(turn);
+    SteeringControl->SetSpeed(rpm);
+}

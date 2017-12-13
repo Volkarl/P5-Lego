@@ -30,11 +30,14 @@ public:
 class SteeringCommand
 {
 public:
-    SteeringCommand(int rpm, int distance, TurnData turn){
+    SteeringCommand(){}
+
+    void SetData(int rpm, int distance, TurnData turn){
         SpeedRotationsPerMin = rpm;
         OverDistance = distance;
         Turn = &turn;
     }
+
     int SpeedRotationsPerMin;
     int OverDistance;
     TurnData* Turn;

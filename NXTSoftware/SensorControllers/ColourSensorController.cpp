@@ -46,3 +46,7 @@ int ColourSensorController::DetectColour(int red, int green, int blue){
 ColourSensorController::ColourSensorController(ColorSensor *colourSensor) {
     this->ColourSensor = colourSensor;
 }
+
+void ColourSensorController::Calibrate() {
+
+}

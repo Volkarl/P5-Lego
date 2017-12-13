@@ -150,7 +150,16 @@ TASK(drivingUpdate)
 TASK(TaskMain)
 {
 //	U8 data[MAX_USB_DATA_LEN]; // first byte is preserved for disconnect request from host
-    ultrasonicSensorController.Calibrate();  //Currently does nothing.
+
+    colourSensorController.Calibrate();
+    displayController.Calibrate();
+    nxtCamLineTrackingController.Calibrate();
+    steeringController.Calibrate();
+    ultrasonicSensorController.Calibrate();
+    // Currently most of these do nothing
+
+
+
 
 	driving.calibrate();
 

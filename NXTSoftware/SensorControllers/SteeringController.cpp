@@ -19,3 +19,11 @@ void SteeringController::SetTurningAngle(TurnData turn) {
 
 }
 
+void SteeringController::Calibrate() {
+
+}
+
+int SteeringController::GetCmDrivenSinceLast() {
+    return 1;
+    //todo
+}

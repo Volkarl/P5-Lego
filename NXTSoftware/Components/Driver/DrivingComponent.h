@@ -11,9 +11,6 @@
 #include "../SpeedZoneDetection/SpeedZoneDetectionComponent.h"
 
 #include "../../SensorControllers/SteeringController.h"
-#include "../../SensorControllers/UltrasonicSensorController.h"
-#include "../../SensorControllers/NxtCamLineTrackingController.h"
-#include "../../SensorControllers/ColourSensorController.h"
 #include "../../SensorControllers/DisplayController.h"
 //todo fix includes
 
@@ -38,21 +35,21 @@ private:
     SpeedZoneDetectionComponent* SpeedZoneCalculator;
 
     // Component Results
-    SteeringSequence ObstacleDetectionSuggestion;
-    SteeringSequence BusStopSuggestion;
-    TurnData StayWithinLaneSuggestion;
+    TurnData StayWithinLaneTurnSuggestion;
     SpeedZone CurrentSpeedZone;
+    bool IsObstacleDetected, IsBusStopDetected;
 
     // Sensor Controllers
     SteeringController* SteeringControl;
-    //UltrasonicSensorController* ObstacleDetectionControl;
-    //NxtCamLineTrackingController* CameraControl;
-    //ColourSensorController* ColourControl;
     DisplayController* DisplayControl;
 
-    void ExecuteSteeringCommand(SteeringSequence sequence);
-    void ExecuteSteeringCommandMaxSpeed(SteeringSequence sequence, SpeedZone currentSpeedZone);
-    void ExecuteSteeringCommandSetSpeed(SteeringSequence sequence, SpeedZone currentSpeedZone);
+    // Methods
+    void ExecuteSteeringCommandMaxSpeed(SteeringCommand command, int maxRpm);
+    void Execute(int rpm, TurnData turn);
+
+    void ExecuteFollowTrack();
+    void ExecuteBusStop();
+    void ExecuteHalt();
 };
 
 #endif //P5_LEGO_DRIVING_H

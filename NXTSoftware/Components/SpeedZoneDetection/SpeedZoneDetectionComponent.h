@@ -11,7 +11,7 @@
 class SpeedZoneDetectionComponent{
 public:
     SpeedZoneDetectionComponent(ColourSensorController* colourSensor);
-    bool CalculateSteering(SteeringSequence* sequence);
+    bool DetectSpeedZone(SpeedZone* speedZone);
 
 private:
     ColourSensorController* ColourSensor;

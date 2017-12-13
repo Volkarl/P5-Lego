@@ -20,3 +20,7 @@ void DisplayController::SetText(char* textToDisplay, double numberToDisplay, int
     lcd->putf("sdn", textToDisplay, numberToDisplay, spaceForNumber);
     lcd->disp();
 }
+
+void DisplayController::Calibrate() {
+
+}

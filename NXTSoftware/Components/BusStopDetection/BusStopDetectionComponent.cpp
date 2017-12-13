@@ -8,7 +8,30 @@ BusStopDetectionComponent::BusStopDetectionComponent(ColourSensorController* col
     this->ColourSensor = colorSensor;
 }
 
-bool BusStopDetectionComponent::CalculateSteering(SteeringSequence *sequence){
+bool BusStopDetectionComponent::DetectBusStop(){
+    //if(ColourSensor->DetectColour() == RED) {
+    // StoppingSequence.SetValue(CalculateBusStop())
+    // return true;
+    // }
+
+    return false;
+}
+
+void BusStopDetectionComponent::GetNextBusStopCommand(SteeringCommand *command, int cmDrivenSinceLastCall){
+
+
+    // If sequence has ended, we just return the previous command
+}
+
+bool BusStopDetectionComponent::IsBusStopSequenceOngoing(int cmDrivenSinceLastCall) {
+    if(StoppingSequence.CommandIndex >= StoppingSequence.Items){}
+    // if the last item is also done, we return true
+    return true;
+}
+
+
+/*
+bool BusStopDetectionComponent::CalculateSteering(SteeringCommand *command, int cmDrivenSinceLastCall) {
 
     int SteeringArray[5][3];   //Creates a 5*3 array of the steering sequence data.
     //The numbers in the rows are: 0=angle, 1=speed, 2=time.
@@ -30,6 +53,10 @@ bool BusStopDetectionComponent::CalculateSteering(SteeringSequence *sequence){
     SteeringArray[4][1] = 100;
     SteeringArray[4][2] = 1;
 
+
+
+    // GetNextActiveCommand from BusStopSequence, then
+
     //return (SteeringArray);
     return false; //The angle, how fast it drives, and how long it drives.
     //It needs to return an array the above mentioned items.
@@ -41,4 +68,8 @@ bool BusStopDetectionComponent::CalculateSteering(SteeringSequence *sequence){
     //When the bus is straightened out the wheels will go back to being straight.
 
 
+
+
 }
+*/
+

@@ -8,7 +8,6 @@ SpeedZoneDetectionComponent::SpeedZoneDetectionComponent(ColourSensorController 
     this->ColourSensor = colourSensor;
 }
 
-bool SpeedZoneDetectionComponent::CalculateSteering(SteeringSequence *sequence){
+bool SpeedZoneDetectionComponent::DetectSpeedZone(SpeedZone *speedZone) {
     return false;
 }
-

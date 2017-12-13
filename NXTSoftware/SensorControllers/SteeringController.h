@@ -13,8 +13,10 @@ using namespace ecrobot;
 class SteeringController {
 public:
     SteeringController(Motor* motorForSpeed, Motor* motorForTurning);
+    void Calibrate();
     void SetSpeed(int rpm);
     void SetTurningAngle(TurnData turn);
+    int GetCmDrivenSinceLast();
 
     int CurrentSpeedRpm;
     TurnData CurrentTurningAngle;

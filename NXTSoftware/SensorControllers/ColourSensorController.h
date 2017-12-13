@@ -12,6 +12,7 @@ class ColourSensorController
 {
 public:
 	ColourSensorController(ColorSensor* colourSensor);
+	void Calibrate();
 	int DetectColour();
     int DetectColour(int red, int green, int blue);
 
