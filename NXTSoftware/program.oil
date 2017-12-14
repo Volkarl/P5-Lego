@@ -2,8 +2,8 @@
 
 CPU ATMEL_AT91SAM7S256
 {
-  OS LEJOS_OSEK
-  {
+    OS LEJOS_OSEK
+    {
     STATUS = EXTENDED;
     STARTUPHOOK = FALSE;
     ERRORHOOK = FALSE;
@@ -13,10 +13,35 @@ CPU ATMEL_AT91SAM7S256
     USEGETSERVICEID = FALSE;
     USEPARAMETERACCESS = FALSE;
     USERESSCHEDULER = FALSE;
-  };
+    };
 
-  /* Definition of application mode */
-  APPMODE appmode1{};
+    /* Definition of application mode */
+    APPMODE appmode1{};
+
+    /*DetectBusStop*/
+    TASK TaskDetectBusStop
+    {
+        AUTOSTART = FALSE;
+        PRIORITY = 5;
+        ACTIVATION = 1;
+        SCHEDULE = NON;
+        STACKSIZE = 512;
+    };
+
+    ALARM AlarmDetectBusStop
+    {
+        COUNTER = SysTimerCnt;
+        ACTION = ACTIVATETASK
+        {
+            TASK = TaskDetectBusStop;
+        };
+        AUTOSTART = FALSE;
+    };
+
+    /*DetectObstacles*/
+    /*DetectSpeedZone*/
+    /*DetectLanes*/
+    /*Steer*/
 
 
     TASK TaskUpdateCam
@@ -43,7 +68,7 @@ CPU ATMEL_AT91SAM7S256
         STACKSIZE = 512;
     };
 
-  /* Definition of TaskMain */
+    /* Definition of TaskMain */
     TASK TaskMain
     {
         AUTOSTART = TRUE
@@ -62,7 +87,7 @@ CPU ATMEL_AT91SAM7S256
 
 
 
-  /* Definition of OSEK Alarm Counter */
+    /* Definition of OSEK Alarm Counter */
     COUNTER SysTimerCnt
     {
         MINCYCLE = 1;
@@ -88,6 +113,7 @@ CPU ATMEL_AT91SAM7S256
         };
         AUTOSTART = FALSE;
     };
+
     ALARM AlarmUpdateSonar
     {
         COUNTER = SysTimerCnt;
@@ -99,26 +125,25 @@ CPU ATMEL_AT91SAM7S256
                 ALARMTIME = 250;
                 CYCLETIME = 400; /* TaskLCD is executed every 500msec */
                 APPMODE = appmode1;
-
         };
     };
 
-	TASK drivingUpdate
-	{
-		AUTOSTART = FALSE;
-		PRIORITY = 4;
-		ACTIVATION = 1;
-		SCHEDULE = FULL;
-		STACKSIZE = 512;
-	};
+    TASK drivingUpdate
+    {
+        AUTOSTART = FALSE;
+        PRIORITY = 4;
+        ACTIVATION = 1;
+        SCHEDULE = FULL;
+        STACKSIZE = 512;
+    };
 
-	ALARM AlarmDrivingUpdate
-	{
-		COUNTER = SysTimerCnt;
-		ACTION = ACTIVATETASK
-		{
-			TASK = drivingUpdate;
-		};
-		AUTOSTART = FALSE;
-	};
+    ALARM AlarmDrivingUpdate
+    {
+        COUNTER = SysTimerCnt;
+        ACTION = ACTIVATETASK
+        {
+            TASK = drivingUpdate;
+        };
+        AUTOSTART = FALSE;
+    };
 };

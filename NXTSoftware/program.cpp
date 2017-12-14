@@ -46,6 +46,8 @@ DeclareAlarm(AlarmDrivingUpdate);
 DeclareEvent(EventSleepI2C);
 DeclareEvent(EventSleep);
 
+DeclareAlarm(AlarmDetectBusStop);
+
 /* Nxt Input Ports */
 ColorSensor colorSensor(PORT_1);
 SonarSensor sonar(PORT_2);
@@ -103,11 +105,6 @@ TASK(TaskUpdateCam)
     TerminateTask();
 }
 
-void DisplayAndWait(char* textToDisplay){
-    displayController.SetText(textToDisplay);
-    clock.wait(1000);
-}
-
 TASK(TaskUpdateSonar)
 {
 
@@ -147,6 +144,31 @@ TASK(drivingUpdate)
 	TerminateTask();
 }
 
+TASK(TaskDetectBusStop){
+    drivingComponent.DetectBusStop();
+    TerminateTask();
+}
+
+TASK(TaskDetectObstacles){
+        drivingComponent.DetectObstacles();
+        TerminateTask();
+}
+
+TASK(TaskDetectSpeedZone){
+        drivingComponent.DetectSpeedZone();
+        TerminateTask();
+}
+
+TASK(TaskDetectLanes){
+        drivingComponent.DetectLanes();
+        TerminateTask();
+}
+
+TASK(TaskSteer){
+        drivingComponent.Steer();
+        TerminateTask();
+}
+
 TASK(TaskMain)
 {
 //	U8 data[MAX_USB_DATA_LEN]; // first byte is preserved for disconnect request from host
@@ -170,6 +192,7 @@ TASK(TaskMain)
 	camera.sendCommand('X'); // Sort NONE
 	clock.wait(25);
 	camera.enableTracking(true);
+    SetRelAlarm(AlarmDetectBusStop, 25, 500);
     SetRelAlarm(AlarmUpdateCam, 25, 350);
 	SetRelAlarm(AlarmDrivingUpdate, 150, 150);
 
