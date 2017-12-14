@@ -6,18 +6,22 @@
 #define NXTSOFTWARE_DISPLAYCONTROLLER_H
 
 #include "Lcd.h"
+#include "Clock.h"
 
 namespace ecrobot {
 
     class DisplayController {
     public:
-        DisplayController(Lcd *display);
+        DisplayController(Lcd *display, Clock* clock);
         void Calibrate();
         void SetText(char* textToDisplay);
         void SetText(char* textToDisplay, double numberToDisplay, int spaceForNumber);
+        //void RefreshDisplay();
+        //void ClearDisplay();
 
     private:
         Lcd* lcd;
+        Clock* clock;
     };
 
 };

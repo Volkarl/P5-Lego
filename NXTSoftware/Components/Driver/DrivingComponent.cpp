@@ -27,7 +27,7 @@ DrivingComponent::DrivingComponent(StayWithinLaneComponent *laneDetector,
 }
 
 void DrivingComponent::DetectLanes(){
-    DisplayControl->SetText("LANE");
+    // DisplayControl->SetText("4 | LANE");
 
     TurnData turn;
     LaneCalculator->CalculateSteering(&turn);
@@ -35,7 +35,7 @@ void DrivingComponent::DetectLanes(){
 }
 
 void DrivingComponent::DetectObstacles(){
-    DisplayControl->SetText("OBSTACLE");
+    // DisplayControl->SetText("5 | OBSTACLE");
 
     if(ObstacleCalculator->DetectObstacles()){
         IsObstacleDetected = true;
@@ -46,7 +46,7 @@ void DrivingComponent::DetectObstacles(){
 }
 
 void DrivingComponent::DetectBusStop() {
-    DisplayControl->SetText("BUS STOP");
+    // DisplayControl->SetText("2 | BUS STOP");
 
     if(!BusStopCalculator->IsBusStopSequenceOngoing(SteeringControl->GetCmDrivenSinceLast())){
         if(BusStopCalculator->DetectBusStop())
@@ -58,7 +58,7 @@ void DrivingComponent::DetectBusStop() {
 }
 
 void DrivingComponent::DetectSpeedZone(){
-    DisplayControl->SetText("SPEED ZONE");
+    // DisplayControl->SetText("3 | SPEED ZONE");
 
     SpeedZone speedZone;
     if(SpeedZoneCalculator->DetectSpeedZone(&speedZone)){
@@ -67,7 +67,7 @@ void DrivingComponent::DetectSpeedZone(){
 }
 
 void DrivingComponent::Steer(){
-    DisplayControl->SetText("STEER");
+    // DisplayControl->SetText("1 | STEER");
 
     if(IsObstacleDetected)
         ExecuteHalt();
@@ -80,20 +80,20 @@ void DrivingComponent::Steer(){
 }
 
 void DrivingComponent::ExecuteFollowTrack(){
-    DisplayControl->SetText("STEER: Follow");
+    //DisplayControl->SetText("STEER: Follow");
 
     // The bus drives according to LaneTracking turn and CurrentSpeedZone speed
     Execute(CurrentSpeedZone.SpeedRpm, StayWithinLaneTurnSuggestion);
 }
 
 void DrivingComponent::ExecuteHalt() {
-    DisplayControl->SetText("STEER: Halt");
+    //DisplayControl->SetText("STEER: Halt");
 
     Execute(0, TurnData(Direction(Left), 0));
 }
 
 void DrivingComponent::ExecuteBusStop() {
-    DisplayControl->SetText("STEER: Bus Stop");
+    //DisplayControl->SetText("STEER: Bus Stop");
 
     SteeringCommand cmd;
     BusStopCalculator->GetNextBusStopCommand(&cmd, SteeringControl->GetCmDrivenSinceLast());

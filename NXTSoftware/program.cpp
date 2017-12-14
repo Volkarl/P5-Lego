@@ -47,6 +47,10 @@ DeclareEvent(EventSleepI2C);
 DeclareEvent(EventSleep);
 
 DeclareAlarm(AlarmDetectBusStop);
+DeclareAlarm(AlarmDetectObstacles);
+DeclareAlarm(AlarmDetectSpeedZone);
+DeclareAlarm(AlarmDetectLanes);
+DeclareAlarm(AlarmSteer);
 
 /* Nxt Input Ports */
 ColorSensor colorSensor(PORT_1);
@@ -65,7 +69,7 @@ Usb usb;
 
 /* Sensor Controllers */
 ColourSensorController colourSensorController(&colorSensor);
-DisplayController displayController(&lcd);
+DisplayController displayController(&lcd, &clock);
 NxtCamLineTrackingController nxtCamLineTrackingController(&camera, 3, 20); //Todo: is 3 cm. correct??
 SteeringController steeringController(&motorForward, &motorTurn);
 UltrasonicSensorController ultrasonicSensorController(&sonar);
@@ -150,23 +154,23 @@ TASK(TaskDetectBusStop){
 }
 
 TASK(TaskDetectObstacles){
-        drivingComponent.DetectObstacles();
-        TerminateTask();
+    drivingComponent.DetectObstacles();
+    TerminateTask();
 }
 
 TASK(TaskDetectSpeedZone){
-        drivingComponent.DetectSpeedZone();
-        TerminateTask();
+    drivingComponent.DetectSpeedZone();
+    TerminateTask();
 }
 
 TASK(TaskDetectLanes){
-        drivingComponent.DetectLanes();
-        TerminateTask();
+    drivingComponent.DetectLanes();
+    TerminateTask();
 }
 
 TASK(TaskSteer){
-        drivingComponent.Steer();
-        TerminateTask();
+    drivingComponent.Steer();
+    TerminateTask();
 }
 
 TASK(TaskMain)
@@ -182,7 +186,8 @@ TASK(TaskMain)
 
 
 
-
+    // todo PUT THE THINGS BELOW INSIDE A CALIBRATE FUNCTION
+    /*
 	driving.calibrate();
 
     displayController.SetText("USB");
@@ -192,18 +197,28 @@ TASK(TaskMain)
 	camera.sendCommand('X'); // Sort NONE
 	clock.wait(25);
 	camera.enableTracking(true);
-    SetRelAlarm(AlarmDetectBusStop, 25, 500);
-    SetRelAlarm(AlarmUpdateCam, 25, 350);
+    */
+
+    SetRelAlarm(AlarmDetectBusStop, 200, 1000);
+    SetRelAlarm(AlarmDetectObstacles, 200, 1000);
+    SetRelAlarm(AlarmDetectSpeedZone, 200, 1000);
+    SetRelAlarm(AlarmDetectLanes, 200, 1000);
+    SetRelAlarm(AlarmSteer, 200, 1000);
+
+    while(1){}
+
+/*    SetRelAlarm(AlarmUpdateCam, 25, 350);
 	SetRelAlarm(AlarmDrivingUpdate, 150, 150);
 
-	while(1)
-  	{
-		communication.handle();
+    while(1)
+    {
+        communication.handle();
         if (nxt.getButtons() == Nxt::ENTR_ON)
         {
             displayController.SetText("Dist: ",ultrasonicSensorController.GetDistanceFast(), 0);
         }
-  	}
+    }
+*/
 }
 
 }

@@ -18,11 +18,72 @@ CPU ATMEL_AT91SAM7S256
     /* Definition of application mode */
     APPMODE appmode1{};
 
+
+    /*DetectObstacles*/
+    TASK TaskDetectObstacles
+    {
+        AUTOSTART = FALSE;
+        PRIORITY = 6;
+        ACTIVATION = 1;
+        SCHEDULE = NON;
+        STACKSIZE = 512;
+    };
+
+    ALARM AlarmDetectObstacles
+    {
+        COUNTER = SysTimerCnt;
+        ACTION = ACTIVATETASK
+        {
+            TASK = TaskDetectObstacles;
+        };
+        AUTOSTART = FALSE;
+    };
+
+    /*DetectLanes*/
+    TASK TaskDetectLanes
+    {
+        AUTOSTART = FALSE;
+        PRIORITY = 5;
+        ACTIVATION = 1;
+        SCHEDULE = NON;
+        STACKSIZE = 512;
+    };
+
+    ALARM AlarmDetectLanes
+    {
+        COUNTER = SysTimerCnt;
+        ACTION = ACTIVATETASK
+        {
+            TASK = TaskDetectLanes;
+        };
+        AUTOSTART = FALSE;
+    };
+
+    /*DetectSpeedZone*/
+    TASK TaskDetectSpeedZone
+    {
+        AUTOSTART = FALSE;
+        PRIORITY = 4;
+        ACTIVATION = 1;
+        SCHEDULE = NON;
+        STACKSIZE = 512;
+    };
+
+    ALARM AlarmDetectSpeedZone
+    {
+        COUNTER = SysTimerCnt;
+        ACTION = ACTIVATETASK
+        {
+            TASK = TaskDetectSpeedZone;
+        };
+        AUTOSTART = FALSE;
+    };
+
     /*DetectBusStop*/
     TASK TaskDetectBusStop
     {
         AUTOSTART = FALSE;
-        PRIORITY = 5;
+        PRIORITY = 3;
         ACTIVATION = 1;
         SCHEDULE = NON;
         STACKSIZE = 512;
@@ -38,12 +99,28 @@ CPU ATMEL_AT91SAM7S256
         AUTOSTART = FALSE;
     };
 
-    /*DetectObstacles*/
-    /*DetectSpeedZone*/
-    /*DetectLanes*/
     /*Steer*/
+    TASK TaskSteer
+    {
+        AUTOSTART = FALSE;
+        PRIORITY = 2;
+        ACTIVATION = 1;
+        SCHEDULE = NON;
+        STACKSIZE = 512;
+    };
 
+    ALARM AlarmSteer
+    {
+        COUNTER = SysTimerCnt;
+        ACTION = ACTIVATETASK
+        {
+            TASK = TaskSteer;
+        };
+        AUTOSTART = FALSE;
+    };
 
+///// BELOW IS RIP
+/*
     TASK TaskUpdateCam
     {
         AUTOSTART = FALSE;
@@ -67,7 +144,7 @@ CPU ATMEL_AT91SAM7S256
         SCHEDULE = FULL;
         STACKSIZE = 512;
     };
-
+*/
     /* Definition of TaskMain */
     TASK TaskMain
     {
@@ -103,7 +180,7 @@ CPU ATMEL_AT91SAM7S256
     {
         MASK = AUTO;
     };
-
+/*
     ALARM AlarmUpdateCam
     {
         COUNTER = SysTimerCnt;
@@ -123,7 +200,7 @@ CPU ATMEL_AT91SAM7S256
         };
         AUTOSTART = TRUE{
                 ALARMTIME = 250;
-                CYCLETIME = 400; /* TaskLCD is executed every 500msec */
+                CYCLETIME = 400; // TaskLCD is executed every 500msec
                 APPMODE = appmode1;
         };
     };
@@ -146,4 +223,5 @@ CPU ATMEL_AT91SAM7S256
         };
         AUTOSTART = FALSE;
     };
+    */
 };
