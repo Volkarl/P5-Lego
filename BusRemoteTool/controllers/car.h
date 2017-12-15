@@ -21,6 +21,11 @@ public:
     bool MotorTurning(int deg);
 
     void Update();
+	
+	float m_fDegree;
+	float GetAngle() const;
+	
+	bool AllowDrive; // ghetto as fuck, but for UI and prolly on the car for collision? dunno
 };
 
 #endif // CAR_H

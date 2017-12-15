@@ -15,6 +15,8 @@ public:
 	bool SetForce(int force);
 	bool SetAngle(int angle);
 	
+	int GetSpeed();
+	
 	bool Send();
 };
 

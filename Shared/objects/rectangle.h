@@ -22,6 +22,8 @@ public:
 
 	float rotation;
 	bool anchorInCenter;
+	
+	int dist;
 
 public:
 	RectangleF();

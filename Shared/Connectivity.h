@@ -26,7 +26,9 @@ typedef struct {
 	signed int height;
 	signed int objColor;
 	
-	RGB color;
+	int dist;
+	
+	RGB color; // TODO: Remove, this is just a silly way to get away with sending data with no effort
 	bool collision;
 } Rectangle_T;
 

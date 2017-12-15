@@ -197,17 +197,8 @@ TASK(TaskMain)
 	camera.sendCommand('X'); // Sort NONE
 	clock.wait(25);
 	camera.enableTracking(true);
-    */
-
-    SetRelAlarm(AlarmDetectBusStop, 200, 1000);
+    SetRelAlarm(AlarmUpdateCam, 25, 175);
     SetRelAlarm(AlarmDetectObstacles, 200, 1000);
-    SetRelAlarm(AlarmDetectSpeedZone, 200, 1000);
-    SetRelAlarm(AlarmDetectLanes, 200, 1000);
-    SetRelAlarm(AlarmSteer, 200, 1000);
-
-    while(1){}
-
-/*    SetRelAlarm(AlarmUpdateCam, 25, 350);
 	SetRelAlarm(AlarmDrivingUpdate, 150, 150);
 
     while(1)

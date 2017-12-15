@@ -8,7 +8,7 @@
 #include <QTimer>
 #include <QDebug>
 
-#define TIMER_REFRESH_RATE 350
+#define TIMER_REFRESH_RATE 175
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->m_iTimerID = startTimer(TIMER_REFRESH_RATE);
 	
 	this->testVar = false;
+	this->reverseTestVar = false;
 }
 
 MainWindow::~MainWindow()
@@ -35,9 +36,10 @@ MainWindow::~MainWindow()
 /* Create event for button for this*/
 void MainWindow::on_refreshButton_clicked()
 {
-	this->m_Car.Update();
+	/*this->m_Car.Update();
     ui->camWidget->refreshView();
-    this->fillTable();
+    this->fillTable();*/
+	this->m_Car.m_Motor.SetAngle(0);
 }
 
 void MainWindow::setupTable()
@@ -45,8 +47,8 @@ void MainWindow::setupTable()
     ui->tableWidget->clear();
 
     QStringList headers;
-    headers << "Width" << "Height" << "X" << "Y";
-    ui->tableWidget->setColumnCount(4);
+    headers << "W" << "H" << "X" << "Y" << "dist";
+    ui->tableWidget->setColumnCount(5);
     ui->tableWidget->setRowCount(0);
     ui->tableWidget->setHorizontalHeaderLabels(headers);
 
@@ -67,6 +69,8 @@ void MainWindow::fillTable()
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(line.upperLeftX)));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(line.upperLeftY)));
 		
+		const int distance = this->m_Car.m_Cam.m_Detector.GetDistance(cambuff.m_buffRects[i]);
+		ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(distance)));
     }
 }
 
@@ -78,21 +82,43 @@ void MainWindow::timerEvent(QTimerEvent *event)
 	
 	ui->currentAngleBox->setText(QString::number(this->m_Car.m_Cam.m_Detector.angle) + "°");
 	
-	qDebug() << "A: " << QString::number(-(ui->camWidget->m_fDegree));
-	
-	if (testVar)
-		this->m_Car.m_Motor.SetForce(38);
-	else
-		this->m_Car.m_Motor.SetForce(0);
+	qDebug() << "A: " << QString::number(-(this->m_Car.GetAngle()));
 	
 	const int angle = ui->angleBox->value();
-	//this->m_Car.m_Motor.SetAngle(angle);	
-	this->m_Car.m_Motor.SetAngle(-(ui->camWidget->m_fDegree));
+	const int speed = ui->speedBox->value();
+	
+	
+	if(reverseTestVar) // BEWARE: DESTROYS CAR
+	{
+		this->m_Car.m_Motor.SetForce(-30);
+		this->m_Car.m_Motor.SetAngle(angle);
+	} else {
+		if (testVar)
+		{
+			this->m_Car.AllowDrive = true;
+			/*
+			// auto stop car while it's doing math
+			static float olddeg = 0;
+			if (olddeg != this->m_Car.GetAngle()) {
+				olddeg = this->m_Car.GetAngle();
+				this->m_Car.m_Motor.SetForce(20);
+			} else {
+				this->m_Car.m_Motor.SetForce(speed);
+			}*/
+		}
+		else
+		{
+			this->m_Car.AllowDrive = false;
+			this->m_Car.m_Motor.SetForce(0);
+		}
+		
+		//this->m_Car.m_Motor.SetAngle(-(this->m_Car.GetAngle()));		
+	}
 	
 	this->m_Car.m_Motor.Send();
 	
+	ui->currentSpeedBox->setText(QString::number(this->m_Car.m_Motor.GetSpeed()));
 	
-	this->m_Car.m_Motor.SetAngle(-(ui->camWidget->m_fDegree));
 	/*
 	//this->m_Car.m_Motor.SetAngle(-45);
 	
@@ -135,6 +161,7 @@ void MainWindow::on_connectButton_clicked()
         ui->disconnectButton->setEnabled(true);
 
         ui->testButton->setEnabled(true);
+		ui->testButton_2->setEnabled(true);
         ui->refreshButton->setEnabled(true);
     }
 }
@@ -147,5 +174,12 @@ void MainWindow::on_disconnectButton_clicked()
     ui->disconnectButton->setEnabled(false);
 
     ui->testButton->setEnabled(false);
+	ui->testButton_2->setEnabled(false);
     ui->refreshButton->setEnabled(false);
+}
+
+void MainWindow::on_testButton_2_clicked()
+{
+    reverseTestVar = !reverseTestVar;
+	ui->testButton->setEnabled(!reverseTestVar);
 }

@@ -51,10 +51,17 @@ void cameraWidget::paintEvent(QPaintEvent *) {
 		if (upperLeft.y() + size.height() > width()) {
 			size.setHeight(height() - upperLeft.y());
 		}
+		
+		// tmp test
+		bool isclosest = false;
+		if (line.upperLeftX == this->m_Detector.m_closestwall.x &&
+			line.upperLeftY == this->m_Detector.m_closestwall.y) {
+			isclosest = true;
+		}
 
         QRect rect(upperLeft, size);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(line.collision == false ? Qt::black : Qt::red);
+        painter.setBrush(line.collision == false ? Qt::black : isclosest ? Qt::blue : Qt::red);
         painter.drawRect(rect);
 
         painter.setPen(Qt::white);
@@ -65,18 +72,27 @@ void cameraWidget::paintEvent(QPaintEvent *) {
     //painter.drawRect(rect1);
 
 
-	const float turnMultiplier = 1.5f;
-	const float maxTurnAngle = 46.0f;
+	/*float dist = (float)this->m_Detector.GetDistanceFromNearest();
+	
+	const float maxdist = 60;
+	if (dist > maxdist) dist = maxdist;
+	
+	//const float turnMultiplier = dist == -1 ? 0 : 20 + ((maxdist - dist) / 100 * 2);
+	const float turnMultiplier = dist == -1 ? 5.5f : 5.5f + maxdist / dist;
+	
+	const float maxTurnAngle = 38.0f; // Much higher than it should be, but an attempt to make it not go back and forth
+	
+	qDebug() << QString::number(dist) << " | " << QString::number(turnMultiplier);	
 	
     // LETS DRAW
 	DirectionType dirtomove = this->m_Detector.ShouldEvade();
 	switch(dirtomove) {
 		case DirectionType::None:
-			if (this->m_fDegree > -1.0f && this->m_fDegree < 1.0f) {
+			if (this->m_fDegree > -3.5f && this->m_fDegree < 3.5f) {
 				this->m_fDegree = 0;
 			} else {
-				if (this->m_fDegree > 0) this->m_fDegree -= turnMultiplier;
-				else if (this->m_fDegree < 0) this->m_fDegree += turnMultiplier;
+				if (this->m_fDegree > 0) this->m_fDegree -= 4.5;//turnMultiplier + 1.5f;
+				else if (this->m_fDegree < 0) this->m_fDegree += 4.5;//turnMultiplier + 1.5f;
 			}
 			break;
 			
@@ -90,20 +106,31 @@ void cameraWidget::paintEvent(QPaintEvent *) {
 	}
 	
 	if (this->m_fDegree > maxTurnAngle) this->m_fDegree = maxTurnAngle;
-	if (this->m_fDegree < -maxTurnAngle) this->m_fDegree = -maxTurnAngle;
-	
+	if (this->m_fDegree < -maxTurnAngle) this->m_fDegree = -maxTurnAngle;*/
+		
 	QLineF angleline;
 	angleline.setP1(QPointF(this->width() / 2, this->height() - 30));
 	angleline.setLength(40);
-	angleline.setAngle(90 - (int)this->m_fDegree);
+	angleline.setAngle(90 - (int)this->m_Car->GetAngle());
 	
-
-    QPen pen;
+	int camcenter = this->m_Detector.c_CamWidth;
+	
+	QLineF anglelinemid;
+	anglelinemid.setP1(QPointF(camcenter, this->height()));
+	anglelinemid.setP2(QPointF(camcenter, 0));
+	
+	
+	QPen pen;
     pen.setColor(Qt::red);
     pen.setWidth(10);
 
     painter.setPen(pen);
 	painter.drawLine(angleline);
+	pen.setColor(Qt::green);
+	pen.setWidth(2);
+	painter.setPen(pen);
+	painter.drawLine(anglelinemid);
+	
     //painter.drawPolygon(poly);
 }
 

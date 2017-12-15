@@ -7,7 +7,7 @@ Motor::Motor(NXTCommunication* comm) : m_nxtComm(comm) {
 
 bool Motor::SetForce(int force)
 {
-	if (force < 0 && force > 100)
+	if (force < -100 && force > 100)
 		return false;
 	
 	this->driveSpeed = force;
@@ -32,4 +32,9 @@ bool Motor::Send()
 	buff[3] = '\0';
 	
 	return this->m_nxtComm->SendArray(buff, 4);
+}
+
+int Motor::GetSpeed()
+{
+	return this->driveSpeed;
 }

@@ -26,6 +26,8 @@ private slots:
 
     void on_refreshButton_clicked();
 
+	void on_testButton_2_clicked();
+	
 private:
 	int m_iTimerID;
 	Car m_Car;
@@ -35,6 +37,7 @@ private:
     void fillTable();
 	
 	bool testVar; // TODO: Remove
+	bool reverseTestVar;
 	
 protected:
 	void timerEvent(QTimerEvent *event);

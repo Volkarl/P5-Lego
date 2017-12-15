@@ -50,7 +50,7 @@ void Communication::driveCmd(unsigned char *data)
 	char forwardSpeed = (char)data[1];
 	char angle = (char)data[2];
 
-	if (forwardSpeed < 0 || forwardSpeed > 100 ||
+	if (forwardSpeed < -100 || forwardSpeed > 100 ||
 		angle < -90 || angle > 90)
 		return;
 
