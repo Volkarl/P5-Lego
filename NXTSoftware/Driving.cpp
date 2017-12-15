@@ -22,13 +22,19 @@ using namespace ecrobot;
 /**
  * Constructor
  */
-Driving::Driving(Motor* motorForSpeed, Motor* motorForTurning) : data()
+Driving::Driving(Motor* propulsionMotor, Motor* turnMotor)
 {
-	this->motorForward = motorForSpeed;
-	this->motorTurn = motorForTurning;
-	// TODO: Necessary?
-	data.angle = 0, data.speed = 0, data.calibrated = false, data.halt = false;
-	data.color.red = 0, data.color.green = 0, data.color.blue = 0;
+	this->motorForward = propulsionMotor;
+	this->motorTurn = turnMotor;
+
+	data.angle = 0;
+	data.speed = 0;
+	data.calibrated = false;
+	data.halt = false;
+
+	data.color.red = 0;
+	data.color.green = 0;
+	data.color.blue = 0;
 }
 
 /**

@@ -39,22 +39,26 @@ CPU ATMEL_AT91SAM7S256
         AUTOSTART = FALSE;
     };
 
-    /*DetectLanes*/
-    TASK TaskDetectLanes
+    /* DetectLanes */
+
+    TASK TaskCamUpdate
     {
         AUTOSTART = FALSE;
         PRIORITY = 5;
         ACTIVATION = 1;
         SCHEDULE = NON;
         STACKSIZE = 512;
+
+        EVENT = EventSleepI2C;
+        EVENT = EventSleep;
     };
 
-    ALARM AlarmDetectLanes
+    ALARM AlarmCamUpdate
     {
         COUNTER = SysTimerCnt;
         ACTION = ACTIVATETASK
         {
-            TASK = TaskDetectLanes;
+            TASK = TaskCamUpdate;
         };
         AUTOSTART = FALSE;
     };
@@ -100,7 +104,7 @@ CPU ATMEL_AT91SAM7S256
     };
 
     /*Steer*/
-    TASK TaskSteer
+    TASK TaskDrive
     {
         AUTOSTART = FALSE;
         PRIORITY = 2;
@@ -109,12 +113,12 @@ CPU ATMEL_AT91SAM7S256
         STACKSIZE = 512;
     };
 
-    ALARM AlarmSteer
+    ALARM AlarmDrive
     {
         COUNTER = SysTimerCnt;
         ACTION = ACTIVATETASK
         {
-            TASK = TaskSteer;
+            TASK = TaskDrive;
         };
         AUTOSTART = FALSE;
     };

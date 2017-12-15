@@ -96,26 +96,12 @@ void MainWindow::timerEvent(QTimerEvent *event)
 		if (testVar)
 		{
 			this->m_Car.AllowDrive = true;
-			/*
-			// auto stop car while it's doing math
-			static float olddeg = 0;
-			if (olddeg != this->m_Car.GetAngle()) {
-				olddeg = this->m_Car.GetAngle();
-				this->m_Car.m_Motor.SetForce(20);
-			} else {
-				this->m_Car.m_Motor.SetForce(speed);
-			}*/
 		}
 		else
 		{
 			this->m_Car.AllowDrive = false;
-			this->m_Car.m_Motor.SetForce(0);
 		}
-		
-		//this->m_Car.m_Motor.SetAngle(-(this->m_Car.GetAngle()));		
 	}
-	
-	this->m_Car.m_Motor.Send();
 	
 	ui->currentSpeedBox->setText(QString::number(this->m_Car.m_Motor.GetSpeed()));
 	

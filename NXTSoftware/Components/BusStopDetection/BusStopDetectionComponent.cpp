@@ -4,8 +4,7 @@
 
 #include "BusStopDetectionComponent.h"
 
-BusStopDetectionComponent::BusStopDetectionComponent(ColourSensorController* colorSensor){
-    this->ColourSensor = colorSensor;
+BusStopDetectionComponent::BusStopDetectionComponent(){
 }
 
 bool BusStopDetectionComponent::DetectBusStop(){

@@ -30,7 +30,7 @@ public:
 
 	CamBuffer GetBuffer() const;
 	
-	DirectionType ShouldEvade();
+	DirectionType::Type ShouldEvade();
 };
 
 #endif // CAM_H

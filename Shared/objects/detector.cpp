@@ -1,5 +1,10 @@
 #include "detector.h"
 #include <string.h>
+#include <math.h>
+#include <stdlib.h>
+
+const int Detector::c_CamWidth = 176;
+const int Detector::c_CamHeight = 144;
 
 void Detector::MarkData(CamBuffer& cambuff) {
 	int carwidth = 105; // TODO: Modify value
@@ -34,7 +39,7 @@ void Detector::MarkData(CamBuffer& cambuff) {
 
 	int curoffset = 0;
 	if (this->m_DetectedWall) {
-		curoffset = (this->c_CamWidth / 2) - (this->m_closestwall.x + this->m_closestwall.w / 2);
+		curoffset = (int)((this->c_CamWidth / 2) - (this->m_closestwall.x + this->m_closestwall.w / 2));
 	}
 
 	for (int i = 0; i < CAM_OFFSET_BUFFER_SIZE - 1; i++) {
@@ -44,7 +49,61 @@ void Detector::MarkData(CamBuffer& cambuff) {
 	this->m_iOffsetBuffer[CAM_OFFSET_BUFFER_SIZE - 1] = curoffset;
 }
 
-DirectionType Detector::ShouldEvade() const {
+DrivingData Detector::GetAdvisedDrivingData() {
+	DrivingData data;
+	memset(&data, 0, sizeof(DrivingData));
+
+	/*
+	 * DIRECTION PART
+	 */
+	float dist = (float)this->GetDistanceFromNearest();
+
+	const float maxdist = 60;
+	if (dist > maxdist) dist = maxdist;
+
+	//const float turnMultiplier = dist == -1 ? 0 : 20 + ((maxdist - dist) / 100 * 2);
+	const float turnMultiplier = dist == -1 ? 5.5f : 5.5f + maxdist / dist;
+	const float maxTurnAngle = 38.0f; // Much higher than it should be, but an attempt to make it not go back and forth
+
+	DirectionType::Type dirtomove = this->ShouldEvade();
+	switch(dirtomove) {
+		case DirectionType::None:
+			if (this->m_fDirectionAngle > -3.5f && this->m_fDirectionAngle < 3.5f) {
+				this->m_fDirectionAngle = 0;
+			} else {
+				if (this->m_fDirectionAngle > 0) this->m_fDirectionAngle -= 4.5;//turnMultiplier + 1.5f;
+				else if (this->m_fDirectionAngle < 0) this->m_fDirectionAngle += 4.5;//turnMultiplier + 1.5f;
+			}
+			break;
+
+		case DirectionType::Left:
+			this->m_fDirectionAngle -= turnMultiplier;
+			break;
+
+		case DirectionType::Right:
+			this->m_fDirectionAngle += turnMultiplier;
+			break;
+	}
+
+	if (this->m_fDirectionAngle > maxTurnAngle) this->m_fDirectionAngle = maxTurnAngle;
+	if (this->m_fDirectionAngle < -maxTurnAngle) this->m_fDirectionAngle = -maxTurnAngle;
+
+
+	const int speed = 37; // TODO: #ghettotemp, DEFINE CONFIG?
+
+	if (this->m_fDirectionAngleOld != this->m_fDirectionAngle) {
+		this->m_fDirectionAngleOld = this->m_fDirectionAngle;
+		data.speed = 20;
+	} else {
+		data.speed = speed;
+	}
+
+	data.angle = (int)this->m_fDirectionAngle;
+
+	return data;
+}
+
+DirectionType::Type Detector::ShouldEvade() const {
 	int balancedoffset = 0;
 	for (int i = 0; i < CAM_OFFSET_BUFFER_SIZE; i++) {
 		balancedoffset += this->m_iOffsetBuffer[i];
@@ -60,7 +119,7 @@ DirectionType Detector::ShouldEvade() const {
 	}
 }
 
-Detector::Detector() : speed(0), angle(0), halt(false) {
+Detector::Detector() : speed(0), angle(0), halt(false), m_DetectedWall(false), m_fDirectionAngle(0), m_fDirectionAngleOld(0) {
 	memset(this->m_iOffsetBuffer, 0, CAM_OFFSET_BUFFER_SIZE * sizeof(int));
 }
 
@@ -74,7 +133,7 @@ int Detector::GetDistance(const Rectangle_T& wall)
 	} else {
 		const int x2 = this->c_CamWidth / 2 > wall.upperLeftX + wall.width ? wall.upperLeftX + wall.width : wall.upperLeftX;
 	
-		return abs(sqrt(
+		return (int)abs(sqrt(
 			pow( (x2 - this->c_CamWidth / 2), 2) + 
 			pow( (wall.upperLeftY + wall.height) - this->c_CamHeight, 2)
 		));

@@ -4,8 +4,8 @@
 
 #include "SpeedZoneDetectionComponent.h"
 
-SpeedZoneDetectionComponent::SpeedZoneDetectionComponent(ColourSensorController *colourSensor){
-    this->ColourSensor = colourSensor;
+SpeedZoneDetectionComponent::SpeedZoneDetectionComponent()
+{
 }
 
 bool SpeedZoneDetectionComponent::DetectSpeedZone(SpeedZone *speedZone) {

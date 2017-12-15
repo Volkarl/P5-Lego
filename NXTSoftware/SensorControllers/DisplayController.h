@@ -1,7 +1,3 @@
-//
-// Created by Andreas Laugård Hald on 11-12-2017.
-//
-
 #ifndef NXTSOFTWARE_DISPLAYCONTROLLER_H
 #define NXTSOFTWARE_DISPLAYCONTROLLER_H
 
@@ -12,16 +8,16 @@ namespace ecrobot {
 
     class DisplayController {
     public:
-        DisplayController(Lcd *display, Clock* clock);
+        DisplayController();
         void Calibrate();
-        void SetText(char* textToDisplay);
-        void SetText(char* textToDisplay, double numberToDisplay, int spaceForNumber);
+        void SetText(const char* textToDisplay);
+        void SetText(int textToDisplay);
+        void SetText(const char* textToDisplay, double numberToDisplay, int spaceForNumber);
         //void RefreshDisplay();
         //void ClearDisplay();
 
     private:
-        Lcd* lcd;
-        Clock* clock;
+        Lcd lcd;
     };
 
 };

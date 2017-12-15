@@ -7,11 +7,10 @@ TARGET_CPP_SOURCES = \
         Driving.cpp \
         Communication.cpp \
         ../Shared/objects/rectangle.cpp \
-        SensorControllers/ColourSensorController.cpp \
-        SensorControllers/DisplayController.cpp \
-        SensorControllers/NxtCamLineTrackingController.cpp \
-        SensorControllers/SteeringController.cpp \
+        ../Shared/objects/detector.cpp \
+        SensorControllers/CamController.cpp \
         SensorControllers/UltrasonicSensorController.cpp \
+        SensorControllers/DisplayController.cpp \
         Components/BusStopDetection/BusStopDetectionComponent.cpp \
         Components/Driver/DrivingComponent.cpp \
         Components/ObstacleDetection/ObstacleDetectionComponent.cpp \

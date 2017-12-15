@@ -1,28 +1,28 @@
-//
-// Created by Andreas Laugård Hald on 11-12-2017.
-//
-
 #include "DisplayController.h"
 
 using namespace ecrobot;
 
-DisplayController::DisplayController(Lcd *display, Clock *clock){
-    this->lcd = display;
-    this->clock = clock;
+DisplayController::DisplayController()
+{
+    this->lcd.clear();
 }
 
-void DisplayController::SetText(char* textToDisplay) {
-    clock->wait(100);
+void DisplayController::SetText(const char* textToDisplay) {
     //lcd->clear();
-    lcd->putf("sn", textToDisplay);
-    lcd->disp();
+    this->lcd.putf("sn", textToDisplay);
+    this->lcd.disp();
 }
 
-void DisplayController::SetText(char* textToDisplay, double numberToDisplay, int spaceForNumber) {
-    clock->wait(100);
+void DisplayController::SetText(const char* textToDisplay, double numberToDisplay, int spaceForNumber) {
     //lcd->clear();
-    lcd->putf("sdn", textToDisplay, numberToDisplay, spaceForNumber);
-    lcd->disp();
+    this->lcd.putf("sdn", textToDisplay, numberToDisplay, spaceForNumber);
+    this->lcd.disp();
+}
+
+void DisplayController::SetText(int number) {
+    //lcd->clear();
+    this->lcd.putf("dn", number, 0);
+    this->lcd.disp();
 }
 
 /*
@@ -36,6 +36,6 @@ void DisplayController::ClearDisplay(){
 }
 */
 
-void DisplayController::Calibrate() {
-
+void DisplayController::Calibrate()
+{
 }

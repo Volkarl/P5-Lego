@@ -4,8 +4,7 @@
 
 #include "StayWithinLaneComponent.h"
 
-StayWithinLaneComponent::StayWithinLaneComponent(NxtCamLineTrackingController *laneTrackingSensor) {
-    this->LaneTrackingSensor = laneTrackingSensor;
+StayWithinLaneComponent::StayWithinLaneComponent() {
 }
 
 bool StayWithinLaneComponent::CalculateSteering(TurnData *turn){

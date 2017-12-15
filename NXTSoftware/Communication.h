@@ -2,7 +2,7 @@
 #define CONNECTIVITY_COMMUNICATION_H
 
 #include "Usb.h"
-#include "Camera.h"
+#include "SensorControllers/CamController.h"
 #include "Clock.h"
 #include "ColorSensor.h"
 #include "Driving.h"
@@ -10,12 +10,12 @@
 namespace ecrobot {
 	class Communication {
 		public:
-			Communication(Usb* usb, Camera* camera, ColorSensor* colorSensor, Driving* drive);
+			Communication(Usb* usb, CamController* camera, ColorSensor* colorSensor, Driving* drive);
 			void handle();
 
 		private:
 			void sendData(unsigned char *data);
-			void sendCameraData(unsigned char *data);
+			//void sendCameraData(unsigned char *data);
 			//void getCameraLineTest(unsigned char *data);
 			//int  getCameraLineTestLoop();
 			void getCameraHeatmapTest();
@@ -24,7 +24,7 @@ namespace ecrobot {
 
 			unsigned char data[64]; //Usb::MAX_USB_DATA_LEN];
 			Usb* usb;
-			Camera* camera;
+			CamController* m_Camera;
 			ColorSensor* color;
 			Driving* drive;
 			Clock clock;

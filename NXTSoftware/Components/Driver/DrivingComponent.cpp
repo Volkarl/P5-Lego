@@ -4,18 +4,16 @@
 
 #include "DrivingComponent.h"
 
-DrivingComponent::DrivingComponent(StayWithinLaneComponent *laneDetector,
-                                   ObstacleDetectionComponent *obstacleDetector,
-                                   BusStopDetectionComponent *busStopDetector,
-                                   SpeedZoneDetectionComponent *speedZoneDetector,
-                                   SteeringController *steeringController,
-                                   DisplayController *displayController){
+DrivingComponent::DrivingComponent(StayWithinLaneComponent* laneDetector,
+                                   ObstacleDetectionComponent* obstacleDetector,
+                                   BusStopDetectionComponent* busStopDetector,
+                                   SpeedZoneDetectionComponent* speedZoneDetector,
+                                   DisplayController* displayController){
     this->LaneCalculator = laneDetector;
     this->ObstacleCalculator = obstacleDetector;
     this->BusStopCalculator = busStopDetector;
     this->SpeedZoneCalculator = speedZoneDetector;
 
-    this->SteeringControl = steeringController;
     this->DisplayControl = displayController;
 
     CurrentSpeedZone.SetData(10);
@@ -34,39 +32,32 @@ void DrivingComponent::DetectLanes(){
     StayWithinLaneTurnSuggestion.SetData(turn.TurnDirection, turn.TurnDegrees);
 }
 
-void DrivingComponent::DetectObstacles(){
-    // DisplayControl->SetText("5 | OBSTACLE");
-
-    if(ObstacleCalculator->DetectObstacles()){
-        IsObstacleDetected = true;
-    }
-    else{
-        IsObstacleDetected = false;
-    }
+void DrivingComponent::DetectObstacles()
+{
+	IsObstacleDetected = ObstacleCalculator->DetectObstacles();
 }
 
-void DrivingComponent::DetectBusStop() {
+void DrivingComponent::DetectBusStop()
+{
     // DisplayControl->SetText("2 | BUS STOP");
 
-    if(!BusStopCalculator->IsBusStopSequenceOngoing(SteeringControl->GetCmDrivenSinceLast())){
-        if(BusStopCalculator->DetectBusStop())
-            IsBusStopDetected = true;
-        else
-            IsBusStopDetected = false;
-    }
+    /*if(!BusStopCalculator->IsBusStopSequenceOngoing(SteeringControl->GetCmDrivenSinceLast())) {
+        IsBusStopDetected = BusStopCalculator->DetectBusStop();
+    }*/
     // If we're already executing a bus stop, we don't override it with a new measurement
 }
 
-void DrivingComponent::DetectSpeedZone(){
-    // DisplayControl->SetText("3 | SPEED ZONE");
-
+void DrivingComponent::DetectSpeedZone()
+{
     SpeedZone speedZone;
+
     if(SpeedZoneCalculator->DetectSpeedZone(&speedZone)){
         CurrentSpeedZone.SetData(speedZone.SpeedRpm);
     }
 }
 
-void DrivingComponent::Steer(){
+void DrivingComponent::Steer()
+{
     // DisplayControl->SetText("1 | STEER");
 
     if(IsObstacleDetected)
@@ -79,28 +70,32 @@ void DrivingComponent::Steer(){
         ExecuteFollowTrack();
 }
 
-void DrivingComponent::ExecuteFollowTrack(){
+void DrivingComponent::ExecuteFollowTrack()
+{
     //DisplayControl->SetText("STEER: Follow");
 
     // The bus drives according to LaneTracking turn and CurrentSpeedZone speed
     Execute(CurrentSpeedZone.SpeedRpm, StayWithinLaneTurnSuggestion);
 }
 
-void DrivingComponent::ExecuteHalt() {
+void DrivingComponent::ExecuteHalt()
+{
     //DisplayControl->SetText("STEER: Halt");
 
     Execute(0, TurnData(Direction(Left), 0));
 }
 
-void DrivingComponent::ExecuteBusStop() {
+void DrivingComponent::ExecuteBusStop()
+{
     //DisplayControl->SetText("STEER: Bus Stop");
 
     SteeringCommand cmd;
-    BusStopCalculator->GetNextBusStopCommand(&cmd, SteeringControl->GetCmDrivenSinceLast());
+    //BusStopCalculator->GetNextBusStopCommand(&cmd, SteeringControl->GetCmDrivenSinceLast());
     ExecuteSteeringCommandMaxSpeed(cmd, CurrentSpeedZone.SpeedRpm);
 }
 
-void DrivingComponent::ExecuteSteeringCommandMaxSpeed(SteeringCommand command, int maxRpm){
+void DrivingComponent::ExecuteSteeringCommandMaxSpeed(SteeringCommand command, int maxRpm)
+{
     int rpm;
 
     if(command.SpeedRotationsPerMin > maxRpm)
@@ -111,7 +106,8 @@ void DrivingComponent::ExecuteSteeringCommandMaxSpeed(SteeringCommand command, i
     Execute(rpm, TurnData(command.Turn->TurnDirection, command.Turn->TurnDegrees));
 }
 
-void DrivingComponent::Execute(int rpm, TurnData turn) {
-    SteeringControl->SetTurningAngle(turn);
-    SteeringControl->SetSpeed(rpm);
+void DrivingComponent::Execute(int rpm, TurnData turn)
+{
+    //SteeringControl->SetTurningAngle(turn);
+    //SteeringControl->SetSpeed(rpm);
 }

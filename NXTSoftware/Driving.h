@@ -3,6 +3,7 @@
 
 #include "Motor.h"
 #include "../Shared/Connectivity.h"
+#include "../Shared/objects/detector.h"
 
 
 #define TURN_ANGLE 25
@@ -14,21 +15,10 @@
 #define DRIVE_REVERSE -1
 #define DRIVE_STOP 0
 
-
-struct DrivingData {
-	bool halt;
-
-	int speed;
-	int angle;
-	bool calibrated;
-
-	RGB color;
-};
-
 namespace ecrobot{
 	class Driving {
 		public:
-			Driving(Motor* motorForSpeed, Motor* motorForTurning);
+			Driving(Motor* propulsionMotor, Motor* turnMotor);
 
 			void forward();
 			void forward(int speed);
@@ -49,7 +39,6 @@ namespace ecrobot{
 			bool setTurnAngle(int angle);
 
 			void update();
-
 
 
 		//private:

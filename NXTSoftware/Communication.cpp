@@ -4,15 +4,16 @@
 #include "Communication.h"
 #include "../Shared/Connectivity.h"
 #include "../Shared/Tools.h"
+#include "../Shared/objects/camtools.h"
 #include "Driving.h"
 
 
 using namespace ecrobot;
 
-Communication::Communication(Usb* usbobj, Camera* cam, ColorSensor* colorSensor, Driving* drive)
+Communication::Communication(Usb* usbobj, CamController* cam, ColorSensor* colorSensor, Driving* drive)
 {
 	this->usb = usbobj;
-	this->camera = cam;
+	this->m_Camera = cam;
 	this->color = colorSensor;
 	this->drive = drive;
 
@@ -31,9 +32,7 @@ void Communication::handle()
 
 			if (type == DISCONNECT_REQ)
 				usb->close(); // close usb connection
-			else if (type == PACKET_CAM)
-				this->sendCameraData(this->data);
-			else if (type == PACKET_POLL)
+			else if (type == PACKET_CAM || type == PACKET_POLL)
 				this->sendData(this->data);
 			else if (type == PACKET_DRIVE) // TEST
 				this->driveCmd(this->data);
@@ -54,8 +53,6 @@ void Communication::driveCmd(unsigned char *data)
 		angle < -90 || angle > 90)
 		return;
 
-	//this->drive->forward(forwardSpeed);
-	//this->drive->setTurnAngle(angle);
 	this->drive->data.speed = forwardSpeed;
 	this->drive->data.angle = angle;
 }
@@ -70,6 +67,7 @@ void Communication::driveCmd(unsigned char *data)
  */
 void Communication::getCameraHeatmapTest()
 {
+	/*
 	unsigned char buf[41];
 	memset(buf, 0, 41);
 	buf[41] = '\0';
@@ -79,41 +77,38 @@ void Communication::getCameraHeatmapTest()
 	camera->receive(0x80, buf, 41);
 
 	usb->send(buf, 0, 41);
+	 */
 }
 
 
 
 void Communication::sendData(unsigned char *data)
 {
-	int amountOfObjects = 0;
 	size_t offset = 0;
-	Camera::Rectangle_T rec;
-	data[0] = PACKET_END; data[1] = '\0'; // TODO: Ditch this? Seems a bit odd when you look at the next if clause
+	//Camera::Rectangle_T rec;
+	data[0] = PACKET_END; data[1] = '\0';
 
-	//camera.update();
-	//clock.wait(10); // Wait for camera data, we can possibly lower the time waited
 
-	int numOfObjects = camera->getNumberOfObjects();
-
-	if (numOfObjects >= 1 && numOfObjects <= 8)
-		amountOfObjects = numOfObjects;
-	else
-	{
+	if (!this->m_Camera->UpdateBuffer()) {
 		data[0] = 0;
 		usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 		return;
 	}
 
-	data[offset++] = amountOfObjects;
+	CamBuffer camBuffer = this->m_Camera->GetBuffer();
 
-	for (int i = 0; i < amountOfObjects; i++)
+
+	data[offset++] = camBuffer.m_iCount;
+
+	for (int i = 0; i < camBuffer.m_iCount; i++)
 	{
-		camera->getRectangle(i, &rec);
+		const Rectangle_T& rec = camBuffer.m_buffRects[i];
+
 		data[offset++] = rec.width;
 		data[offset++] = rec.height;
 		data[offset++] = rec.upperLeftX;
 		data[offset++] = rec.upperLeftY;
-		data[offset++] = camera->getObjectColor(i);
+		data[offset++] = rec.objColor;
 		data[offset] = PACKET_END;
 	}
 
@@ -129,11 +124,11 @@ void Communication::sendData(unsigned char *data)
 }
 
 
-void Communication::sendCameraData(unsigned char *data)
+/*void Communication::sendCameraData(unsigned char *data)
 {
 	size_t offset = 0;
 	Camera::Rectangle_T rec;
-	data[0] = PACKET_END; data[1] = '\0'; // TODO: Ditch this? Seems a bit odd when you look at the next if clause
+	data[0] = PACKET_END; data[1] = '\0';
 
 	int numOfObjects = camera->getNumberOfObjects();
 
@@ -158,75 +153,5 @@ void Communication::sendCameraData(unsigned char *data)
 	}
 
 	usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
-}
-
-
-
-
-
-/*
-void Communication::getCameraLineTest(unsigned char *data)
-{
-	int amountOfObjects = 0;
-	size_t offset = 0;
-	Camera::Rectangle_T rec;
-
-	camera->update();
-	this->clock.wait(10);
-
-	int numOfObjects = camera->getNumberOfObjects();
-
-	if (numOfObjects == 8)
-		amountOfObjects = 8;
-	else
-		amountOfObjects = 0;
-
-	unsigned char countPacket[2];
-	countPacket[0] = amountOfObjects;
-	countPacket[1] = '\0';
-	usb->send(countPacket, 0, 2);
-
-	for (int i = 0; i < amountOfObjects; i++)
-	{
-		//memset(data, 0, Usb::MAX_USB_DATA_LENGTH); // flush buffer
-
-		camera->getRectangle(i, &rec);
-		offset = insertNumberToArray(data, offset, rec.width);
-		offset = insertNumberToArray(data, offset, rec.height);
-		offset = insertNumberToArray(data, offset, rec.upperLeftX);
-		offset = insertNumberToArray(data, offset, rec.upperLeftY);
-		offset = insertNumberToArray(data, offset, rec.lowerRightX);
-		offset = insertNumberToArray(data, offset, rec.lowerRightY);
-		data[offset] = PACKET_END;
-
-		if (this->getCameraLineTestLoop() == -1)
-			break;
-
-		usb->send(data, 0, MAX_USB_DATA_LEN);
-		offset = 0;
-		//clock.wait(10);
-	}
-
-}
-
-int Communication::getCameraLineTestLoop()
-{
-	Clock clock;
-	int i = 0, timeout = 10;
-	U32 len;
-	U8 data[2];
-
-	while (i <= timeout && usb->isConnected())
-	{
-		len = usb->receive(data, 0, 2);
-
-		if (len > 0 && data[0] != PACKET_ACK)
-			return -1;
-
-		i++;
-		this->clock.wait(5);
-	}
-
-	return 0;
 }
 */

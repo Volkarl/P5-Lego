@@ -5,12 +5,11 @@
 #ifndef P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H
 #define P5_LEGO_BUSSTOPDETECTIONCOMPONENT_H
 
-#include "../../SensorControllers/ColourSensorController.h"
 #include "../../SteeringTypes.h"
 
 class BusStopDetectionComponent {
 public:
-    BusStopDetectionComponent(ColourSensorController* colorSensor);
+    BusStopDetectionComponent();
     //bool CalculateSteering(SteeringCommand* command);
 
     bool DetectBusStop();
@@ -18,7 +17,6 @@ public:
     void GetNextBusStopCommand(SteeringCommand *command, int cmDrivenSinceLastCall);
 
 private:
-    ColourSensorController* ColourSensor;
     SteeringSequence StoppingSequence;
 };
 

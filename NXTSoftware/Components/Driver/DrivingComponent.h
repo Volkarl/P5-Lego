@@ -10,7 +10,6 @@
 #include "../BusStopDetection/BusStopDetectionComponent.h"
 #include "../SpeedZoneDetection/SpeedZoneDetectionComponent.h"
 
-#include "../../SensorControllers/SteeringController.h"
 #include "../../SensorControllers/DisplayController.h"
 //todo fix includes
 
@@ -18,7 +17,7 @@ class DrivingComponent {
 public:
     DrivingComponent(StayWithinLaneComponent* laneDetector, ObstacleDetectionComponent* obstacleDetector,
             BusStopDetectionComponent* busStopDetector, SpeedZoneDetectionComponent* speedZoneDetector,
-            SteeringController* steeringController, DisplayController* displayController);
+            DisplayController* displayController);
 
     void DetectLanes();
     void DetectObstacles();
@@ -40,7 +39,7 @@ private:
     bool IsObstacleDetected, IsBusStopDetected;
 
     // Sensor Controllers
-    SteeringController* SteeringControl;
+    //SteeringController* SteeringControl;
     DisplayController* DisplayControl;
 
     // Methods
