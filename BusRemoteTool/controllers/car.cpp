@@ -2,7 +2,6 @@
 
 Car::Car() : m_Cam(&m_nxtComm), m_Motor(&m_nxtComm)
 {	
-	this->m_fDegree = 0.0f;
 }
 
 bool Car::Init()
