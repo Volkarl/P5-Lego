@@ -6,7 +6,7 @@
 #define PACKET_END 0xFE
 #define PACKET_SEPERATOR 0xFD
 #define PACKET_CAM 0xE1
-#define PACKET_TEST 0xE2
+#define PACKET_SETMODE 0xE2
 #define PACKET_POLL 0xE3
 #define PACKET_DRIVE 0xE4
 #define PACKET_ACK 0xFC
@@ -31,5 +31,11 @@ typedef struct {
 	RGB color; // TODO: Remove, this is just a silly way to get away with sending data with no effort
 	bool collision;
 } Rectangle_T;
+
+namespace Controller {
+	enum Source {
+		NXT, PC
+	};
+}
 
 #endif

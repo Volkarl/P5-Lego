@@ -79,7 +79,7 @@ DrivingComponent drivingComponent(&stayWithinLaneComponent, &obstacleDetectionCo
 
 // TODO OLD Stuff below (not old)
 Driving driving(&motorForward, &motorTurn);
-Communication communication(&usb, &cam, &colorSensor, &driving);
+Communication communication(&usb, &cam, &colorSensor, &driving, &displayController);
 
 
 /* nxtOSEK hook to be invoked from an ISR in category 2 */
@@ -114,25 +114,30 @@ TASK(TaskUpdateSonar)
     */
 }
 
-TASK(TaskDetectBusStop){
+TASK(TaskDetectBusStop)
+{
     drivingComponent.DetectBusStop();
     TerminateTask();
 }
 
-TASK(TaskDetectObstacles){
+TASK(TaskDetectObstacles)
+{
     if(obstacleDetectionComponent.DetectObstacles())
         driving.halt();
     else
         driving.data.halt = false;
+
     TerminateTask();
 }
 
-TASK(TaskDetectSpeedZone){
+TASK(TaskDetectSpeedZone)
+{
     drivingComponent.DetectSpeedZone();
     TerminateTask();
 }
 
-TASK(TaskCamUpdate){
+TASK(TaskCamUpdate)
+{
 	//drivingComponent.DetectLanes();
 
 	cam.Update();
@@ -141,14 +146,16 @@ TASK(TaskCamUpdate){
     TerminateTask();
 }
 
-TASK(TaskDrive){
+TASK(TaskDrive)
+{
+	if(communication.m_Controller == Controller::NXT) {
+		CamBuffer buffdata = cam.GetBuffer();
+		detector.MarkData(buffdata);
 
-	CamBuffer buffdata = cam.GetBuffer();
-	detector.MarkData(buffdata);
-
-	DrivingData detectordata = detector.GetAdvisedDrivingData();
-	driving.data.speed = detectordata.speed;
-	driving.data.angle = -detectordata.angle;
+		DrivingData detectordata = detector.GetAdvisedDrivingData();
+		driving.data.speed = detectordata.speed;
+		driving.data.angle = -detectordata.angle;
+	}
 
 	driving.update();
 
@@ -162,7 +169,7 @@ TASK(TaskMain)
     ultrasonicSensorController.Calibrate();
 
 	driving.calibrate(); // Finding the center
-	cam.Calibrate(); // Calling calibrate, as if I run it in the constructor it seems to not work :S
+	cam.Calibrate(); // Calling calibrate, as running it in the constructor seems to not work :S
 
     displayController.SetText("USB");
 

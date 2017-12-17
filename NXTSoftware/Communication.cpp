@@ -2,40 +2,40 @@
 #include <cstring>
 
 #include "Communication.h"
-#include "../Shared/Connectivity.h"
-#include "../Shared/Tools.h"
-#include "../Shared/objects/camtools.h"
-#include "Driving.h"
-
 
 using namespace ecrobot;
 
-Communication::Communication(Usb* usbobj, CamController* cam, ColorSensor* colorSensor, Driving* drive)
+Communication::Communication(Usb* usb, CamController* cam, ColorSensor* colorSensor, Driving* drive, DisplayController* lcd)
 {
-	this->usb = usbobj;
+	this->m_Usb = usb;
 	this->m_Camera = cam;
-	this->color = colorSensor;
-	this->drive = drive;
+	this->m_Color = colorSensor;
+	this->m_Drive = drive;
+
+	this->m_Controller = Controller::NXT; // Use NXT by default
+	this->m_Lcd = lcd;
 
 	memset(data, 0, Usb::MAX_USB_DATA_LENGTH); // flush buffer
 }
 
 void Communication::handle()
 {
-	if (this->usb->isConnected()) // check usb connection
+	if (this->m_Usb->isConnected()) // check usb connection
 	{
-		U32 len = usb->receive(this->data, 0, Usb::MAX_USB_DATA_LENGTH); // receive data
+		U32 len = m_Usb->receive(this->data, 0, Usb::MAX_USB_DATA_LENGTH); // receive data
 
 		if (len > 0)
 		{
 			const unsigned char& type = data[0];
 
 			if (type == DISCONNECT_REQ)
-				usb->close(); // close usb connection
+				m_Usb->close(); // close usb connection
 			else if (type == PACKET_CAM || type == PACKET_POLL)
 				this->sendData(this->data);
-			else if (type == PACKET_DRIVE) // TEST
+			else if (type == PACKET_DRIVE)
 				this->driveCmd(this->data);
+			else if(type == PACKET_SETMODE)
+				this->setMode(this->data);
 
 			memset(data, 0, Usb::MAX_USB_DATA_LENGTH); // flush buffer
 		}
@@ -44,8 +44,11 @@ void Communication::handle()
 }
 
 
-void Communication::driveCmd(unsigned char *data)
+void Communication::driveCmd(unsigned char* data)
 {
+	if(!this->m_Controller == Controller::PC)
+		return;
+
 	char forwardSpeed = (char)data[1];
 	char angle = (char)data[2];
 
@@ -53,8 +56,8 @@ void Communication::driveCmd(unsigned char *data)
 		angle < -90 || angle > 90)
 		return;
 
-	this->drive->data.speed = forwardSpeed;
-	this->drive->data.angle = angle;
+	this->m_Drive->data.speed = forwardSpeed;
+	this->m_Drive->data.angle = angle;
 }
 
 /**
@@ -76,13 +79,13 @@ void Communication::getCameraHeatmapTest()
 	this->clock.wait(10);
 	camera->receive(0x80, buf, 41);
 
-	usb->send(buf, 0, 41);
+	m_Usb->send(buf, 0, 41);
 	 */
 }
 
 
 
-void Communication::sendData(unsigned char *data)
+void Communication::sendData(unsigned char* data)
 {
 	size_t offset = 0;
 	//Camera::Rectangle_T rec;
@@ -91,7 +94,7 @@ void Communication::sendData(unsigned char *data)
 
 	if (!this->m_Camera->UpdateBuffer()) {
 		data[0] = 0;
-		usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
+		m_Usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 		return;
 	}
 
@@ -112,17 +115,27 @@ void Communication::sendData(unsigned char *data)
 		data[offset] = PACKET_END;
 	}
 
-	data[offset++] = drive->data.speed;
-	data[offset++] = (unsigned char) drive->getTurnCount();
-	data[offset++] = drive->data.halt;
+	data[offset++] = m_Drive->data.speed;
+	data[offset++] = (unsigned char) m_Drive->getTurnCount();
+	data[offset++] = m_Drive->data.halt;
 	// Color Sensor
-	data[offset++] = drive->data.color.red;
-	data[offset++] = drive->data.color.green;
-	data[offset++] = drive->data.color.blue;
+	data[offset++] = m_Drive->data.color.red;
+	data[offset++] = m_Drive->data.color.green;
+	data[offset++] = m_Drive->data.color.blue;
 
-	usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
+	m_Usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 }
 
+void Communication::setMode(unsigned char *data)
+{
+	this->m_Controller = (Controller::Source) data[1];
+
+	this->m_Lcd->ClearDisplay();
+	if(this->m_Controller == Controller::PC)
+		this->m_Lcd->SetText("PC");
+	else if(this->m_Controller == Controller::NXT)
+		this->m_Lcd->SetText("NXT");
+}
 
 /*void Communication::sendCameraData(unsigned char *data)
 {
@@ -135,7 +148,7 @@ void Communication::sendData(unsigned char *data)
 	if (numOfObjects < 1 && numOfObjects > 8)
 	{
 		data[0] = 0;
-		usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
+		m_Usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 		return;
 	}
 
@@ -152,6 +165,6 @@ void Communication::sendData(unsigned char *data)
 		data[offset] = PACKET_END;
 	}
 
-	usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
+	m_Usb->send(data, 0, Usb::MAX_USB_DATA_LENGTH);
 }
 */

@@ -1,7 +1,3 @@
-//
-// Created by karlz on 29/11/2017.
-//
-
 #ifndef P5_LEGO_STAYWITHINLANECOMPONENT_H
 #define P5_LEGO_STAYWITHINLANECOMPONENT_H
 

@@ -30,6 +30,7 @@ public:
 	int GetDistance(const Rectangle_T& wall);
 	int GetDistance(RectangleF& wall);
 	int GetDistanceFromNearest();
+	int GetAngle() const; 	
 	
 	int m_iOffsetBuffer[CAM_OFFSET_BUFFER_SIZE]; // Change to private?
 	

@@ -24,9 +24,11 @@ private slots:
 
     void on_disconnectButton_clicked();
 
-    void on_refreshButton_clicked();
-
 	void on_testButton_2_clicked();
+	
+	void on_modePcButton_clicked();
+	
+	void on_modeNxtButton_clicked();
 	
 private:
 	int m_iTimerID;

@@ -6,20 +6,6 @@
 using namespace ecrobot;
 
 /**
- * Input:
- */
-
-/**
- * Output:
- *
- * PORT_A Turning Engine
- * PORT_B Forward Engine
- */
-//Motor motorTurn(PORT_A);
-//Motor motorForward(PORT_B);
-
-
-/**
  * Constructor
  */
 Driving::Driving(Motor* propulsionMotor, Motor* turnMotor)

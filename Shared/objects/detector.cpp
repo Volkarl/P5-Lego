@@ -6,6 +6,12 @@
 const int Detector::c_CamWidth = 176;
 const int Detector::c_CamHeight = 144;
 
+Detector::Detector() : speed(0), angle(0), halt(false), m_DetectedWall(false), m_fDirectionAngle(0), m_fDirectionAngleOld(0) {
+	memset(this->m_iOffsetBuffer, 0, CAM_OFFSET_BUFFER_SIZE * sizeof(int));
+}
+
+Detector::~Detector() {}
+
 void Detector::MarkData(CamBuffer& cambuff) {
 	int carwidth = 105; // TODO: Modify value
 
@@ -119,13 +125,6 @@ DirectionType::Type Detector::ShouldEvade() const {
 	}
 }
 
-Detector::Detector() : speed(0), angle(0), halt(false), m_DetectedWall(false), m_fDirectionAngle(0), m_fDirectionAngleOld(0) {
-	memset(this->m_iOffsetBuffer, 0, CAM_OFFSET_BUFFER_SIZE * sizeof(int));
-}
-
-Detector::~Detector() {
-}
-
 int Detector::GetDistance(const Rectangle_T& wall)
 {
 	if(wall.upperLeftX <= this->c_CamWidth / 2 && wall.upperLeftX + wall.width >= this->c_CamWidth / 2) {
@@ -160,4 +159,9 @@ int Detector::GetDistanceFromNearest()
 		return this->GetDistance(this->m_closestwall);
 	else
 		return -1;
+}
+
+int Detector::GetAngle() const
+{
+	return this->m_fDirectionAngle;
 }

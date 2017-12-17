@@ -16,6 +16,7 @@ implementation.oil
 *.d
 *.o
 .f
+*.autosave
 
 # Scripts etc
 appflash.sh

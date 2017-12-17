@@ -1,7 +1,3 @@
-//
-// Created by karlz on 29/11/2017.
-//
-
 // Todo add constructors and write the functions!
 
 #ifndef P5_LEGO_STEERINGTYPES_H

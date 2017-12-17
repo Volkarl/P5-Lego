@@ -1,7 +1,3 @@
-//
-// Created by karlz on 29/11/2017.
-//
-
 #include "DrivingComponent.h"
 
 DrivingComponent::DrivingComponent(StayWithinLaneComponent* laneDetector,

@@ -4,6 +4,7 @@
 #include "objects/cam.h"
 #include "../objects/motor.h"
 #include "../Shared/objects/detector.h"
+#include "../Shared/Connectivity.h"
 
 class Car {
 public:
@@ -22,10 +23,11 @@ public:
 
     void Update();
 	
-	float m_fDegree;
 	float GetAngle() const;
 	
-	bool AllowDrive; // ghetto as fuck, but for UI and prolly on the car for collision? dunno
+	bool AllowDrive;
+	
+	bool SetController(Controller::Source);
 };
 
 #endif // CAR_H

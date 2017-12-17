@@ -41,5 +41,20 @@ void Car::Update()
 
 float Car::GetAngle() const
 {
-	return this->m_fDegree;
+	return this->m_Cam.m_Detector.GetAngle();
+}
+
+bool Car::SetController(Controller::Source mode)
+{
+	if(!this->m_nxtComm.isConnected()) {
+		return false;
+	}
+	
+	char buf[MAX_DATA_LEN];
+	
+	buf[0] = PACKET_SETMODE;
+	buf[1] = (char) mode;
+	buf[2] = '\0';
+	
+	return this->m_nxtComm.SendArray(buf, 3);
 }

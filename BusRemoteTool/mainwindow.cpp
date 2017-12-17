@@ -33,15 +33,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-/* Create event for button for this*/
-void MainWindow::on_refreshButton_clicked()
-{
-	/*this->m_Car.Update();
-    ui->camWidget->refreshView();
-    this->fillTable();*/
-	this->m_Car.m_Motor.SetAngle(0);
-}
-
 void MainWindow::setupTable()
 {
     ui->tableWidget->clear();
@@ -93,30 +84,10 @@ void MainWindow::timerEvent(QTimerEvent *event)
 		this->m_Car.m_Motor.SetForce(-30);
 		this->m_Car.m_Motor.SetAngle(angle);
 	} else {
-		if (testVar)
-		{
-			this->m_Car.AllowDrive = true;
-		}
-		else
-		{
-			this->m_Car.AllowDrive = false;
-		}
+		this->m_Car.AllowDrive = testVar;
 	}
 	
 	ui->currentSpeedBox->setText(QString::number(this->m_Car.m_Motor.GetSpeed()));
-	
-	/*
-	//this->m_Car.m_Motor.SetAngle(-45);
-	
-	if (this->testVar)
-	{
-		this->m_Car.m_Motor.SetForce(25);
-	} else {
-		this->m_Car.m_Motor.SetForce(0);
-	}
-	
-	this->m_Car.m_Motor.Send();
-	*/
 	
 	/*CamBuffer cambuff = this->m_Car.m_Cam.GetBuffer();
 	ui->colorRedBox->setText(QString::number((int) cambuff.m_buffRects[0].color.red));
@@ -127,16 +98,6 @@ void MainWindow::timerEvent(QTimerEvent *event)
 void MainWindow::on_testButton_clicked()
 {
 	testVar = !testVar;
-	const int angle = ui->angleBox->value();
-	
-	//this->m_Car.m_Motor.SetAngle(angle);	
-	
-	/*if (testVar)
-		this->m_Car.m_Motor.SetForce(30);
-	else
-		this->m_Car.m_Motor.SetForce(0);*/
-	
-	//this->m_Car.m_Motor.Send();
 }
 
 void MainWindow::on_connectButton_clicked()
@@ -148,7 +109,6 @@ void MainWindow::on_connectButton_clicked()
 
         ui->testButton->setEnabled(true);
 		ui->testButton_2->setEnabled(true);
-        ui->refreshButton->setEnabled(true);
     }
 }
 
@@ -161,11 +121,20 @@ void MainWindow::on_disconnectButton_clicked()
 
     ui->testButton->setEnabled(false);
 	ui->testButton_2->setEnabled(false);
-    ui->refreshButton->setEnabled(false);
 }
 
 void MainWindow::on_testButton_2_clicked()
 {
     reverseTestVar = !reverseTestVar;
 	ui->testButton->setEnabled(!reverseTestVar);
+}
+
+void MainWindow::on_modePcButton_clicked()
+{
+    this->m_Car.SetController(Controller::PC);
+}
+
+void MainWindow::on_modeNxtButton_clicked()
+{
+    this->m_Car.SetController(Controller::NXT);
 }

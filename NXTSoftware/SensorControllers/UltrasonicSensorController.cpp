@@ -1,7 +1,3 @@
-//
-// Created by karlz on 5/12/2017.
-//
-
 #include "UltrasonicSensorController.h"
 
 using namespace ecrobot;

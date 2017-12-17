@@ -5,29 +5,42 @@
 #include "SensorControllers/CamController.h"
 #include "Clock.h"
 #include "ColorSensor.h"
+
 #include "Driving.h"
+#include "../Shared/Connectivity.h"
+#include "../Shared/Tools.h"
+#include "../Shared/objects/camtools.h"
+#include "Driving.h"
+
+#include "SensorControllers/DisplayController.h"
+
 
 namespace ecrobot {
 	class Communication {
 		public:
-			Communication(Usb* usb, CamController* camera, ColorSensor* colorSensor, Driving* drive);
+			Communication(Usb* usb, CamController* camera, ColorSensor* colorSensor, Driving* drive, DisplayController* lcd);
 			void handle();
+			Controller::Source m_Controller;
 
 		private:
-			void sendData(unsigned char *data);
+			void sendData(unsigned char* data);
 			//void sendCameraData(unsigned char *data);
 			//void getCameraLineTest(unsigned char *data);
 			//int  getCameraLineTestLoop();
 			void getCameraHeatmapTest();
-			void driveCmd(unsigned char *data);
+			void driveCmd(unsigned char* data);
+			void setMode(unsigned char* data);
 
 
 			unsigned char data[64]; //Usb::MAX_USB_DATA_LEN];
-			Usb* usb;
+			Usb* m_Usb;
 			CamController* m_Camera;
-			ColorSensor* color;
-			Driving* drive;
-			Clock clock;
+			ColorSensor* m_Color;
+			Driving* m_Drive;
+
+			DisplayController* m_Lcd;
+			//Clock clock;
+
 	};
 };
 

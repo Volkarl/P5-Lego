@@ -6,18 +6,18 @@
 
 namespace ecrobot {
 
-    class DisplayController {
+class DisplayController {
     public:
         DisplayController();
         void Calibrate();
-        void SetText(const char* textToDisplay);
-        void SetText(int textToDisplay);
-        void SetText(const char* textToDisplay, double numberToDisplay, int spaceForNumber);
+        void SetText(const char* text);
+        void SetText(int text);
+        void SetText(const char* text, int number, int space);
         //void RefreshDisplay();
-        //void ClearDisplay();
+        void ClearDisplay();
 
     private:
-        Lcd lcd;
+        Lcd m_Lcd;
     };
 
 };

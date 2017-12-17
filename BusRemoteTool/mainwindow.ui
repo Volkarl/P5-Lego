@@ -47,22 +47,6 @@
      <string notr="true">background-color:white;</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="refreshButton">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>635</x>
-      <y>15</y>
-      <width>110</width>
-      <height>40</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Refresh</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="testButton">
     <property name="enabled">
      <bool>false</bool>
@@ -342,6 +326,32 @@
     </property>
     <property name="placeholderText">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="modeNxtButton">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>15</y>
+      <width>110</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>NXT</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="modePcButton">
+    <property name="geometry">
+     <rect>
+      <x>635</x>
+      <y>15</y>
+      <width>110</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PC</string>
     </property>
    </widget>
   </widget>

@@ -4,37 +4,37 @@ using namespace ecrobot;
 
 DisplayController::DisplayController()
 {
-    this->lcd.clear();
+    this->m_Lcd.clear();
 }
 
-void DisplayController::SetText(const char* textToDisplay) {
-    //lcd->clear();
-    this->lcd.putf("sn", textToDisplay);
-    this->lcd.disp();
+void DisplayController::SetText(const char* text) {
+    //m_Lcd->clear();
+    this->m_Lcd.putf("sn", text);
+    this->m_Lcd.disp();
 }
 
-void DisplayController::SetText(const char* textToDisplay, double numberToDisplay, int spaceForNumber) {
-    //lcd->clear();
-    this->lcd.putf("sdn", textToDisplay, numberToDisplay, spaceForNumber);
-    this->lcd.disp();
+void DisplayController::SetText(const char* text, int number, int space) {
+    //m_Lcd->clear();
+    this->m_Lcd.putf("sdn", text, number, space);
+    this->m_Lcd.disp();
 }
 
 void DisplayController::SetText(int number) {
-    //lcd->clear();
-    this->lcd.putf("dn", number, 0);
-    this->lcd.disp();
+    //m_Lcd->clear();
+    this->m_Lcd.putf("dn", number, 0);
+    this->m_Lcd.disp();
 }
 
 /*
 void DisplayController::RefreshDisplay(){
     // Can only refresh every 50 ms, otherwise it doesn't refresh properly
-    lcd->disp();
-}
-
-void DisplayController::ClearDisplay(){
-    lcd->clear();
+    m_Lcd->disp();
 }
 */
+void DisplayController::ClearDisplay(){
+    this->m_Lcd.clear();
+}
+
 
 void DisplayController::Calibrate()
 {

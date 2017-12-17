@@ -13,7 +13,6 @@ CamBuffer Cam::GetBuffer() const {
 
 bool Cam::UpdateSight() {
 	char buff[MAX_DATA_LEN];
-	int speed, angle, halt;
 	
 	this->m_nxtComm->SendPacket(PACKET_POLL); // Previously PACKET_CAM
 	this->m_nxtComm->Receive(buff, MAX_DATA_LEN);
