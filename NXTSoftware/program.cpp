@@ -120,7 +120,10 @@ TASK(TaskDetectBusStop){
 }
 
 TASK(TaskDetectObstacles){
-    drivingComponent.DetectObstacles();
+    if(obstacleDetectionComponent.DetectObstacles())
+        driving.halt();
+    else
+        driving.data.halt = false;
     TerminateTask();
 }
 
