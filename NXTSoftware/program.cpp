@@ -58,13 +58,13 @@ Motor motorTurn(PORT_A);
 
 /* NXT Objects */
 Nxt nxt;
-Clock clock;
+Clock clockfuck;
 Usb usb;
 
 /* Sensor Controllers */
 DisplayController displayController;
 UltrasonicSensorController ultrasonicSensorController(&sonar);
-CamController cam(&clock, &camera);
+CamController cam(&clockfuck, &camera);
 Detector detector;
 
 
@@ -81,10 +81,12 @@ DrivingComponent drivingComponent(&stayWithinLaneComponent, &obstacleDetectionCo
 Driving driving(&motorForward, &motorTurn);
 Communication communication(&usb, &cam, &colorSensor, &driving, &displayController);
 
+long msPassed = 0;
 
 /* nxtOSEK hook to be invoked from an ISR in category 2 */
 void user_1ms_isr_type2(void)
 {
+    msPassed++;
 	SleeperMonitor(); // needed for I2C device and Clock classes
 	usb.commHandler(); // USB communication handler
     // fun times
@@ -162,6 +164,7 @@ TASK(TaskDrive)
     TerminateTask();
 }
 
+/*
 TASK(TaskMain)
 {
 	// Useless calibrations
@@ -182,6 +185,49 @@ TASK(TaskMain)
         communication.handle();
     }
 }
+*/
+
+void functionToTest(){
+    cam.Update();
+    cam.UpdateBuffer();
+}
+
+void TestingMain(){
+    driving.calibrate(); // Finding the center
+    cam.Calibrate(); // Calling calibrate, as running it in the constructor seems to not work :S
+    communication.m_Controller = Controller::NXT;
+
+    double duration = 0;
+    double highest = 0;
+    double all = 0;
+    msPassed = 0;
+
+    for (int i = 0; i < 1000; ++i) {
+        all += msPassed;
+        msPassed = 0;
+
+
+        functionToTest();
+
+        duration = msPassed;
+        if(duration > highest) highest = duration;
+    }
+
+    displayController.SetText("All: ", (int) all, 0);
+
+    clockfuck.wait(5000);
+
+    displayController.SetText("Highest: ", (int) highest, 0);
+
+    while (1){}
+}
+
+
+TASK(TaskMain){
+        TestingMain();
+}
+
+
 
 }
 
