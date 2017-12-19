@@ -52,10 +52,6 @@ void Communication::driveCmd(unsigned char* data)
 	char forwardSpeed = (char)data[1];
 	char angle = (char)data[2];
 
-	if (forwardSpeed < -100 || forwardSpeed > 100 ||
-		angle < -90 || angle > 90)
-		return;
-
 	this->m_Drive->SetSpeed(forwardSpeed);
 	this->m_Drive->SetAngle(angle);
 }

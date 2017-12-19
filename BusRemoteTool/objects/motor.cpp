@@ -16,7 +16,7 @@ bool Motor::SetForce(int force)
 
 bool Motor::SetAngle(int angle)
 {
-	if (angle < -90 && angle > 90)
+	if (angle < -90 || angle > 90)
 		return false;
 	
 	this->driveAngle = angle;

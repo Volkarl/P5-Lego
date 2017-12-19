@@ -50,8 +50,8 @@ bool Driving::SetSpeed(int speed)
 
 bool Driving::SetAngle(int angle)
 {
-	//if(angle < -90 && angle > 90)
-	//	return false;
+	if(angle < -90 || angle > 90)
+		return false;
 
 	data.angle = angle;
 	return true;
