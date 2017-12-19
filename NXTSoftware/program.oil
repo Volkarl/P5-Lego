@@ -103,7 +103,7 @@ CPU ATMEL_AT91SAM7S256
         AUTOSTART = FALSE;
     };
 
-    /*Steer*/
+    /* Drive */
     TASK TaskDrive
     {
         AUTOSTART = FALSE;
@@ -123,32 +123,6 @@ CPU ATMEL_AT91SAM7S256
         AUTOSTART = FALSE;
     };
 
-///// BELOW IS RIP
-/*
-    TASK TaskUpdateCam
-    {
-        AUTOSTART = FALSE;
-        PRIORITY = 3;
-        ACTIVATION = 1;
-        SCHEDULE = FULL;
-        STACKSIZE = 512;
-
-        EVENT = EventSleepI2C;
-        EVENT = EventSleep;
-    };
-
-    TASK TaskUpdateSonar
-    {
-        AUTOSTART = TRUE
-        {
-            APPMODE = appmode1;
-        };
-        PRIORITY = 2;
-        ACTIVATION = 1;
-        SCHEDULE = FULL;
-        STACKSIZE = 512;
-    };
-*/
     /* Definition of TaskMain */
     TASK TaskMain
     {
@@ -184,48 +158,4 @@ CPU ATMEL_AT91SAM7S256
     {
         MASK = AUTO;
     };
-/*
-    ALARM AlarmUpdateCam
-    {
-        COUNTER = SysTimerCnt;
-        ACTION = ACTIVATETASK
-        {
-            TASK = TaskUpdateCam;
-        };
-        AUTOSTART = FALSE;
-    };
-
-    ALARM AlarmUpdateSonar
-    {
-        COUNTER = SysTimerCnt;
-        ACTION = ACTIVATETASK
-        {
-            TASK = TaskUpdateSonar;
-        };
-        AUTOSTART = TRUE{
-                ALARMTIME = 250;
-                CYCLETIME = 400; // TaskLCD is executed every 500msec
-                APPMODE = appmode1;
-        };
-    };
-
-    TASK drivingUpdate
-    {
-        AUTOSTART = FALSE;
-        PRIORITY = 4;
-        ACTIVATION = 1;
-        SCHEDULE = FULL;
-        STACKSIZE = 512;
-    };
-
-    ALARM AlarmDrivingUpdate
-    {
-        COUNTER = SysTimerCnt;
-        ACTION = ACTIVATETASK
-        {
-            TASK = drivingUpdate;
-        };
-        AUTOSTART = FALSE;
-    };
-    */
 };

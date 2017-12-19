@@ -12,10 +12,10 @@ public:
     void Calibrate();
     int GetDistancePrecise();
     int GetDistanceFast();
+	int GetDistance() const;
 
 private:
-    SonarSensor* UltrasonicSensor;
-    Clock clock;
+    SonarSensor* m_UltrasonicSensor;
 };
 
 #endif //P5_LEGO_ULTRASONICSENSORCONTROLLER_H

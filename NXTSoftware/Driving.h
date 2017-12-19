@@ -27,26 +27,32 @@ namespace ecrobot{
 
 			void stop();
 			void halt();
+			void halt(bool state);
 
 			int getTurnCount();
 			bool isCentered();
 			bool isCalibrated();
+			bool IsHalted();
 			bool isAtAngle(int angle);
 
 			void calibrate();
 
 			void center();
-			bool setTurnAngle(int angle);
+			bool SetSpeed(int speed);
+			bool SetAngle(int angle);
 
-			void update();
+			int GetSpeed();
+
+			void Update();
 
 
-		//private:
-			DrivingData data;
+			DrivingData data; // public is NOT optimal, but it's a stupid shortcut
 
-		private:
+	private:
 			Motor* motorForward;
 			Motor* motorTurn;
+			bool setTurnAngle(int angle);
+
 	};
 };
 

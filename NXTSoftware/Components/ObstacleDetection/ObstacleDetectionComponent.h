@@ -8,15 +8,16 @@ namespace ecrobot{
 
 class ObstacleDetectionComponent {
 public:
-    ObstacleDetectionComponent(UltrasonicSensorController* obstacleDetectionController);
+    ObstacleDetectionComponent(UltrasonicSensorController* UltrasonicSensorController);
     // It's coded to only take UltrasonicSensorController as input, which is sad.
     // It should be able to take any IObstacleDetectionController, because the logic works for either.
     // Removed because interface inheritance is dumb in c++.
 
-    bool DetectObstacles();
+    bool DetectObstacles(); // Terrible name, this sounds like a Update() function
+	int GetDistance() const;
 
 private:
-    UltrasonicSensorController* ObstacleDetectionSensor;
+    UltrasonicSensorController* m_UltrasonicSensorController;
     int oldDistance;
 };
 };

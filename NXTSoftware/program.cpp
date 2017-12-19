@@ -2,7 +2,6 @@
 #include "../Shared/Tools.h"
 #include "../Shared/Connectivity.h"
 
-// Old stuff todo
 #include "Driving.h"
 #include "Communication.h"
 #include "../Shared/objects/detector.h"
@@ -37,7 +36,6 @@ extern "C" {
 
 /* OSEK DECLARATIONS */
 DeclareCounter(SysTimerCnt);
-//DeclareAlarm(AlarmUpdateSonar);
 DeclareEvent(EventSleepI2C);
 DeclareEvent(EventSleep);
 
@@ -85,8 +83,8 @@ Communication communication(&usb, &cam, &colorSensor, &driving, &displayControll
 /* nxtOSEK hook to be invoked from an ISR in category 2 */
 void user_1ms_isr_type2(void)
 {
-	SleeperMonitor(); // needed for I2C device and Clock classes
-	usb.commHandler(); // USB communication handler
+    SleeperMonitor(); // needed for I2C device and Clock classes
+    usb.commHandler(); // USB communication handler
     // fun times
     StatusType ercd;
 
@@ -97,23 +95,6 @@ void user_1ms_isr_type2(void)
     }
 }
 
-TASK(TaskUpdateSonar)
-{
-    drivingComponent.DetectObstacles();
-    TerminateTask();
-
-// Jakob's old code for ultrasonic sensor
-/*
-    int distance = ultrasonicSensorController.GetDistanceFast();
-	if (distance < 15 && distance > 5)
-		driving.halt();
-	else
-		driving.data.halt = false; // TODO: Change to new function
-
-    TerminateTask();
-    */
-}
-
 TASK(TaskDetectBusStop)
 {
     drivingComponent.DetectBusStop();
@@ -122,10 +103,12 @@ TASK(TaskDetectBusStop)
 
 TASK(TaskDetectObstacles)
 {
-    if(obstacleDetectionComponent.DetectObstacles())
+	const int dist = sonar.getDistance();
+
+    if(dist < 20 && dist > 2)
         driving.halt();
     else
-        driving.data.halt = false;
+        driving.halt(false);
 
     TerminateTask();
 }
@@ -138,10 +121,10 @@ TASK(TaskDetectSpeedZone)
 
 TASK(TaskCamUpdate)
 {
-	//drivingComponent.DetectLanes();
+    //drivingComponent.DetectLanes();
 
-	cam.Update();
-	cam.UpdateBuffer();
+    cam.Update();
+    cam.UpdateBuffer();
 
     TerminateTask();
 }
@@ -153,11 +136,11 @@ TASK(TaskDrive)
 		detector.MarkData(buffdata);
 
 		DrivingData detectordata = detector.GetAdvisedDrivingData();
-		driving.data.speed = detectordata.speed;
-		driving.data.angle = -detectordata.angle;
+		driving.SetSpeed(detectordata.speed);
+		driving.SetAngle(-detectordata.angle);
 	}
 
-	driving.update();
+	driving.Update();
 
     TerminateTask();
 }
@@ -168,14 +151,14 @@ TASK(TaskMain)
     displayController.Calibrate();
     ultrasonicSensorController.Calibrate();
 
-	driving.calibrate(); // Finding the center
-	cam.Calibrate(); // Calling calibrate, as running it in the constructor seems to not work :S
+    driving.calibrate(); // Finding the center
+    cam.Calibrate(); // Calling calibrate, as running it in the constructor seems to not work :S
 
-    displayController.SetText("USB");
+    displayController.SetText("NXT");
 
     SetRelAlarm(AlarmCamUpdate, 25, 175);
-    //SetRelAlarm(AlarmDetectObstacles, 200, 1000);
-	SetRelAlarm(AlarmDrive, 150, 150);
+    SetRelAlarm(AlarmDetectObstacles, 200, 800);
+    SetRelAlarm(AlarmDrive, 150, 150);
 
     while(1)
     {

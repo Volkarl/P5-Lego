@@ -26,9 +26,9 @@ Driving::Driving(Motor* propulsionMotor, Motor* turnMotor)
 /**
  * Loop for task
  */
-void Driving::update()
+void Driving::Update()
 {
-	if (data.halt)
+	if (this->IsHalted())
 	{
 		motorForward->setPWM(0);
 		motorTurn->setPWM(0);
@@ -39,8 +39,37 @@ void Driving::update()
 	this->setTurnAngle(data.angle);
 }
 
+bool Driving::SetSpeed(int speed)
+{
+	if(speed < -100 || speed > 100 )
+		return false;
+
+	data.speed = speed;
+	return true;
+}
+
+bool Driving::SetAngle(int angle)
+{
+	//if(angle < -90 && angle > 90)
+	//	return false;
+
+	data.angle = angle;
+	return true;
+}
+
+bool Driving::IsHalted()
+{
+	return this->data.halt;
+}
+
+int Driving::GetSpeed()
+{
+	return this->data.speed;
+}
+
 /**
  * Drive Forwards
+ * Set Speed makes this kind of silly though
  */
 void Driving::forward()
 {
@@ -75,11 +104,16 @@ void Driving::stop()
 
 /**
  * Stop both forward and turn engines.
- * TODO: Remember that this should interrupt tasks as well
+ * TODO: Remember that this should interrupt tasks as well (Ghetto fix using Update() solution)
  */
 void Driving::halt()
 {
 	data.halt = true;
+}
+
+void Driving::halt(bool state)
+{
+	data.halt = state;
 }
 
 

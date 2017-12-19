@@ -56,8 +56,8 @@ void Communication::driveCmd(unsigned char* data)
 		angle < -90 || angle > 90)
 		return;
 
-	this->m_Drive->data.speed = forwardSpeed;
-	this->m_Drive->data.angle = angle;
+	this->m_Drive->SetSpeed(forwardSpeed);
+	this->m_Drive->SetAngle(angle);
 }
 
 /**
@@ -115,9 +115,9 @@ void Communication::sendData(unsigned char* data)
 		data[offset] = PACKET_END;
 	}
 
-	data[offset++] = m_Drive->data.speed;
+	data[offset++] = m_Drive->GetSpeed();
 	data[offset++] = (unsigned char) m_Drive->getTurnCount();
-	data[offset++] = m_Drive->data.halt;
+	data[offset++] = m_Drive->IsHalted();
 	// Color Sensor
 	data[offset++] = m_Drive->data.color.red;
 	data[offset++] = m_Drive->data.color.green;
