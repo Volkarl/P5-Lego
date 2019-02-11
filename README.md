@@ -16,7 +16,7 @@ To push it to the NXT, make sure you have the USB cable attached and it is in fl
 If you want to combine these you can chain them by doing ```make all && ./appflash.sh```.
 
 ------------------------------------------------------
-Created as part of the 5th semester project of Software group 501e17, Comp. Sci, Aalborg University, during spring/summer of 2016. 
+Created as part of the 5th semester project of Software group 501e17, Comp. Sci, Aalborg University, during spring/summer of 2017. 
 
 Group members:
 - Andreas Laugård Hald 
